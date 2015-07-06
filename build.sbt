@@ -10,8 +10,6 @@ libraryDependencies ++= Seq(
   "com.novocode" % "junit-interface" % "0.11" % Test
 )
 
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
-
 // Solve issue where some loggers are initialised during configuration phase
 testOptions in Test += Tests.Setup(classLoader =>
   classLoader
