@@ -1,30 +1,33 @@
+[![Build Status](https://travis-ci.org/NICTA/javallier.svg?branch=master)](https://travis-ci.org/NICTA/javallier)
+
 javallier
 =========
 
-A Java library for Paillier partially homomorphic encryption based on phe-prototype.
+A Java library for Paillier partially homomorphic encryption 
+based on [python-paillier](https://github.com/NICTA/python-paillier).
 
 Build
 -----
 
 Compile the library:
 
-    % sbt compile
+    $ sbt compile
     
 Create a jar file:
 
-    % sbt package
+    $ sbt package
     
 
 Run all tests with `sbt`:
 
-    sbt test
+    $ sbt test
     
 Or run just fast tests:
 
     $ ./test-fast.sh
 
-Limitation
-----------
+Limitations
+-----------
 
 *   Arithmetic functions that involve a combination of addition and multiplication operations, such as 
     (a + b) &times; c, might result in overflow in the `EncryptedNumber` domain. When overflow occurs, the computation 
