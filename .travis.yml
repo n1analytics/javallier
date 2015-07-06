@@ -2,6 +2,7 @@ language: scala
 scala:
 - 2.11.7
 jdk:
+- openjdk7
 - oraclejdk8
 script: ./test-fast.sh
 notifications:
