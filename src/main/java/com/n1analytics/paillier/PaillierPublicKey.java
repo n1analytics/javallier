@@ -1,17 +1,15 @@
 /**
  * Copyright 2015 NICTA
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package com.n1analytics.paillier;
 
@@ -50,96 +48,97 @@ import java.math.BigInteger;
  *     </li>
  * </ul>
  */
-public final class PaillierPublicKey{
-    protected final BigInteger modulus;
-    protected final BigInteger modulusSquared;
-    protected final BigInteger generator;
+public final class PaillierPublicKey {
 
-    public static interface Serializer {
-        void serialize(BigInteger modulus);
-    }
-    
-    /**
-     * Construct a Paillier public key.
-     * @param modulus
-     */
-    public PaillierPublicKey(BigInteger modulus) {
-    	if(modulus == null)
-    		throw new NullPointerException("modulus must not be null");
-    	this.modulus = modulus;
-    	this.modulusSquared = modulus.multiply(modulus);
-    	this.generator = modulus.add(BigInteger.ONE);
-    }
-    
-    /**
-     * Gets the public key, modulus.
-     *
-     * @return public key modulus.
-     */
-    public BigInteger getModulus() {
-        return modulus;
-    }
+  protected final BigInteger modulus;
+  protected final BigInteger modulusSquared;
+  protected final BigInteger generator;
 
-    /**
-     * Gets modulus<sup>2</sup>.
-     *
-     * @return modulus<sup>2</sup>.
-     */
-    public BigInteger getModulusSquared() {
-        return modulusSquared;
-    }
+  public static interface Serializer {
 
-    /**
-     * Gets the public key generator.
-     *
-     * @return public key generator.
-     */
-    public BigInteger getGenerator() {
-        return generator;
-    }
+    void serialize(BigInteger modulus);
+  }
 
-    public void serialize(Serializer serializer) {
-        serializer.serialize(modulus);
+  /**
+   * Construct a Paillier public key.
+   * @param modulus
+   */
+  public PaillierPublicKey(BigInteger modulus) {
+    if (modulus == null) {
+      throw new NullPointerException("modulus must not be null");
     }
-    
-    public PaillierContext createUnsignedContext() {
-    	return new PaillierContext(this, false, modulus.bitLength());
-    }
-    
-    public PaillierContext createUnsignedContext(int precision) throws
-    	IllegalArgumentException
-    {
-    	return new PaillierContext(this, false, precision);
-    }
-    
-    public PaillierContext createSignedContext() {
-    	return new PaillierContext(this, true, modulus.bitLength());
-    }
-    
-    public PaillierContext createSignedContext(int precision) {
-    	return new PaillierContext(this, true, precision);
-    }
+    this.modulus = modulus;
+    this.modulusSquared = modulus.multiply(modulus);
+    this.generator = modulus.add(BigInteger.ONE);
+  }
 
-    @Override
-    public int hashCode() {
-    	return modulus.hashCode();
-    	// NOTE we don't need to hash modulusSquared or generator since they
-    	//      are uniquely determined by modulus
-    }
+  /**
+   * Gets the public key, modulus.
+   *
+   * @return public key modulus.
+   */
+  public BigInteger getModulus() {
+    return modulus;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-    	return o == this || (
-    		o != null &&
-    		o.getClass() == PaillierPublicKey.class &&
-    		modulus.equals(((PaillierPublicKey)o).modulus));
-    	// NOTE we don't need to compare modulusSquared or generator since they
-    	//      are uniquely determined by modulus
-    }
-    
-    public boolean equals(PaillierPublicKey o) {
-    	return o == this || (o != null && modulus.equals(o.modulus));
-    	// NOTE we don't need to compare modulusSquared or generator since they
-    	//      are uniquely determined by modulus
-    }
+  /**
+   * Gets modulus<sup>2</sup>.
+   *
+   * @return modulus<sup>2</sup>.
+   */
+  public BigInteger getModulusSquared() {
+    return modulusSquared;
+  }
+
+  /**
+   * Gets the public key generator.
+   *
+   * @return public key generator.
+   */
+  public BigInteger getGenerator() {
+    return generator;
+  }
+
+  public void serialize(Serializer serializer) {
+    serializer.serialize(modulus);
+  }
+
+  public PaillierContext createUnsignedContext() {
+    return new PaillierContext(this, false, modulus.bitLength());
+  }
+
+  public PaillierContext createUnsignedContext(int precision)
+          throws IllegalArgumentException {
+    return new PaillierContext(this, false, precision);
+  }
+
+  public PaillierContext createSignedContext() {
+    return new PaillierContext(this, true, modulus.bitLength());
+  }
+
+  public PaillierContext createSignedContext(int precision) {
+    return new PaillierContext(this, true, precision);
+  }
+
+  @Override
+  public int hashCode() {
+    return modulus.hashCode();
+    // NOTE we don't need to hash modulusSquared or generator since they
+    //      are uniquely determined by modulus
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    return o == this || (o != null &&
+            o.getClass() == PaillierPublicKey.class &&
+            modulus.equals(((PaillierPublicKey) o).modulus));
+    // NOTE we don't need to compare modulusSquared or generator since they
+    //      are uniquely determined by modulus
+  }
+
+  public boolean equals(PaillierPublicKey o) {
+    return o == this || (o != null && modulus.equals(o.modulus));
+    // NOTE we don't need to compare modulusSquared or generator since they
+    //      are uniquely determined by modulus
+  }
 }

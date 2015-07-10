@@ -1,17 +1,15 @@
 /**
  * Copyright 2015 NICTA
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package com.n1analytics.paillier;
 
@@ -25,76 +23,77 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
 public class BigIntegerUtilTest {
-	final private BigInteger BigOne = BigInteger.ONE;
-	final private BigInteger BigZero = BigInteger.ZERO;
-	final private BigInteger BigNegativeOne = BigInteger.ONE.negate();
 
-	@Test
-	public void testRandomPositiveNumberInvalidParameters() {
-		int[] invalidParameters = new int[]{-1, 0, 1};
-		for(int i: invalidParameters) {
-			try {
-				BigIntegerUtil.randomPositiveNumber(BigInteger.valueOf(i));
-				fail("Expected IllegalArgumentException");
-			} catch(IllegalArgumentException e) {
-			}
-		}
-	}
-	
-	@Test
-	public void testRandomPositiveNumberSmallRanges() {
-		for(int i = 2; i < 32; ++i) {
-			HashSet<Integer> sampled = new HashSet<Integer>();
-			for(int j = 0; j < 1000*i; ++j) {
-				int k = BigIntegerUtil.randomPositiveNumber(BigInteger.valueOf(i)).intValue();
-				assertTrue(1 <= k && k < i);
-				sampled.add(k);
-			}
-			assertTrue("Missing samples (NON-DETERMINISTIC TEST)", sampled.size() == i - 1);
-		}
-	}
+  final private BigInteger BigOne = BigInteger.ONE;
+  final private BigInteger BigZero = BigInteger.ZERO;
+  final private BigInteger BigNegativeOne = BigInteger.ONE.negate();
 
-	@Test
-	public void testBigIntegerSignum() throws Exception {
-		assertTrue(BigIntegerUtil.positive(BigOne));
-		assertTrue(BigIntegerUtil.nonNegative(BigOne));
-		assertFalse(BigIntegerUtil.negative(BigOne));
-		assertFalse(BigIntegerUtil.nonPositive(BigOne));
+  @Test
+  public void testRandomPositiveNumberInvalidParameters() {
+    int[] invalidParameters = new int[]{-1, 0, 1};
+    for (int i : invalidParameters) {
+      try {
+        BigIntegerUtil.randomPositiveNumber(BigInteger.valueOf(i));
+        fail("Expected IllegalArgumentException");
+      } catch (IllegalArgumentException e) {
+      }
+    }
+  }
 
-		assertTrue(BigIntegerUtil.nonNegative(BigZero));
-		assertTrue(BigIntegerUtil.nonPositive(BigZero));
+  @Test
+  public void testRandomPositiveNumberSmallRanges() {
+    for (int i = 2; i < 32; ++i) {
+      HashSet<Integer> sampled = new HashSet<Integer>();
+      for (int j = 0; j < 1000 * i; ++j) {
+        int k = BigIntegerUtil.randomPositiveNumber(BigInteger.valueOf(i)).intValue();
+        assertTrue(1 <= k && k < i);
+        sampled.add(k);
+      }
+      assertTrue("Missing samples (NON-DETERMINISTIC TEST)", sampled.size() == i - 1);
+    }
+  }
 
-		assertTrue(BigIntegerUtil.negative(BigNegativeOne));
-		assertTrue(BigIntegerUtil.nonPositive(BigNegativeOne));
-		assertFalse(BigIntegerUtil.positive(BigNegativeOne));
-		assertFalse(BigIntegerUtil.nonNegative(BigNegativeOne));
-	}
+  @Test
+  public void testBigIntegerSignum() throws Exception {
+    assertTrue(BigIntegerUtil.positive(BigOne));
+    assertTrue(BigIntegerUtil.nonNegative(BigOne));
+    assertFalse(BigIntegerUtil.negative(BigOne));
+    assertFalse(BigIntegerUtil.nonPositive(BigOne));
 
-	@Test
-	public void testComparison() throws Exception {
-		assertTrue(BigIntegerUtil.greater(BigOne, BigNegativeOne));
-		assertTrue(BigIntegerUtil.greaterOrEqual(BigOne, BigNegativeOne));
-		assertTrue(BigIntegerUtil.greaterOrEqual(BigOne, BigOne));
+    assertTrue(BigIntegerUtil.nonNegative(BigZero));
+    assertTrue(BigIntegerUtil.nonPositive(BigZero));
 
-		assertTrue(BigIntegerUtil.less(BigNegativeOne, BigOne));
-		assertTrue(BigIntegerUtil.lessOrEqual(BigNegativeOne, BigOne));
-		assertTrue(BigIntegerUtil.lessOrEqual(BigNegativeOne, BigNegativeOne));
+    assertTrue(BigIntegerUtil.negative(BigNegativeOne));
+    assertTrue(BigIntegerUtil.nonPositive(BigNegativeOne));
+    assertFalse(BigIntegerUtil.positive(BigNegativeOne));
+    assertFalse(BigIntegerUtil.nonNegative(BigNegativeOne));
+  }
 
-		assertFalse(BigIntegerUtil.greater(BigNegativeOne, BigOne));
-		assertFalse(BigIntegerUtil.greaterOrEqual(BigNegativeOne, BigOne));
+  @Test
+  public void testComparison() throws Exception {
+    assertTrue(BigIntegerUtil.greater(BigOne, BigNegativeOne));
+    assertTrue(BigIntegerUtil.greaterOrEqual(BigOne, BigNegativeOne));
+    assertTrue(BigIntegerUtil.greaterOrEqual(BigOne, BigOne));
 
-		assertFalse(BigIntegerUtil.less(BigOne, BigNegativeOne));
-		assertFalse(BigIntegerUtil.lessOrEqual(BigOne, BigNegativeOne));
-	}
+    assertTrue(BigIntegerUtil.less(BigNegativeOne, BigOne));
+    assertTrue(BigIntegerUtil.lessOrEqual(BigNegativeOne, BigOne));
+    assertTrue(BigIntegerUtil.lessOrEqual(BigNegativeOne, BigNegativeOne));
 
-	@Test
-	public void testAbsBitLength() throws Exception {
-		assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne));
-		assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne.negate()));
+    assertFalse(BigIntegerUtil.greater(BigNegativeOne, BigOne));
+    assertFalse(BigIntegerUtil.greaterOrEqual(BigNegativeOne, BigOne));
 
-		assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero));
-		assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero.negate()));
+    assertFalse(BigIntegerUtil.less(BigOne, BigNegativeOne));
+    assertFalse(BigIntegerUtil.lessOrEqual(BigOne, BigNegativeOne));
+  }
 
-		assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigNegativeOne));
-	}
+  @Test
+  public void testAbsBitLength() throws Exception {
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne));
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne.negate()));
+
+    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero));
+    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero.negate()));
+
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigNegativeOne));
+  }
 }
