@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 public class DivisionTest {
     static private final double EPSILON = 0.1;
 
-////    Key size of 1024 bits gives incorrect result when the difference of the exponents of two EncryptedNumbers are
-////    greater than or equal to 977.
     static private final int keySize = 2104;
 
     static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
@@ -62,8 +60,6 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish EncryptedNumber division 1");
     }
 
     @Test
@@ -107,8 +103,6 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish EncryptedNumber division 2");
     }
 
     @Test
@@ -151,8 +145,6 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish EncodedNumber division 1");
     }
 
     @Test
@@ -196,8 +188,6 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish EncodedNumber division 2");
     }
 
     @Test
@@ -240,8 +230,6 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish Number division 1");
     }
 
     @Test
@@ -285,7 +273,5 @@ public class DivisionTest {
             } catch (ArithmeticException e) {
             }
         }
-
-//        System.out.println("Finish Number division 2");
     }
 }

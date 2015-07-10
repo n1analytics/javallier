@@ -9,18 +9,10 @@ import java.util.HashSet;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertFalse;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-// NOTE: decrypt() method is tested in other test classes
 public class PaillierPrivateKeyTest {
-//    final static Logger logger = LoggerFactory.getLogger(PaillierKeyGenerationTest.class);
-
     @Category(SlowTests.class)
     @Test
     public void testCreateKeypairs() throws Exception {
-//        logger.debug("Running phe test: Generate keypairs with various length.");
-
         int[] keyLength = {8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
 
         for(int i = 0; i < keyLength.length; i++){
@@ -49,8 +41,6 @@ public class PaillierPrivateKeyTest {
 
     @Test
     public void testIllegalKeyLength() throws Exception {
-//        logger.debug("Running test: Generate keypair with unsupported keylength.");
-
         PaillierPrivateKey privateKey = null;
 
         int keysizeSmallerThanEight = 4;

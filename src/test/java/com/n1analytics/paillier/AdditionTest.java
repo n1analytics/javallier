@@ -14,8 +14,6 @@ import static org.junit.Assert.assertEquals;
 public class AdditionTest {
     static private final double EPSILON = 0.1;
 
-////    Key size of 1024 bits gives incorrect result when the difference of the exponents of two EncryptedNumbers are
-////    greater than or equal to 977.
     static private final int keySize = 2104;
 
     static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
@@ -23,7 +21,6 @@ public class AdditionTest {
     static private PaillierContext context = publicKey.createSignedContext();
 
     static private int bigIntegerBitLength = keySize / 2 - 1;
-    static private int maxExpDifference = 634;
 
     static private int maxIteration = 100;
 
@@ -194,10 +191,6 @@ public class AdditionTest {
             encryptedResult = adder.eval(ciphertTextA, ciphertTextB);
             decryptedResult = encryptedResult.decrypt(privateKey);
 
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
-
             if(!context.isValid(Number.encode(a).add(Number.encode(b))))
                 continue;
 
@@ -269,10 +262,6 @@ public class AdditionTest {
             ciphertTextA = context.encrypt(a);
             ciphertTextB = context.encrypt(b);
 
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             encryptedResult = adder.eval(ciphertTextA, ciphertTextB);
             decryptedResult = encryptedResult.decrypt(privateKey);
 
@@ -304,10 +293,6 @@ public class AdditionTest {
 
             encryptedResult = adder.eval(ciphertTextA, encodedB);
             decryptedResult = encryptedResult.decrypt(privateKey);
-
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             if(!context.isValid(Number.encode(a).add(Number.encode(b))))
                 continue;
@@ -380,10 +365,6 @@ public class AdditionTest {
             ciphertTextA = context.encrypt(a);
             encodedB = context.encode(b);
 
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             encryptedResult = adder.eval(ciphertTextA, encodedB);
             decryptedResult = encryptedResult.decrypt(privateKey);
 
@@ -416,10 +397,6 @@ public class AdditionTest {
 
             encryptedResult = adder.eval(ciphertTextA, numberB);
             decryptedResult = encryptedResult.decrypt(privateKey);
-
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             if(!context.isValid(Number.encode(a).add(Number.encode(b))))
                 continue;
@@ -492,10 +469,6 @@ public class AdditionTest {
 
             ciphertTextA = context.encrypt(a);
             numberB = Number.encode(b);
-
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
 
             encryptedResult = adder.eval(ciphertTextA, numberB);
             decryptedResult = encryptedResult.decrypt(privateKey);
@@ -592,10 +565,6 @@ public class AdditionTest {
 
             encodedA = context.encode(a);
             encodedB = context.encode(b);
-
-//            int expA = encodedA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
 
             if(!context.isValid(Number.encode(a).add(Number.encode(b))))
                 continue;
@@ -695,10 +664,6 @@ public class AdditionTest {
             encodedA = context.encode(a);
             numberB = Number.encode(b);
 
-//            int expA = encodedA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             if(!context.isValid(Number.encode(a).add(numberB)))
                 continue;
 
@@ -794,11 +759,6 @@ public class AdditionTest {
             numberA = Number.encode(a);
             numberB = Number.encode(b);
 
-
-//            int expA = numberA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             if(!context.isValid(numberA.add(numberB)))
                 continue;
 
@@ -819,7 +779,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("EncryptedNumbers addition");
     }
 
     @Test
@@ -829,7 +788,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("EncryptedNumber/EncodedNumber addition");
     }
 
     @Test
@@ -839,7 +797,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("EncryptedNumber/Number addition");
     }
 
     @Test
@@ -849,7 +806,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("EncodedNumbers addition");
     }
 
     @Test
@@ -859,7 +815,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("EncodedNumber/Number addition");
     }
 
     @Test
@@ -869,7 +824,6 @@ public class AdditionTest {
             testLongAddition(adder);
             testBigIntegerAddition(adder);
         }
-//        System.out.println("Numbers addition");
     }
 
 }

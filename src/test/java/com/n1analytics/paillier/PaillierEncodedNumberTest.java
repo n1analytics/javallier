@@ -14,18 +14,10 @@ import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
 import static com.n1analytics.paillier.TestUtil.randomNaNDouble;
 import static org.junit.Assert.*;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-/**
- * Test cases for EncodedNumber class.
- */
 public class PaillierEncodedNumberTest {
 	// Epsilon value for comparing floating point numbers
 	private static final double EPSILON = 1e-3;
 
-//    final static Logger logger = LoggerFactory.getLogger(PaillierEncodedNumberTest.class);
-    
     public static final Random random = new Random();
 
     public static final TestConfiguration defConfig = CONFIGURATION_DOUBLE;
@@ -261,7 +253,6 @@ public class PaillierEncodedNumberTest {
 			assertEquals(ZERO.longValue(), context.getMinLong(0));
 
 			assertEquals(max.doubleValue(), context.getMaxDouble(0), EPSILON * context.getMaxDouble(0));
-//			assertEquals(max.shiftLeft(exponent).doubleValue(), context.getMaxDouble(0), 0.0);
 			assertEquals(ZERO.doubleValue(), context.getMinDouble(0), 0.0);
 
     		// TODO encode/decode
@@ -325,8 +316,6 @@ public class PaillierEncodedNumberTest {
 
 			assertEquals(max.doubleValue(), context.getMaxDouble(0), EPSILON * context.getMaxDouble(0));
 			assertEquals(min.doubleValue(), context.getMinDouble(0), EPSILON * Math.abs(context.getMinDouble(0)));
-//			assertEquals(max.shiftLeft(exponent).doubleValue(), context.getMaxDouble(0), 0.0);
-//			assertEquals(min.doubleValue(), context.getMinDouble(0), 0.0);
     	} else {
     		fail("Invalid defConfig!");
     	}
@@ -341,13 +330,6 @@ public class PaillierEncodedNumberTest {
     	}
     }
     
-    // TODO test the maximum/minimum encodable numbers for each defConfig
-    // TODO test whether an exception is raised for numbers that are too large
-    //      or too negative to encode properly
-    // TODO test that decoding invalid numbers raises an exception (for the min
-    //      and max as well as randomly within that range)
-    
-
 	@Test
 	public void testMaxEncodableNumber() throws Exception {
 		for(TestConfiguration[] confs: CONFIGURATIONS) {
@@ -367,25 +349,6 @@ public class PaillierEncodedNumberTest {
 			}
 		}
 	}
-
-//	@Test
-//    public void testEncodeIntDecodeInt4() throws Exception {
-////        logger.debug("Running phe test: Encode/decode the largest positive BigInteger.");
-//
-//        EncodedNumber enc = defContext.encode(defContext.getMaxSignificand());
-//        assertEquals(0, enc.getExponent());
-//        BigInteger dec = enc.decodeBigInteger();
-//        assertEquals(defContext.getMaxSignificand().toString(), dec.toString());
-//    }
-//
-//    @Test
-//    public void testEncodeIntDecodeInt5() throws Exception {
-////        logger.debug("Running phe test: Encode/decode the largest negative BigInteger.");
-//
-//        EncodedNumber enc = defContext.encode(defContext.getMinSignificand());
-//        BigInteger dec = enc.decodeBigInteger();
-//        assertEquals(defContext.getMinSignificand().toString(), dec.toString());
-//    }
 
 	@Test
 	public void testInvalidLargeMaxNumber() throws Exception {
@@ -409,55 +372,6 @@ public class PaillierEncodedNumberTest {
 		}
 	}
 
-	// NOTE: Need to check how to make humongous2 works!!
-//    @Test
-//    public void testEncodeIntTooLargePositive() throws Exception {
-////        logger.debug("Running phe test: Check whether exception is raised on too large a positive input.");
-//
-//        BigInteger humongous1 = defContext.getMaxSignificand().add(BigInteger.ONE);
-//        BigInteger humongous2 = (new BigInteger("2")).pow(defPublicKey.getModulus().bitLength());
-//
-//        Number humongousNumber1 = Number.encodeToExponent(humongous1, 0);
-//        Number humongousNumber2 = Number.encodeToExponent(humongous2, 0);
-//
-//        exception.expect(EncodeException.class);
-//        EncodedNumber enc = defContext.encode(humongousNumber1);
-//        EncodedNumber enc2 = defContext.encode(humongousNumber2);
-//
-//    }
-
-//    @Test
-//    public void testEncodeIntTooLargeNegative() throws Exception {
-////        logger.debug("Running phe test: Check whether exception is raised on too large a negative input.");
-//
-//        BigInteger negHumongous1 = defContext.getMinSignificand().subtract(BigInteger.ONE);
-//        BigInteger negHumongous2 = (new BigInteger("-2")).pow(defPublicKey.getModulus().bitLength());
-//
-//        Number negHumongousNumber1 = Number.encodeToExponent(negHumongous1, 0);
-//        Number neghumongousNumber2 = Number.encodeToExponent(negHumongous2, 0);
-//
-//        exception.expect(EncodeException.class);
-//        EncodedNumber enc = defContext.encode(negHumongousNumber1);
-//        EncodedNumber enc2 = defContext.encode(neghumongousNumber2);
-//    }
-
-// NOTE: The test is not valid. For arithmetic operations between EncryptedNumber and primitive data type, the methods
-//      check whether both operands are valid (i.e., the values are between minSignificand and maxSignificand).
-//    @Test
-//    public void testDecodeCorruptEncodedNumber() throws Exception {
-//        logger.debug("Running phe test: Check exception is raised when attempting to decode corrupt encoded number.");
-//
-//        EncodedNumber enc = defContext.encode(10);
-//
-////        enc = new EncodedNumber(
-////        	defContext,
-////        	enc.getValue().add(defPublicKey.getModulus()),
-////        	enc.getExponent());
-//
-//        exception.expect(ArithmeticException.class);
-//        long dec = enc.decodeLong();
-//    }
-
 	public void testUndecodable(EncodedNumber encodedNumber) throws Exception {
 		try {
 			Number decodedNumber = encodedNumber.decode();
@@ -473,7 +387,8 @@ public class PaillierEncodedNumberTest {
 		for(TestConfiguration[] confs: CONFIGURATIONS) {
 			for (TestConfiguration conf : confs) {
 				if(conf.isPartialPrecision()) {
-					EncodedNumber encodedNumber = new EncodedNumber(conf.context(), conf.maxEncoded().add(BigInteger.ONE), 0);
+					EncodedNumber encodedNumber = new EncodedNumber(conf.context(),
+							conf.maxEncoded().add(BigInteger.ONE), 0);
 					testUndecodable(encodedNumber);
 				}
 			}
@@ -485,7 +400,8 @@ public class PaillierEncodedNumberTest {
 		for(TestConfiguration[] confs: CONFIGURATIONS) {
 			for (TestConfiguration conf : confs) {
 				if(conf.signedPartialPrecision()) {
-					EncodedNumber encodedNumber = new EncodedNumber(conf.context(), conf.minEncoded().subtract(BigInteger.ONE), 0);
+					EncodedNumber encodedNumber = new EncodedNumber(conf.context(),
+							conf.minEncoded().subtract(BigInteger.ONE), 0);
 					testUndecodable(encodedNumber);
 				}
 			}
@@ -650,191 +566,6 @@ public class PaillierEncodedNumberTest {
         assertFalse(defPublicKey.equals(otherEncodedNumber));
 
         assertFalse(defPublicKey.equals(null));
-
     }
-
-//    @Test
-//    public void testDecodeWithOverflowEncodedNumber() {
-////        logger.debug("Running phe test: Check exception is raised when attempting to decode overflow encoded number.");
-//
-//        EncodedNumber enc = defContext.encode(10);
-//        enc = enc.add(defContext.getMaxEncoded().subtract(new BigInteger("10")));
-//
-//        exception.expect(ArithmeticException.class);
-//        long dec = enc.decodeLong();
-//    }
-
-// NOTE: Encode/decode floating point numbers are done in testDouble
-//    @Test
-//    public void testEncodeFloat0() throws Exception {
-//        logger.debug("Running phe test: Encode a small positive double.");
-//
-//        EncodedNumber enc = EncodedNumber.encode(publicKey, 15.1);
-//
-//        // BASE^exponent * encoding
-//        double dec = Math.pow((double)2, (double) enc.getExponent()) * enc.getEncoded().doubleValue();
-//        assertEquals((new BigDecimal(15.1)).toString(), (new BigDecimal(dec)).toString());
-//    }
-//
-//    @Test
-//    public void testEncodeFloatDecodeFloat0() throws Exception {
-////        logger.debug("Running phe test: Encode/decode a small positive double.");
-//
-//        EncodedNumber enc = defContext.encode(15.1);
-////        EncodedNumber enc = EncodedNumber.encode(publicKey, 15.1);
-//        double dec = enc.decodeDouble();
-//        assertEquals(15.1, dec, 0.0);
-//    }
-//
-//    @Test
-//    public void testEncodeFloatDecodeFloat1() throws Exception {
-//        logger.debug("Running phe test: Encode/decode a small negative double.");
-//
-//        EncodedNumber enc = EncodedNumber.encode(publicKey, -15.1);
-//        assertEquals((new BigDecimal(-15.1)).toString(), (new BigDecimal(enc.decodeDouble())).toString());
-//    }
-//
-//    @Test
-//    public void testEncryptFloatDecryptFloat2() throws Exception {
-////        logger.debug("Running phe test: Encode/decode a large positive double.");
-//
-//        EncodedNumber enc = defContext.encode(Math.pow(2.1,20.0));
-//        assertEquals(Math.pow(2.1,20.0), enc.decodeDouble(), 0.0);
-//    }
-//
-//    @Test
-//    public void testEncryptFloatDecryptFloat3() throws Exception {
-////        logger.debug("Running phe test: Encode/decode a large negative double.");
-//
-//        EncodedNumber enc = defContext.encode(Math.pow(-2.1,63));
-//        assertEquals(Math.pow(-2.1, 63.0), enc.decodeDouble(), 0.0);
-//    }
-
-// NOTE: Encoding to specific precision or exponent are done in Number.
-//    @Test
-//    public void testManualPrecision0() throws Exception {
-//        logger.debug("Running phe test: Check that the encoded positive number is precise enough.");
-//
-//        double val = 3.171234 * Math.pow(10,-7);
-//        double prec = Math.pow(10, -8);
-//
-//        EncodedNumber enc = EncodedNumber.encode(publicKey, val, prec);
-//        double dec = enc.decodeDouble();
-//
-////        Original code: self.assertInRange(decoded, val - prec, val + prec)
-//        if(dec < val - prec || dec > val + prec){
-//            fail("decoded number < val - prec or decoded number > val + prec");
-//        }
-//
-//        EncodedNumber enc2 = EncodedNumber.encode(publicKey, dec + 0.500001 * prec, prec);
-//        double dec2 = enc2.decodeDouble();
-//        assertNotEquals(dec, dec2);
-//
-////        Original code: self.assertInRange(dec2, val - prec/2, val + prec*1.5001)
-//        if(dec2 < val - prec / 2 || dec2 > val + prec * 1.5001){
-//            fail("(decoded number < val - prec / 2) OR (decode number > val + prec * 1.5001)");
-//        }
-//
-//        double val3 = dec + prec / 2;
-//        EncodedNumber enc3 = EncodedNumber.encode(publicKey, val3, prec);
-//        double dec3 = enc3.decodeDouble();
-//        assertEquals((new BigDecimal(String.valueOf(dec))).toString(), (new BigDecimal(String.valueOf(dec3))).toString());
-//    }
-//
-//    @Test
-//    public void testManualPrecision1(){
-//        logger.debug("Running phe test: Check that the encoded -ve number is precise enough.");
-//
-//        double val = -3.171234 * Math.pow(10,-7);
-//        double prec = Math.pow(10, -8);
-//
-//        EncodedNumber enc = EncodedNumber.encode(publicKey, val, prec);
-//        double dec = enc.decodeDouble();
-//
-////        Original code: self.assertInRange(decoded, val - prec, val + prec)
-//        if(dec < val - prec || dec > val + prec){
-//            fail("decoded number < val - prec or decoded number > val + prec");
-//        }
-//
-//        EncodedNumber enc2 = EncodedNumber.encode(publicKey, dec + 0.500001 * prec, prec);
-//        double dec2 = enc2.decodeDouble();
-//        assertNotEquals(dec, dec2);
-//
-////        Original code: self.assertInRange(decoded2, val, val + prec)
-//        if(dec2 < val || dec2 > val + prec){
-//            fail("decoded number < val OR decoded number > val + prec");
-//        }
-//
-//        double val3 = dec + prec / 2;
-//        EncodedNumber enc3 = EncodedNumber.encode(publicKey, val3, prec);
-//        double dec3 = enc3.decodeDouble();
-//        assertEquals((new BigDecimal(String.valueOf(dec))).toString(), (new BigDecimal(String.valueOf(dec3))).toString());
-//    }
-//
-//    @Test
-//    public void testAutomaticPrecisionAgreesWithEpsilon() throws Exception {
-//        logger.debug("Running phe test: Check that automatic precision is equivalent to the machine epsilon");
-//
-//        double eps = Math.ulp(1.0);
-//
-//        double floorHappy = Math.ceil(Math.log((double)2)/ Math.log(2.0)) * 2;
-//
-//        for(double i = -floorHappy; i <= floorHappy; i++){
-//            EncodedNumber enc1 = EncodedNumber.encode(publicKey, Math.pow(2.0, i));
-//            EncodedNumber enc2 = EncodedNumber.encode(publicKey, Math.pow(2.0, i), (eps * Math.pow(2.0, i)));
-//            assertEquals(String.valueOf(i), enc1.getExponent(), enc2.getExponent());
-//
-//            double realEps = eps * Math.pow(2.0, (i - 1));
-//            double val = Math.pow(2.0, i) - realEps;
-//            assert val != Math.pow(2.0, i);
-//
-//            EncodedNumber enc3 = EncodedNumber.encode(publicKey, val);
-//            EncodedNumber enc4 = EncodedNumber.encode(publicKey, val, realEps);
-//            assertEquals(String.valueOf(i), enc3.getExponent(), enc4.getExponent());
-//        }
-//    }
-//
-//    @Test
-//    public void testEncodedDecreaseExponentTo0() throws Exception {
-//        logger.debug("Running phe test: Check that decreaseExponentTo does what it says to positive double.");
-//
-//        EncodedNumber enc1 = EncodedNumber.encode(publicKey, 3.14);
-//        assert -30 < enc1.getExponent();
-//        EncodedNumber enc2 = enc1.decreaseExponentTo(-30);
-//
-//        if(enc1.getExponent() < -30){
-//            fail("-30 < enc1.getExponent()");
-//        }
-//        assertEquals(-30, enc2.getExponent());
-//        double dec = enc2.decodeDouble();
-//        assertEquals(3.14, dec, 0.01);
-//    }
-//
-//    @Test
-//    public void testEncodedDecreaseExponentTo1() throws Exception {
-//        logger.debug("Running phe test: Check that decreaseExponentTo does what it says to negative double.");
-//
-//        EncodedNumber enc1 = EncodedNumber.encode(publicKey, -3.14);
-//        assert -30 < enc1.getExponent();
-//        EncodedNumber enc2 = enc1.decreaseExponentTo(-30);
-//
-//        if(enc1.getExponent() < -30){
-//            fail("-30 < enc1.getExponent()");
-//        }
-//        assertEquals(-30, enc2.getExponent());
-//        double dec = enc2.decodeDouble();
-//        assertEquals(-3.14, dec, 0.01);
-//    }
-//
-//    @Test
-//    public void testEncodedDecreaseInvalidExponent(){
-//        logger.debug("Running phe test: Check that decreaseExponentTo catch invalid exponent.");
-//
-//        EncodedNumber enc1 = EncodedNumber.encode(publicKey, 3.14);
-//        assert enc1.getExponent() < -10;
-//
-//        exception.expect(IllegalArgumentException.class);
-//        enc1.decreaseExponentTo(-10);
-//    }
 }
 

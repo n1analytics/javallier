@@ -1,6 +1,5 @@
 package com.n1analytics.paillier;
 
-import com.n1analytics.paillier.util.FloatingPointUtil;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -16,7 +15,6 @@ public class FuzzTest {
 
     static private final int keySize = 2104;
 
-    static private final int maxExpDiff = keySize - (FloatingPointUtil.DOUBLE_FRACTION_BITS + 1);
     static private int bigIntegerBitLength = keySize / 2 - 1;
 
     static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
@@ -44,7 +42,6 @@ public class FuzzTest {
             // Check if the computation would result in overflow
             numberResult = (Number.encode(a).add(Number.encode(b))).multiply(numberC);
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
@@ -69,7 +66,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 1 test");
     }
 
     @Test
@@ -91,22 +87,14 @@ public class FuzzTest {
             // Check if the computation would result in overflow
             numberResult = Number.encode(a).multiply(numberB).add(Number.encode(c));
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
             plainResult = a * b + c;
 
             encryptedResult1 = ciphertextA.multiply(numberB);
-
             encryptedResult2 = encryptedResult1.add(ciphertextC);
-
-//            if(Math.abs(encryptedResult1.getExponent() - ciphertextC.getExponent()) > maxExpDiff)
-//                continue;
-
             decryptedResult = privateKey.decrypt(encryptedResult2);
-//            if(!signedContext.isValid(decryptedResult.decode()))
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -124,7 +112,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 2 test");
     }
 
     @Test
@@ -147,25 +134,14 @@ public class FuzzTest {
 
             numberResult = Number.encode(a).add(Number.encode(b).multiply(numberC.add(numberD)));
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
             plainResult = a + b * (c + d);
 
-
-//            encryptedResult = ciphertextA.add(ciphertextB.multiply(numberC.add(numberD)));
-
             additionResult = numberC.add(numberD);
-
-//            if(Math.abs(numberC.getExponent() - numberD.getExponent()) > maxExpDiff)
-//                continue;
-//
             encryptedResult1 = ciphertextB.multiply(additionResult);
-
             encryptedResult2 = ciphertextA.add(encryptedResult1);
-//            if(Math.abs(ciphertextA.getExponent() - encryptedResult1.getExponent()) > maxExpDiff)
-//                continue;
 
             decryptedResult = privateKey.decrypt(encryptedResult2);
             if(!signedContext.isValid(decryptedResult.decode()))
@@ -187,7 +163,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 3 test");
     }
 
     @Test
@@ -214,20 +189,13 @@ public class FuzzTest {
 
             numberResult = Number.encode(a).add(Number.encode(b).multiply(numberC)).divide(d);
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
             plainResult = (a + (b * c)) / d;
 
-//            encryptedResult = ciphertextA.add(ciphertextB.multiply(numberC)).divide(d);
-
             encryptedResult1 = ciphertextB.multiply(numberC);
-
             encryptedResult2 = ciphertextA.add(encryptedResult1);
-//            if(Math.abs(ciphertextA.getExponent() - encryptedResult2.getExponent()) > maxExpDiff)
-//                continue;
-
             encryptedResult3 = encryptedResult2.divide(d);
 
             decryptedResult = privateKey.decrypt(encryptedResult3);
@@ -249,7 +217,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 4 test");
     }
 
     @Test
@@ -296,7 +263,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 5 test");
     }
 
     @Test
@@ -341,7 +307,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish double mix operation 6 test");
     }
 
     @Test
@@ -370,7 +335,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish long mix operation 1 test");
     }
 
     @Test
@@ -399,7 +363,6 @@ public class FuzzTest {
             } catch(ArithmeticException e) {
             }
         }
-//        System.out.println("Finish long mix operation 2 test");
     }
 
     @Test
@@ -429,7 +392,6 @@ public class FuzzTest {
             } catch(ArithmeticException e) {
             }
         }
-//        System.out.println("Finish long mix operation 3 test");
     }
 
     @Test
@@ -468,7 +430,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish long mix operation 5 test");
     }
 
     @Test
@@ -505,7 +466,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish long mix operation 6 test");
     }
 
     @Test
@@ -522,11 +482,6 @@ public class FuzzTest {
 
             plainResult = (a.add(b)).multiply(c);
 
-//            if(plainResult.compareTo(signedContext.getMaxEncoded()) > 0) {
-////                System.out.println("Plain result is greater than max encoded number.");
-//                continue;
-//            }
-
             ciphertextA = signedContext.encrypt(a);
             ciphertextB = signedContext.encrypt(b);
             numberC = Number.encode(c);
@@ -534,16 +489,10 @@ public class FuzzTest {
             // Check if the computation would result in overflow
             numberResult = (Number.encode(a).add(Number.encode(b))).multiply(numberC);
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
-//            System.out.println(i + " - exp encr a: " + ciphertextA.getExponent() + ", exp encr b: "
-//                    + ciphertextB.getExponent() + ", exp num c: " + numberC.getExponent());
-
             encryptedResult = (ciphertextA.add(ciphertextB)).multiply(numberC);
-
-//            System.out.println("exp encr result: " + encryptedResult.getExponent());
 
             decryptedResult = privateKey.decrypt(encryptedResult);
             if(!signedContext.isValid(decryptedResult.decode()))
@@ -556,7 +505,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish Big Integer mix operation 1 test");
     }
 
     @Test
@@ -578,18 +526,13 @@ public class FuzzTest {
             // Check if the computation would result in overflow
             numberResult = Number.encode(a).multiply(numberB).add(Number.encode(c));
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
             plainResult = a.multiply(b).add(c);
 
-//            if(plainResult.compareTo(signedContext.getMaxEncoded()) > 0) {
-//                System.out.println("Plain result is greater than max encoded number.");
-//                continue;
-//            }
-
             encryptedResult = ciphertextA.multiply(numberB).add(ciphertextC);
+
             decryptedResult = privateKey.decrypt(encryptedResult);
 
             if(!signedContext.isValid(decryptedResult.decode()))
@@ -602,7 +545,6 @@ public class FuzzTest {
             } catch(ArithmeticException e) {
             }
         }
-//        System.out.println("Finish Big Integer mix operation 2 test");
     }
 
     @Test
@@ -625,18 +567,13 @@ public class FuzzTest {
 
             numberResult = Number.encode(a).add(Number.encode(b).multiply(numberC.add(numberD)));
             if(!signedContext.isValid(numberResult)) {
-//                System.out.println(i + " - Number is invalid, go to the next iteration!");
                 continue;
             }
 
             plainResult = a.add(b.multiply(c.add(d)));
 
-//            if(plainResult.compareTo(signedContext.getMaxEncoded()) > 0) {
-////                System.out.println("Plain result is greater than max encoded number.");
-//                continue;
-//            }
-
             encryptedResult = ciphertextA.add(ciphertextB.multiply(numberC.add(numberD)));
+
             decryptedResult = privateKey.decrypt(encryptedResult);
 
             if(!signedContext.isValid(decryptedResult.decode()))
@@ -649,7 +586,6 @@ public class FuzzTest {
             } catch(ArithmeticException e) {
             }
         }
-//        System.out.println("Finish Big Integer mix operation 3 test");
     }
 
     @Test
@@ -688,7 +624,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish Big Integer mix operation 5 test");
     }
 
     @Test
@@ -725,7 +660,6 @@ public class FuzzTest {
             } catch (ArithmeticException e) {
             }
         }
-//        System.out.println("Finish Big Integer mix operation 6 test");
     }
 
 }

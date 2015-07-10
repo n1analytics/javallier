@@ -10,15 +10,6 @@ import static org.junit.Assert.assertEquals;
 public class Assumptions {
 	// TODO modulus of public key is always odd (and greater than 4...)
 	
-//	public static class NamedFloat {
-//		public final String name;
-//		public final float value;
-//		public NamedFloat(String name, float value) {
-//			this.name = name;
-//			this.value = value;
-//		}
-//	}
-	
 	public static class NamedDouble {
 		public final String name;
 		public final double value;
@@ -27,40 +18,6 @@ public class Assumptions {
 			this.value = value;
 		}
 	}
-	
-//	public static final NamedFloat[] namedFloats = {
-//		new NamedFloat(" NaN", Float.NaN),
-//		new NamedFloat(" INIFINITY", Float.POSITIVE_INFINITY),
-//		new NamedFloat(" MAX_VALUE", Float.MAX_VALUE),
-//		new NamedFloat(" MAX_VALUE / 2", Float.MAX_VALUE / 2),
-//		new NamedFloat(" MAX_INT * 2", FLOAT_MAX_INT * 2),
-//		new NamedFloat(" MAX_INT", FLOAT_MAX_INT),
-//		new NamedFloat(" MAX_INT - 1", FLOAT_MAX_INT - 1),
-//		new NamedFloat(" MAX_INT / 2", FLOAT_MAX_INT / 2),
-//		new NamedFloat(" 2", 2f),
-//		new NamedFloat(" 1", 1f),
-//		new NamedFloat(" MIN_NORMAL", Float.MIN_NORMAL),
-//		new NamedFloat(" MAX_SUBNORMAL", nextNegative(Float.MIN_NORMAL)),
-//		new NamedFloat(" MIN_NORMAL / 2", Float.MIN_NORMAL / 2),
-//		new NamedFloat(" MIN_VALUE * 2", Float.MIN_VALUE * 2),
-//		new NamedFloat(" MIN_VALUE", Float.MIN_VALUE),
-//		new NamedFloat(" 0", 0f),
-//		new NamedFloat("-0", -0f),
-//		new NamedFloat("-MIN_VALUE", -Float.MIN_VALUE),
-//		new NamedFloat("-MIN_VALUE * 2", -Float.MIN_VALUE * 2),
-//		new NamedFloat("-MIN_NORMAL / 2", -Float.MIN_NORMAL / 2),
-//		new NamedFloat("-MAX_SUBNORMAL", -nextNegative(Float.MIN_NORMAL)),
-//		new NamedFloat("-MIN_NORMAL", -Float.MIN_NORMAL),
-//		new NamedFloat("-1", -1f),
-//		new NamedFloat("-2", -2f),
-//		new NamedFloat("-MAX_INT/2", -FLOAT_MAX_INT / 2),
-//		new NamedFloat("-MAX_INT+1", -FLOAT_MAX_INT + 1),
-//		new NamedFloat("-MAX_INT", -FLOAT_MAX_INT),
-//		new NamedFloat("-MAX_INT * 2", -FLOAT_MAX_INT * 2),
-//		new NamedFloat("-MAX_VALUE / 2", -Float.MAX_VALUE / 2),
-//		new NamedFloat("-MAX_VALUE", -Float.MAX_VALUE),
-//		new NamedFloat("-INFINITY", Float.NEGATIVE_INFINITY)
-//	};
 	
 	public static final NamedDouble[] namedDoubles = {
 		new NamedDouble(" NaN", Double.NaN),
@@ -95,37 +52,6 @@ public class Assumptions {
 		new NamedDouble("-MAX_VALUE", -Double.MAX_VALUE),
 		new NamedDouble("-INFINITY", Double.NEGATIVE_INFINITY)
 	};
-	
-//	public void printFloatInfo() {
-//		System.out.println(
-//			"+-----------------+------------------+----------+------+----------+----------+\n" +
-//			"| number          | value            | bits     | sign | exponent | fraction |\n" +
-//			"+-----------------+------------------+----------+------+----------+----------+");
-//		for(NamedFloat namedFloat: namedFloats) {
-//			if(isFinite(namedFloat.value)){
-//				System.out.format(
-//					"| %-15s | %s0x%01d.%06Xp%-+4d | %08X | %01X    | %02X       | %06X   |\n",
-//					namedFloat.name,
-//					sign(namedFloat.value) < 0 ? "-" : " ",
-//					isNormal(namedFloat.value) ? 1 : 0,
-//					fraction(namedFloat.value) << 1,
-//					isNormal(namedFloat.value) ? exponent(namedFloat.value) : -126,
-//					bits(namedFloat.value),
-//					signBitsShifted(namedFloat.value),
-//					exponentBitsShifted(namedFloat.value),
-//					fraction(namedFloat.value));
-//			} else {
-//				System.out.format(
-//					"| %-15s |                  | %08X | %01X    | %02X       | %06X   |\n",
-//					namedFloat.name,
-//					bits(namedFloat.value),
-//					signBitsShifted(namedFloat.value),
-//					exponentBitsShifted(namedFloat.value),
-//					fraction(namedFloat.value));
-//			}
-//		}
-//		System.out.println("+-----------------+------------------+----------+------+----------+----------+");
-//	}
 	
 	public void printDoubleInfo() {
 		System.out.println(

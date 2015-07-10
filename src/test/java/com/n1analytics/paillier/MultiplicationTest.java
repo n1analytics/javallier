@@ -21,7 +21,6 @@ public class MultiplicationTest {
     static private PaillierContext context = publicKey.createSignedContext();
 
     static private int bigIntegerBitLength = keySize / 2 - 1;
-//    static private int maxExpDifference = 634;
 
     static private int maxIteration = 100;
 

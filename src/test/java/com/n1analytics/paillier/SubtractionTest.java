@@ -14,8 +14,6 @@ import static org.junit.Assert.assertEquals;
 public class SubtractionTest {
     static private final double EPSILON = 0.1;
 
-////    Key size of 1024 bits gives incorrect result when the difference of the exponents of two EncryptedNumbers are
-////    greater than or equal to 977.
     static private final int keySize = 2104;
 
     static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
@@ -23,11 +21,6 @@ public class SubtractionTest {
     static private PaillierContext context = publicKey.createSignedContext();
 
     static private int bigIntegerBitLength = keySize / 2 - 1;
-
-//// maxExpDifference represents the maximum exponent difference between two encrypted numbers that does not result
-//// in error when subtraction is performed on the encrypted numbers. maxExpDifference only applies to BigInteger.
-//// At the moment, the number is derived from a simple experiment.
-//    static private int maxExpDifference = 634;
 
     static private int maxIteration = 100;
 
@@ -219,10 +212,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(Number.encode(b))))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
-
             try {
                 decodedResult = decryptedResult.decodeDouble();
 
@@ -259,10 +248,6 @@ public class SubtractionTest {
 
             if(!context.isValid(Number.encode(b).subtract(Number.encode(a))))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -364,10 +349,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(Number.encode(b))))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
 
@@ -408,10 +389,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(b).subtract(Number.encode(a))))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = ciphertTextB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
 
@@ -440,10 +417,6 @@ public class SubtractionTest {
 
             if(!context.isValid(Number.encode(a).subtract(Number.encode(b))))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -481,10 +454,6 @@ public class SubtractionTest {
 
             if(!context.isValid(Number.encode(b).subtract(Number.encode(a))))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -586,10 +555,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(Number.encode(b))))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
 
@@ -630,10 +595,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(b).subtract(Number.encode(a))))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-//
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
 
@@ -663,10 +624,6 @@ public class SubtractionTest {
 
             if(!context.isValid(Number.encode(a).subtract(numberB)))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -705,10 +662,6 @@ public class SubtractionTest {
 
             if(!context.isValid(numberB.subtract(Number.encode(a))))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= 971)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeDouble();
@@ -811,10 +764,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(numberB)))
                 continue;
 
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
                 assertEquals(plainResult, decodedResult);
@@ -854,10 +803,6 @@ public class SubtractionTest {
 
             if(!context.isValid(numberB.subtract(Number.encode(a))))
                 continue;
-
-//            int expA = ciphertTextA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
 
             try {
                 decodedResult = decryptedResult.decodeBigInteger();
@@ -1010,10 +955,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(Number.encode(b))))
                 continue;
 
-//            int expA = encodedA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 encodedResult = subtractor.eval(encodedA, encodedB);
                 decodedResult = encodedResult.decodeBigInteger();
@@ -1050,10 +991,6 @@ public class SubtractionTest {
 
             if(!context.isValid(Number.encode(b).subtract(Number.encode(a))))
                 continue;
-
-//            int expA = encodedA.getExponent(), expB = encodedB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
 
             try {
                 encodedResult = subtractor.eval(encodedA, encodedB);
@@ -1213,10 +1150,6 @@ public class SubtractionTest {
             if(!context.isValid(Number.encode(a).subtract(numberB)))
                 continue;
 
-//            int expA = encodedA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             try {
                 encodedResult = subtractor.eval(encodedA, numberB);
                 decodedResult = encodedResult.decodeBigInteger();
@@ -1254,10 +1187,6 @@ public class SubtractionTest {
 
             if(!context.isValid(numberB.subtract(Number.encode(a))))
                 continue;
-
-//            int expA = encodedA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
 
             try {
                 encodedResult = subtractor.eval(encodedA, numberB);
@@ -1409,10 +1338,6 @@ public class SubtractionTest {
             numberA = Number.encode(a);
             numberB = Number.encode(b);
 
-//            int expA = numberA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-//
             if(!context.isValid(numberA.subtract(numberB)))
                 continue;
 
@@ -1450,10 +1375,6 @@ public class SubtractionTest {
             numberA = Number.encode(a);
             numberB = Number.encode(b);
 
-//            int expA = numberA.getExponent(), expB = numberB.getExponent(), absDiff = Math.abs(expA - expB);
-//            if(absDiff >= maxExpDifference)
-//                continue;
-
             if(!context.isValid(numberB.subtract(numberA)))
                 continue;
 
@@ -1474,14 +1395,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("EncryptedNumbers subtraction - left operation");
 
         for(BinarySubtractor1 subtractor: binarySubtractorsRight1) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("EncryptedNumbers subtraction - right operation");
     }
 
     @Test
@@ -1491,14 +1410,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("EncryptedNumber/EncodedNumber subtraction - left operation");
 
         for(BinarySubtractor2 subtractor: binarySubtractorsRight2) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("EncryptedNumber/EncodedNumber subtraction - right operation");
     }
 
     @Test
@@ -1508,14 +1425,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("EncryptedNumber/Number subtraction - left operation");
 
         for(BinarySubtractor3 subtractor: binarySubtractorsRight3) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("EncryptedNumber/Number subtraction - right operation");
     }
 
     @Test
@@ -1525,14 +1440,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("EncodedNumbers subtraction - left operation");
 
         for(BinarySubtractor4 subtractor: binarySubtractorsRight4) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("EncodedNumbers subtraction - right operation");
     }
 
     @Test
@@ -1542,14 +1455,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("EncodedNumber/Number subtraction - left operation");
 
         for(BinarySubtractor5 subtractor: binarySubtractorsRight5) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("EncodedNumber/Number subtraction - right operation");
     }
 
     @Test
@@ -1559,14 +1470,12 @@ public class SubtractionTest {
             testLongSubtraction(subtractor);
             testBigIntegerSubtraction(subtractor);
         }
-//        System.out.println("Numbers subtraction - left operation");
 
         for(BinarySubtractor6 subtractor: binarySubtractorsRight6) {
             testDoubleSubtractionRight(subtractor);
             testLongSubtractionRight(subtractor);
             testBigIntegerSubtractionRight(subtractor);
         }
-//        System.out.println("Numbers subtraction - right operation");
     }
 
 }
