@@ -61,7 +61,7 @@ public final class PaillierPublicKey {
 
   /**
    * Construct a Paillier public key.
-   * @param modulus
+   * @param modulus Modules for key
    */
   public PaillierPublicKey(BigInteger modulus) {
     if (modulus == null) {

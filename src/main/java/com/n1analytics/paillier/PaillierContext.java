@@ -13,12 +13,12 @@
  */
 package com.n1analytics.paillier;
 
-import com.n1analytics.paillier.util.BigIntegerUtil;
-import com.n1analytics.paillier.util.HashChain;
+import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
 import java.math.BigInteger;
 
-import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
+import com.n1analytics.paillier.util.BigIntegerUtil;
+import com.n1analytics.paillier.util.HashChain;
 
 /**
  * Represents an encoding scheme that allows signed fractional numbers to be
@@ -206,22 +206,23 @@ public final class PaillierContext {
    * <code>this</code>. Throws an ArithmeticException if that is not the case.
    * Returns <code>encrypted</code> unmodified so that it can be called
    * inline.
-   * @param encrypted
-   * @return <code>encrypted</code>
-   * @throws PaillierContextMismatchException If <code>encrypted</code> has a
+   *
+   * @param other Number to compare to
+   * @return <code>other</code>
+   * @throws PaillierContextMismatchException If <code>other</code> has a
    * different context to <code>this</code>.
    */
-  public EncryptedNumber checkSameContext(EncryptedNumber encrypted)
+  public EncryptedNumber checkSameContext(EncryptedNumber other)
           throws PaillierContextMismatchException {
-    checkSameContext(encrypted.getContext());
-    return encrypted;
+    checkSameContext(other.getContext());
+    return other;
   }
 
   /**
    * Check if <code>encoded</code> has the same context as <code>this</code>.
    * Throws an ArithmeticException if that is not the case. Returns
    * <code>encoded</code> unmodified so that it can be called inline.
-   * @param encoded
+   * @param encoded Number to compare to
    * @return <code>encoded</code>
    * @throws PaillierContextMismatchException If <code>encrypted</code> has a
    * different context to <code>this</code>.
@@ -517,7 +518,7 @@ public final class PaillierContext {
 		checkSameContext(operand1);
 		return encode(operand1.decode().multiplicativeInverse());
 	}
-	
+
 	public EncryptedNumber divide(
 		EncryptedNumber operand1,
 		EncodedNumber operand2) throws
@@ -525,7 +526,7 @@ public final class PaillierContext {
 	{
 		return divideUnsafe(operand1, operand2).obfuscate();
 	}
-	
+
 	public EncodedNumber divide(
 		EncodedNumber operand1,
 		EncodedNumber operand2) throws
@@ -533,7 +534,7 @@ public final class PaillierContext {
 	{
 		return multiply(operand1, multiplicativeInverse(operand2));
 	}
-	
+
 	EncryptedNumber divideUnsafe(
 		EncryptedNumber operand1,
 		EncodedNumber operand2) throws

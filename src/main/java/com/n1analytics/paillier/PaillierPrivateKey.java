@@ -21,7 +21,7 @@ import java.security.SecureRandom;
  *
  * A private key (and it's corresponding public key) are generated via the
  * following procedure, given a public key length <code>modulusLength</code>:
- * <ol>
+ * <ul>
  *   <li>
  *     Generate two primes <code>p, q</code>, each of bit length
  *     <code>modulusLength/2</code> and with a product <code>p * q</code> of bit
@@ -42,7 +42,7 @@ import java.security.SecureRandom;
  *   <li>
  *     Calculate the inverse of <code>totient</code> modulo <code>modulus</code>.
  *   </li>
- * <ul>
+ * </ul>
  *
  * The result of this procedure is a public key comprising a
  * <code>modulus</code>, its square <code>modulusSquared</code> and a
@@ -123,7 +123,7 @@ public final class PaillierPrivateKey {
    * @param modulusLength the length of the public key modulus. Must be a
    * positive multiple of 8.
    * @return private key with the associated public key (keypair).
-   * @throws IllegalArgumentException
+   * @throws IllegalArgumentException on illegal <code>modulusLength</code>
    */
   public static PaillierPrivateKey create(int modulusLength) {
     if (modulusLength < 8 || modulusLength % 8 != 0) {

@@ -16,6 +16,7 @@ package com.n1analytics.paillier.util;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+
 public class BigIntegerUtil {
 
   /**
@@ -62,8 +63,8 @@ public class BigIntegerUtil {
 
   /**
    * Return a random strictly positive number less than n.
-   * @param n
-   * @return
+   * @param n upper bound
+   * @return a random number less than n
    */
   public static BigInteger randomPositiveNumber(final BigInteger n) {
     if (lessOrEqual(n, BigInteger.ONE)) {
@@ -88,8 +89,8 @@ public class BigIntegerUtil {
    * not necessarily true of <pre>n.bitLength()</pre> and
    * <pre>n.negate().bitLength()</pre>.
    *
-   * @param n
-   * @return
+   * @param n input
+   * @return number of bits
    */
   public static int absBitLength(BigInteger n) {
     return n.abs().bitLength();
@@ -102,6 +103,8 @@ public class BigIntegerUtil {
    * @return The converted value.
    * @throws ArithmeticException If <code>n</code> cannot be exactly
    * represented as a <code>long</code>
+   *
+   * @param n n Number to convert
    */
   public static long longValueExact(BigInteger n) throws ArithmeticException {
     // TODO optimisation?
