@@ -49,7 +49,6 @@ public class PaillierPrivateKeyTest {
       assertNotNull(privateKey.hq);
       // Check if pInverse exist
       assertNotNull(privateKey.pInverse);
- 
 
       PaillierPublicKey publicKey = privateKey.getPublicKey();
       // Check if the public key exist
@@ -132,8 +131,7 @@ public class PaillierPrivateKeyTest {
     assertEquals(BigInteger.valueOf(19), privateKey.p);
     // Check q
     assertNotNull(privateKey.q);
-    assertEquals(BigInteger.valueOf(17),
-                 privateKey.q);
+    assertEquals(BigInteger.valueOf(17), privateKey.q);
   }
 
   @Test
@@ -151,7 +149,8 @@ public class PaillierPrivateKeyTest {
     // Check when the other private key hasn't been initialised (ie, is null)
     assertFalse(privateKey.equals(otherPrivateKey));
 
-    BigInteger otherModulus = new BigInteger("13").multiply(new BigInteger("17"));
+    BigInteger otherModulus = new BigInteger("13")
+        .multiply(new BigInteger("17"));
     BigInteger otherTotient = new BigInteger("192");
     new PaillierPrivateKey(new PaillierPublicKey(otherModulus), otherTotient);
 
@@ -207,4 +206,3 @@ public class PaillierPrivateKeyTest {
     }
   }
 }
-
