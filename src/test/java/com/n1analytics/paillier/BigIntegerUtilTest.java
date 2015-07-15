@@ -96,4 +96,11 @@ public class BigIntegerUtilTest {
 
     assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigNegativeOne));
   }
+  
+  @Test
+  public void testSqrt() throws Exception{
+	  BigInteger n = BigIntegerUtil.randomPositiveNumber(BigInteger.ONE.shiftLeft(512));
+	  BigInteger nSquared = n.multiply(n);
+	  assertEquals(BigIntegerUtil.sqrt(nSquared), n);
+  }
 }

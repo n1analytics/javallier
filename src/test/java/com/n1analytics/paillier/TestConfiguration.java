@@ -182,13 +182,13 @@ public class TestConfiguration {
     return context;
   }
 
-  public BigInteger totient() {
-    return privateKey.getTotient();
-  }
+  //public BigInteger totient() {
+  //  return privateKey.getTotient();
+ // }
 
-  public BigInteger totientInverse() {
-    return privateKey.getTotientInverse();
-  }
+  //public BigInteger totientInverse() {
+  //  return privateKey.getTotientInverse();
+  //}
 
   public BigInteger modulus() {
     return context.getPublicKey().getModulus();
