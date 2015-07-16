@@ -116,4 +116,25 @@ public class BigIntegerUtil {
     }
     return n.longValue();
   }
+
+  /**
+   * Computes the Integer part of the square root of BigInteger <code>n</code>.
+   * This code is adapted from Faruk Akgul's code found at:
+   * http://faruk.akgul.org/blog/javas-missing-algorithm-biginteger-sqrt/
+   * 
+   * @return The Integer part of the square root of <code>n</code>.
+   */
+  public static BigInteger sqrt(BigInteger n) {
+    BigInteger a = BigInteger.ONE;
+    BigInteger b = n.shiftRight(5).add(BigInteger.valueOf(8));
+    while (b.compareTo(a) >= 0) {
+      BigInteger mid = a.add(b).shiftRight(1);
+      if (mid.multiply(mid).compareTo(n) > 0)
+        b = mid.subtract(BigInteger.ONE);
+      else
+        a = mid.add(BigInteger.ONE);
+    }
+    return a.subtract(BigInteger.ONE);
+  }
+  
 }

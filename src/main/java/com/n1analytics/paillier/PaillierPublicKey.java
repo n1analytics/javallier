@@ -69,6 +69,8 @@ public final class PaillierPublicKey {
     }
     this.modulus = modulus;
     this.modulusSquared = modulus.multiply(modulus);
+    //the generator is always set to modulus+1, as this allows a 
+    //significantly more efficient encryption function.
     this.generator = modulus.add(BigInteger.ONE);
   }
 

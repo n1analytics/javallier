@@ -20,7 +20,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
 
 public class PaillierPrivateKeyTest {
 
@@ -36,10 +35,20 @@ public class PaillierPrivateKeyTest {
       assertNotNull(privateKey);
       // Check if the public key associated with this private key exist
       assertNotNull(privateKey.getPublicKey());
-      // Check if lambda exist
-      assertNotNull(privateKey.getTotient());
-      // Check if mu exist
-      assertNotNull(privateKey.getTotientInverse());
+      // Check if p exist
+      assertNotNull(privateKey.p);
+      // Check if q exist
+      assertNotNull(privateKey.q);
+      // Check if pSquared exist
+      assertNotNull(privateKey.pSquared);
+      // Check if qSquared exist
+      assertNotNull(privateKey.qSquared);
+      // Check if hp exist
+      assertNotNull(privateKey.hp);
+      // Check if hq exist
+      assertNotNull(privateKey.hq);
+      // Check if pInverse exist
+      assertNotNull(privateKey.pInverse);
 
       PaillierPublicKey publicKey = privateKey.getPublicKey();
       // Check if the public key exist
@@ -81,7 +90,7 @@ public class PaillierPrivateKeyTest {
 
     // Check if exception is thrown when the public key is null
     try {
-      privateKey = new PaillierPrivateKey(null, new BigInteger("144"));
+      privateKey = new PaillierPrivateKey(null, new BigInteger("288"));
       fail("Succefully created a private key with a null public key");
     } catch (IllegalArgumentException e) {
     }
@@ -111,25 +120,24 @@ public class PaillierPrivateKeyTest {
     }
     assertNull(privateKey);
 
-    BigInteger totient = new BigInteger("144");
+    BigInteger totient = new BigInteger("288");
     privateKey = new PaillierPrivateKey(publicKey, totient);
     assertNotNull(privateKey);
     // Check public key
     assertNotNull(privateKey.getPublicKey());
     assertEquals(publicKey, privateKey.getPublicKey());
-    // Check totient
-    assertNotNull(privateKey.getTotient());
-    assertEquals(totient, privateKey.getTotient());
-    // Check totient inverse
-    assertNotNull(privateKey.getTotientInverse());
-    assertEquals(totient.modInverse(publicKey.getModulus()),
-                 privateKey.getTotientInverse());
+    // Check p
+    assertNotNull(privateKey.p);
+    assertEquals(BigInteger.valueOf(19), privateKey.p);
+    // Check q
+    assertNotNull(privateKey.q);
+    assertEquals(BigInteger.valueOf(17), privateKey.q);
   }
 
   @Test
   public void testEquals() throws Exception {
     BigInteger modulus = new BigInteger("17").multiply(new BigInteger("19"));
-    BigInteger totient = new BigInteger("144");
+    BigInteger totient = new BigInteger("288");
     PaillierPublicKey publicKey = new PaillierPublicKey(modulus);
     PaillierPrivateKey privateKey = new PaillierPrivateKey(publicKey, totient);
 
@@ -141,7 +149,8 @@ public class PaillierPrivateKeyTest {
     // Check when the other private key hasn't been initialised (ie, is null)
     assertFalse(privateKey.equals(otherPrivateKey));
 
-    BigInteger otherModulus = new BigInteger("13").multiply(new BigInteger("17"));
+    BigInteger otherModulus = new BigInteger("13")
+        .multiply(new BigInteger("17"));
     BigInteger otherTotient = new BigInteger("192");
     new PaillierPrivateKey(new PaillierPublicKey(otherModulus), otherTotient);
 
@@ -197,4 +206,3 @@ public class PaillierPrivateKeyTest {
     }
   }
 }
-

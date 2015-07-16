@@ -356,12 +356,14 @@ public final class PaillierContext {
   }
 
   public EncryptedNumber encrypt(EncodedNumber encoded) {
-    // TODO optimise
+
     checkSameContext(encoded);
-    final BigInteger generator = publicKey.getGenerator();
+    final BigInteger modulus = publicKey.getModulus();
     final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value = encoded.getValue();
-    final BigInteger result = generator.modPow(value, modulusSquared);
+    //the following encryption only works if the generator is chosen to be modulus+1.
+    //Luckily, the PublicKey definition in this library ensures this property. 
+    final BigInteger result = modulus.multiply(value).add(BigInteger.ONE).mod(modulusSquared);
     return new EncryptedNumber(this, result, encoded.getExponent());
   }
 
