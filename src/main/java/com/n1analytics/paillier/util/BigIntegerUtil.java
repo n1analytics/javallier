@@ -104,7 +104,7 @@ public class BigIntegerUtil {
    * @throws ArithmeticException If <code>n</code> cannot be exactly
    * represented as a <code>long</code>
    *
-   * @param n n Number to convert
+   * @param n Number to convert
    */
   public static long longValueExact(BigInteger n) throws ArithmeticException {
     // TODO optimisation?
@@ -121,7 +121,8 @@ public class BigIntegerUtil {
    * Computes the Integer part of the square root of BigInteger <code>n</code>.
    * This code is adapted from Faruk Akgul's code found at:
    * http://faruk.akgul.org/blog/javas-missing-algorithm-biginteger-sqrt/
-   * 
+   *
+   * @param n Number to square root
    * @return The Integer part of the square root of <code>n</code>.
    */
   public static BigInteger sqrt(BigInteger n) {
