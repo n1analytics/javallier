@@ -360,6 +360,8 @@ public final class PaillierContext {
     final BigInteger modulus = publicKey.getModulus();
     final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value = encoded.getValue();
+    //the following encryption only works if the generator is chosen to be modulus+1.
+    //Luckily, the PublicKey definition in this library ensures this property. 
     final BigInteger result = modulus.multiply(value).add(BigInteger.ONE).mod(modulusSquared);
     return new EncryptedNumber(this, result, encoded.getExponent());
   }

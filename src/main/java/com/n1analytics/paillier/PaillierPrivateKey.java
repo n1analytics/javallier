@@ -23,7 +23,7 @@ import com.n1analytics.paillier.util.BigIntegerUtil;
  *
  * A private key (and it's corresponding public key) are generated via the
  * following procedure, given a public key length <code>modulusLength</code>:
- * <ol>
+ * <ul>
  *   <li>
  *     Generate two primes <code>p, q</code>, each of bit length
  *     <code>modulusLength/2</code> and with a product <code>p * q</code> of bit
@@ -35,23 +35,29 @@ import com.n1analytics.paillier.util.BigIntegerUtil;
  *   <li>
  *     Calculate <code>generator = modulus + 1</code>.
  *   </li>
- *   <li>
- *     Calculate the totient function of <code>modulus</code>:
- *     <code>totient = (p-1)*(q-1)</code>. This represents the number of
- *     positive integers less than or equal to <code>modulus</code> which
- *     are relatively prime to <code>modulus</code>.
- *   </li>
- *   <li>
- *     Calculate the inverse of <code>totient</code> modulo <code>modulus</code>.
- *   </li>
- * <ul>
+ * </ul>
  *
  * The result of this procedure is a public key comprising a
  * <code>modulus</code>, its square <code>modulusSquared</code> and a
  * <code>generator</code> as well as  a private key comprising a reference to
- * the <code>publicKey</code>, the <code>totient</code>, and its modular inverse
- * <code>totientInverse</code>.
- *
+ * the <code>publicKey</code> and the prime factors <code>p</code> and <code>q</code>.
+ * In order to speed up the decryption, we also precompute the values:
+ * <ul>
+ *   <li>
+ *     <code>pSquared = p*p</code>,
+ *   </li>
+ *   <li>
+ *     <code>qSquared = q*q</code>,
+ *   </li>
+ *   <li>
+ *     <code>pInverse</code>, the modular inverse of <code>p</code> modulo <code>q</code>,
+ *   </li>
+ *   <li>
+ *     <code>hp</code> and <code>hq</code>, precomputations of the parts of the decryption
+ *     function which do not depend on the ciphertext.
+ *   </li>
+ * </ul>
+ * 
  * Examples:
  * <ul>
  *   <li>
@@ -81,21 +87,16 @@ public final class PaillierPrivateKey {
   }
 
   protected final PaillierPublicKey publicKey;
-  protected final BigInteger p;
-  protected final BigInteger q;
+  protected final BigInteger p; //p and q are the two primes such that 
+  protected final BigInteger q; //p*q = publicKey.modulus
   protected final BigInteger pSquared;
   protected final BigInteger qSquared;
-  protected final BigInteger pInverse; // modular inverse of p to q
-  protected final BigInteger hp; // precomputed hp as defined in Paillier's
-  // paper
-  protected final BigInteger hq; // precomputed hq as defined in Paillier's
+  protected final BigInteger pInverse; //modular inverse of p modulo q
+  protected final BigInteger hp; //precomputed hp and hq as defined in Paillier's
+  protected final BigInteger hq; //paper page 12: Decryption using Chinese-remaindering
+  
 
-  // paper
-
-  // protected final BigInteger totient;
-  // protected final BigInteger totientInverse;
-
-  public PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger totient) {
+  protected PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger totient) {
     // Some basic error checking. Note though that passing these tests does
     // not guarantee that the private key is valid.
     if (publicKey == null) {
@@ -130,19 +131,23 @@ public final class PaillierPrivateKey {
 
   /**
    * Constructs a Paillier private key given an associated public key and the
-   * private key, totient and totientInverse.
+   * two prime numbers p and q of the factorization of the public key's modulus.
    * 
    * @param publicKey
    *          Public key associated with this private key.
-   * @param totient
-   *          Private key, totient.
-   * @param totientInverse
-   *          Private key, totientInverse.
+   * @param p
+   *          prime p.
+   * @param q
+   *          prime q.
    */
-  public PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger p,
+  private PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger p,
       BigInteger q) {
     if (publicKey == null) {
       throw new IllegalArgumentException("publicKey must not be null");
+    }
+    if (!publicKey.modulus.equals(p.multiply(q))) {
+      throw new IllegalArgumentException(
+          "publicKey does not match the given prime numbers.");
     }
     this.publicKey = publicKey;
     this.p = p;
@@ -175,7 +180,7 @@ public final class PaillierPrivateKey {
       p = BigInteger.probablePrime(primeLength, random);
       do {
         q = BigInteger.probablePrime(primeLength, random);
-      } while (p.equals(q));
+      } while (p.equals(q)); //p and q must not be equal 
       modulus = p.multiply(q);
     } while (modulus.bitLength() != modulusLength);
 
@@ -191,14 +196,6 @@ public final class PaillierPrivateKey {
     return publicKey;
   }
 
-  // public BigInteger getTotient() {
-  // return totient;
-  // }
-
-  // public BigInteger getTotientInverse() {
-  // return totientInverse;
-  // }
-
   /**
    * Returns a decrypted encrypted number (which is still encoded).
    * @param encrypted number to be decrypted.
@@ -211,7 +208,7 @@ public final class PaillierPrivateKey {
     if (!publicKey.equals(encrypted.getContext().getPublicKey())) {
       throw new PaillierKeyMismatchException();
     }
-
+    
     BigInteger decryptedToP = lFunction(
         encrypted.ciphertext.modPow(p.subtract(BigInteger.ONE), pSquared), p)
         .multiply(hp).mod(p);
@@ -262,8 +259,8 @@ public final class PaillierPrivateKey {
   @Override
   public int hashCode() {
     return publicKey.hashCode();
-    // NOTE we don't need to hash totient or totientInverse since they are
-    //      are uniquely determined by publicKey
+    // NOTE we don't need to hash any other variables since they are
+    //      uniquely determined by publicKey
   }
 
   @Override
@@ -271,13 +268,13 @@ public final class PaillierPrivateKey {
     return o == this || (o != null &&
             o.getClass() == PaillierPrivateKey.class &&
             publicKey.equals(((PaillierPrivateKey) o).publicKey));
-    // NOTE we don't need to compare totient or totientInverse since they
+    // NOTE we don't need to compare any other variables since they
     //      are uniquely determined by publicKey
   }
 
   public boolean equals(PaillierPrivateKey o) {
     return o == this || (o != null && publicKey.equals(o.publicKey));
-    // NOTE we don't need to compare totient or totientInverse since they
+    // NOTE we don't need to compare any other variables since they
     //      are uniquely determined by publicKey
   }
 }
