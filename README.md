@@ -26,6 +26,13 @@ Or run just fast tests:
 
     $ ./test-fast.sh
 
+Release
+-------
+
+* http://www.scala-sbt.org/release/docs/Using-Sonatype.html
+* http://central.sonatype.org/pages/releasing-the-deployment.html
+
+
 Limitations
 -----------
 
