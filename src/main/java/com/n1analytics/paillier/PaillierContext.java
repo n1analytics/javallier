@@ -51,7 +51,7 @@ import com.n1analytics.paillier.util.HashChain;
  *   </li>
  * </ul>
  */
-public final class PaillierContext {
+public class PaillierContext {
 
   private final PaillierPublicKey publicKey;
   private final boolean signed;

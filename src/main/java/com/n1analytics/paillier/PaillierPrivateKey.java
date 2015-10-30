@@ -218,6 +218,10 @@ public final class PaillierPrivateKey {
       throw new PaillierKeyMismatchException();
     }
     
+    if(encrypted.getContext() instanceof MockPaillierContext){
+      return new EncodedNumber(encrypted.getContext(), encrypted.ciphertext, encrypted.getExponent());
+    }
+    
     BigInteger decryptedToP = lFunction(
         encrypted.ciphertext.modPow(p.subtract(BigInteger.ONE), pSquared), p)
         .multiply(hp).mod(p);

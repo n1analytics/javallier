@@ -121,6 +121,23 @@ public final class PaillierPublicKey {
   public PaillierContext createSignedContext(int precision) {
     return new PaillierContext(this, true, precision);
   }
+  
+  public MockPaillierContext createMockUnsignedContext() {
+    return new MockPaillierContext(this, false, modulus.bitLength());
+  }
+
+  public MockPaillierContext createMockUnsignedContext(int precision)
+          throws IllegalArgumentException {
+    return new MockPaillierContext(this, false, precision);
+  }
+
+  public MockPaillierContext createMockSignedContext() {
+    return new MockPaillierContext(this, true, modulus.bitLength());
+  }
+
+  public MockPaillierContext createMockSignedContext(int precision) {
+    return new MockPaillierContext(this, true, precision);
+  }
 
   @Override
   public int hashCode() {
