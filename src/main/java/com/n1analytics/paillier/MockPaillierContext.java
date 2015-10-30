@@ -53,7 +53,11 @@ public class MockPaillierContext extends PaillierContext {
       exponent2 = exponent1;
     } // else do nothing
     BigInteger result = value1.add(value2);
-    if(result.compareTo(modulus) != -1){
+    //this tests for overflows
+    BigInteger posValue1 = (isSigned() && value1.compareTo(getMinEncoded())>=0)? value1.subtract(this.getPublicKey().modulus) : value1;
+    BigInteger posValue2 = (isSigned() && value2.compareTo(getMinEncoded())>=0)? value2.subtract(this.getPublicKey().modulus) : value2;
+
+    if(posValue1.add(posValue2).compareTo(modulus) != -1){
       logger.warning("Overflow occured in add()");
     }
     return new EncryptedNumber(this, result.mod(modulus), exponent1);
@@ -84,7 +88,11 @@ public class MockPaillierContext extends PaillierContext {
     final BigInteger value1 = operand1.ciphertext;
     final BigInteger value2 = operand2.getValue();
     final BigInteger result = value1.multiply(value2);
-    if(result.compareTo(getPublicKey().getModulus()) != -1){
+    
+    //this tests for overflows
+    BigInteger posValue1 = (isSigned() && value1.compareTo(getMinEncoded())>=0)? value1.subtract(this.getPublicKey().modulus) : value1;
+    BigInteger posValue2 = (isSigned() && value2.compareTo(getMinEncoded())>=0)? value2.subtract(this.getPublicKey().modulus) : value2;
+    if(posValue1.multiply(posValue2).compareTo(getPublicKey().getModulus()) != -1){
       logger.warning("Overflow occured in multiply()");
     }
     final int exponent = operand1.getExponent() + operand2.getExponent();
