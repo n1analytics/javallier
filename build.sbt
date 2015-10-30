@@ -1,6 +1,6 @@
 name := "javallier"
 
-version := "0.4.0"
+version := "0.4.1"
 
 description := "A Java library for Paillier partially homomorphic encryption."
 
@@ -49,6 +49,10 @@ pomExtra := (
       <id>hardbyte</id>
       <name>Brian Thorne</name>
       <url>https://www.nicta.com.au/people/bthorne/</url>
+    </developer>
+    <developer>
+      <id>wilko77</id>
+      <name>Wilko Henecka</name>
     </developer>
   </developers>)
 
