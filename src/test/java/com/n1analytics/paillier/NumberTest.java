@@ -330,8 +330,6 @@ public class NumberTest {
     assertNull(numberDouble);
   }
 
-  // TODO test encodedToExponent(double, int)
-
   @Test
   public void testIllegalExactDecoding() throws Exception {
     Number numberBigInteger = new Number(new BigInteger("17"), -100);

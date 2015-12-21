@@ -269,7 +269,6 @@ public class PaillierEncodedNumberTest {
       assertEquals(max.shiftLeft(exponent), context.getMaxBigInteger(0));
       assertEquals(ZERO, context.getMinBigInteger(0));
 
-      // TODO long and double
       long maxLong = max.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
               exponent).longValue();

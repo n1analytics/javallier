@@ -13,9 +13,9 @@
  */
 package com.n1analytics.paillier;
 
-import java.math.BigInteger;
-
 import com.n1analytics.paillier.util.HashChain;
+
+import java.math.BigInteger;
 
 /**
  * A class representing encoded numbers, which enables Paillier to operate on
@@ -80,16 +80,6 @@ public final class EncodedNumber {
   public boolean isValid() {
     return context.isValid(this);
   }
-
-    /* TODO what is an appropriate value for invalid numbers?
-    public int signum() {
-    	if(value.equals(BigInteger.ZERO))
-    		return 0;
-    	if(context.isUnsigned())
-    		return 1;
-    	return (value.compareTo(getModulusHalved()) <= 0) ? 1 : -1;
-    }
-    */
 
   public EncryptedNumber checkSameContext(EncryptedNumber other)
           throws ArithmeticException {
@@ -199,13 +189,6 @@ public final class EncodedNumber {
     //      corresponding positive value.
     return subtract(context.encode(other));
   }
-
-    /*
-    public EncryptedNumber subtractUnobfuscated(EncryptedNumber other) {
-        // TODO be careful not to use negate() otherwise it won't work when
-        //      isSigned() == false
-    }
-    */
 
   public EncryptedNumber multiply(EncryptedNumber other) {
     return context.multiply(this, other);

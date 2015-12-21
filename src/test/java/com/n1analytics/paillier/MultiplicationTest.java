@@ -22,7 +22,6 @@ import static com.n1analytics.paillier.TestUtil.random;
 import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
 import static org.junit.Assert.assertEquals;
 
-// TODO Check if there is a better way to generate random BigInteger
 @Category(SlowTests.class)
 public class MultiplicationTest {
 
