@@ -21,7 +21,7 @@ import static com.n1analytics.paillier.util.FloatingPointUtil.*;
 import static org.junit.Assert.assertEquals;
 
 public class Assumptions {
-  // TODO modulus of public key is always odd (and greater than 4...)
+  // TODO Issue #14: modulus of public key is always odd (and greater than 4...)
 
   public static class NamedDouble {
 

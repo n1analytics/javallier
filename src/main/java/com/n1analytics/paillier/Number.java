@@ -19,8 +19,8 @@ import com.n1analytics.paillier.util.HashChain;
 
 import java.math.BigInteger;
 
-// TODO maybe limit range of valid exponents so we don't blow up memory
-// TODO take a RoundingMode maybe?
+// TODO Issue #7: maybe limit range of valid exponents so we don't blow up memory
+// TODO Issue #16: take a RoundingMode maybe?
 public final class Number {
   /**
    * Minimum exponent a non-zero subnormal float may have:
@@ -231,7 +231,7 @@ public final class Number {
    * @return The encoded value.
    */
   public static Number encode(long value) {
-    // TODO optimise
+    // TODO Issue #8: optimise
     return encode(BigInteger.valueOf(value));
   }
 
@@ -246,7 +246,7 @@ public final class Number {
    * @return The encoded number.
    */
   public static Number encodeToExponent(long value, int exponent) {
-    // TODO optimise
+    // TODO Issue #8: optimise
     return encodeToExponent(BigInteger.valueOf(value), exponent);
   }
 
@@ -267,7 +267,7 @@ public final class Number {
    */
   public static Number encodeToPrecision(long value, int precision)
           throws IllegalArgumentException {
-    // TODO optimise
+    // TODO Issue #8: optimise
     return encodeToPrecision(BigInteger.valueOf(value), precision);
   }
 
@@ -389,7 +389,7 @@ public final class Number {
     return decodeApproximateBigInteger().longValue();
   }
 
-  // TODO maybe some isFiniteFloat, isFiniteDouble, etc.
+  // TODO Issue #6: maybe some isFiniteFloat, isFiniteDouble, etc.
   //      * isRepresentableAsLong
   //      * isValidLong
   //      * isFiniteDouble
@@ -503,15 +503,15 @@ public final class Number {
   }
 
   public EncryptedNumber subtract(EncryptedNumber other) {
-    return add(other.additiveInverse()); // TODO optimisation?
+    return add(other.additiveInverse()); // TODO Issue #9: optimisation?
   }
 
   public EncodedNumber subtract(EncodedNumber other) {
-    return add(other.additiveInverse()); // TODO optimisation?
+    return add(other.additiveInverse()); // TODO Issue #9: optimisation?
   }
 
   public Number subtract(Number other) {
-    return add(other.negate()); // TODO optimise
+    return add(other.negate()); // TODO Issue #9: optimise
   }
 
   public Number subtract(BigInteger other) {
@@ -552,7 +552,7 @@ public final class Number {
     return multiply(encode(other));
   }
 
-  // TODO - potentially dangerous
+  // TODO  Issue #10: - potentially dangerous
   /*
 	public Number multiplicativeInverse() {
 	    final BigInteger result = BigInteger.ONE
@@ -575,11 +575,11 @@ public final class Number {
 	*/
 
   public Number divide(double other) {
-    return multiply(encode(1.0 / other)); // TODO unhack
+    return multiply(encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   public Number divide(long other) {
-    return multiply(encode(1.0 / (double) other)); // TODO unhack
+    return multiply(encode(1.0 / (double) other)); // TODO Issue #10: unhack
   }
 	
 	/*

@@ -279,7 +279,7 @@ public class PaillierEncodedNumberTest {
                    EPSILON * context.getMaxDouble(0));
       assertEquals(ZERO.doubleValue(), context.getMinDouble(0), 0.0);
 
-      // TODO encode/decode
+      // TODO Issue #15: encode/decode
 
     } else if (configuration.unsignedPartialPrecision()) {
       BigInteger max = ONE.shiftLeft(precision).subtract(ONE);

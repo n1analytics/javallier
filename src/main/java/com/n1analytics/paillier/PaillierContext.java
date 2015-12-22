@@ -13,12 +13,12 @@
  */
 package com.n1analytics.paillier;
 
-import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
+import com.n1analytics.paillier.util.BigIntegerUtil;
+import com.n1analytics.paillier.util.HashChain;
 
 import java.math.BigInteger;
 
-import com.n1analytics.paillier.util.BigIntegerUtil;
-import com.n1analytics.paillier.util.HashChain;
+import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
 /**
  * Represents an encoding scheme that allows signed fractional numbers to be
@@ -258,12 +258,12 @@ public class PaillierContext {
   }
 
   public boolean isValid(BigInteger value) {
-    // TODO optimise
+    // TODO Issue #12: optimise
     return isValid(Number.encode(value));
   }
 
   public boolean isValid(double value) {
-    // TODO optimise
+    // TODO Issue #12: optimise
     try {
       return isValid(Number.encode(value));
     } catch (EncodeException e) {
@@ -272,7 +272,7 @@ public class PaillierContext {
   }
 
   public boolean isValid(long value) {
-    // TODO optimise
+    // TODO Issue #12: optimise
     return isValid(Number.encode(value));
   }
 
@@ -427,15 +427,15 @@ public class PaillierContext {
     if (exponent1 > exponent2) {
       value1 = value1.shiftLeft(exponent1 - exponent2);
 //			if(value1.compareTo(publicKey.getModulus()) > 0)
-//				throw new ArithmeticException(); // TODO better ways to detect
+//				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
       exponent1 = exponent2;
     } else if (exponent1 < exponent2) {
       value2 = value2.shiftLeft(exponent2 - exponent1);
 //			if(value2.compareTo(publicKey.getModulus()) > 0)
-//				throw new ArithmeticException(); // TODO better ways to detect
+//				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
       exponent2 = exponent1;
     } // else do nothing
-    // TODO check that nothing overflows
+    // TODO Issue #11: check that nothing overflows
     final BigInteger result = value1.add(value2).mod(modulus);
     return new EncodedNumber(this, result, exponent1);
   }
@@ -462,7 +462,7 @@ public class PaillierContext {
 
   public EncryptedNumber subtract(EncryptedNumber operand1, EncryptedNumber operand2)
           throws PaillierContextMismatchException {
-    // TODO optimise
+    // TODO Issue #9: optimise
     checkSameContext(operand1);
     checkSameContext(operand2);
     return add(operand1, additiveInverse(operand2));
@@ -512,7 +512,7 @@ public class PaillierContext {
     return new EncodedNumber(this, result, exponent);
   }
 
-  // TODO
+  // TODO Issue #10
   /*
 	public EncodedNumber multiplicativeInverse(EncodedNumber operand1) throws
 		PaillierContextMismatchException

@@ -214,7 +214,7 @@ public final class EncodedNumber {
     return multiply(context.encode(other));
   }
 
-  // TODO
+  // TODO Issue #10
     /*
     public EncodedNumber multiplicativeInverse() {
     	return context.multiplicativeInverse(this);
@@ -234,11 +234,11 @@ public final class EncodedNumber {
     */
 
   public EncodedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO unhack
+    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   public EncodedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO unhack
+    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   @Override

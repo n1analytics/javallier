@@ -13,9 +13,9 @@
  */
 package com.n1analytics.paillier;
 
-import java.math.BigInteger;
-
 import com.n1analytics.paillier.util.HashChain;
+
+import java.math.BigInteger;
 
 /**
  * Immutable class representing encrypted number and arithmetic operations that can be computed on the encrypted number.
@@ -256,7 +256,7 @@ public final class EncryptedNumber {
     return multiply(context.encode(other));
   }
 
-  // TODO
+  // TODO Issue #10
     /*
     public EncryptedNumber divide(EncodedNumber other) {
     	return context.divide(this, other);
@@ -272,11 +272,11 @@ public final class EncryptedNumber {
     */
 
   public EncryptedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO unhack
+    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   public EncryptedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO unhack
+    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   public void serialize(Serializer serializer) {

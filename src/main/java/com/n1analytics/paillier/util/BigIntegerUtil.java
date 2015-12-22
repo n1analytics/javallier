@@ -107,7 +107,7 @@ public class BigIntegerUtil {
    * @param n Number to convert
    */
   public static long longValueExact(BigInteger n) throws ArithmeticException {
-    // TODO optimisation?
+    // TODO Issue #13: optimisation?
     if (n.compareTo(LONG_MIN_VALUE) < 0) {
       throw new ArithmeticException("Cannot represent exactly");
     }
