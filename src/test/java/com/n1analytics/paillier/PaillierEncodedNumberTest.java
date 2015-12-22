@@ -108,7 +108,6 @@ public class PaillierEncodedNumberTest {
         expected = conf.modulus().add(expected);
       }
       assertEquals(expected, encoded.getValue());
-      // TODO check against fixed point?
       assertEquals(value, encoded.decodeApproximateLong());
       assertEquals(value, encoded.decodeLong());
       assertEquals(valueFixed, encoded.decode());
