@@ -3,8 +3,22 @@
 javallier
 =========
 
-A Java library for Paillier partially homomorphic encryption 
+A Java library for [Paillier partially homomorphic encryption](https://en.wikipedia.org/wiki/Paillier_cryptosystem)
 based on [python-paillier](https://github.com/NICTA/python-paillier).
+
+The homomorphic properties of the paillier crypto system are:
+
+- Encrypted numbers can be multiplied by a non encrypted scalar.
+- Encrypted numbers can be added together.
+- Encrypted numbers can be added to non encrypted scalars.
+
+
+Example usages are provided in the ``/examples`` source directory.
+
+To use the library add the following dependency to your SBT configuration:
+
+    libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.4.1"
+
 
 Build
 -----

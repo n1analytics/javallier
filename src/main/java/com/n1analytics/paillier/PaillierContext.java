@@ -50,6 +50,9 @@ import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
  *     point lies with respect to the encoded number.
  *   </li>
  * </ul>
+ *
+ * Note you can create a PaillierContext directly from the create methods
+ * on a PaillierPublicKey e.g., createSignedContext
  */
 public class PaillierContext {
 
