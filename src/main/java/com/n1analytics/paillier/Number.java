@@ -22,29 +22,6 @@ import java.math.BigInteger;
 // TODO Issue #7: maybe limit range of valid exponents so we don't blow up memory
 // TODO Issue #16: take a RoundingMode maybe?
 public final class Number {
-  /**
-   * Minimum exponent a non-zero subnormal float may have:
-   *   Float.MIN_VALUE == 2^-149
-   */
-//	public static final int FLOAT_MIN_VALUE_EXPONENT = -149;
-
-  /**
-   * Minimum exponent a normalised float may have:
-   *   Float.MIN_NORMAL == 2^-126
-   */
-//	public static final int FLOAT_MIN_NORMAL_EXPONENT = -126;
-
-  /**
-   * Maximum exponent a finite float may have:
-   *   Float.MAX_VALUE = (2-(2^-23)) * 2^127
-   */
-//	public static final int FLOAT_MAX_VALUE_EXPONENT = 127;
-
-  /**
-   * Number of bits in the two's-complement representation of Float.MAX_VALUE
-   * when encoded with FLOAT_MIN_VALUE_EXPONENT.
-   */
-//	public static final int FLOAT_MAX_PRECISION = 277;
 
   /**
    * Minimum exponent a non-zero subnormal double may have:
