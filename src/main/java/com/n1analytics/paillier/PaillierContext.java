@@ -345,26 +345,15 @@ public class PaillierContext {
 
   public EncryptedNumber obfuscate(EncryptedNumber encrypted) {
     checkSameContext(encrypted);
-    //final BigInteger modulus = publicKey.getModulus();
-    //final BigInteger modulusSquared = publicKey.getModulusSquared();
-    //final BigInteger value = encrypted.ciphertext;
     final BigInteger obfuscated = publicKey.raw_obfuscate(encrypted.ciphertext);
-    //final BigInteger obfuscated = randomPositiveNumber(modulus).modPow(modulus,
-    //                                                                   modulusSquared).multiply(
-    //       value).mod(modulusSquared);
     return new EncryptedNumber(this, obfuscated, encrypted.getExponent(), true);
   }
 
   public EncryptedNumber encrypt(EncodedNumber encoded) {
-
     checkSameContext(encoded);
-    final BigInteger modulus = publicKey.getModulus();
-    final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value = encoded.getValue();
-    //the following encryption only works if the generator is chosen to be modulus+1.
-    //Luckily, the PublicKey definition in this library ensures this property. 
-    final BigInteger result = modulus.multiply(value).add(BigInteger.ONE).mod(modulusSquared);
-    return new EncryptedNumber(this, result, encoded.getExponent());
+    final BigInteger ciphertext = publicKey.raw_encrypt_without_obfuscation(value);
+    return new EncryptedNumber(this, ciphertext, encoded.getExponent(), false);
   }
 
   public EncryptedNumber encrypt(Number value) {
