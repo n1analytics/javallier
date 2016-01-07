@@ -21,16 +21,16 @@ public class HashChain {
   private int hash;
 
   /**
-   * Construct a new {@code HashChain}, the hashcode is initialised to 0.
+   * Constructs a new HashChain, initialise the hashcode to 0.
    */
   public HashChain() {
     this.hash = 0;
   }
 
   /**
-   * Chain {@code this} with the hashcode of another object.
-   * @param o object whose hash to be chained to {@code this}
-   * @return {@code this}.
+   * Chains this HashChain with the hashcode of another object.
+   * @param o an object whose hashcode is to be chained to this HashChain.
+   * @return this HashChain.
    */
   public HashChain chain(Object o) {
     this.hash = Long.valueOf((((long) this.hash) << 32) | o.hashCode()).hashCode();
@@ -38,7 +38,7 @@ public class HashChain {
   }
 
   /**
-   * Get the hashcode.
+   * Returns the hashcode.
    * @return hashcode.
    */
   public int hashCode() {

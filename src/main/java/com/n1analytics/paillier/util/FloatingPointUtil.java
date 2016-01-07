@@ -81,7 +81,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns a bit representation of the value according to the IEEE 754 floating-point "double format" bit layout.
-   * @param value Input
+   * @param value input.
    * @return bit representation of the value.
    */
   public static long bits(double value) {
@@ -94,7 +94,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the fraction component of the bit representation of the value.
-   * @param value Input
+   * @param value input.
    * @return fraction component of the bit representation.
    */
   public static long fraction(double value) {
@@ -107,7 +107,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the exponent component of the bit representation of the value.
-   * @param value Input
+   * @param value input.
    * @return exponent component of the bit representation.
    */
   public static long exponentBits(double value) {
@@ -119,9 +119,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the (unsigned) right shifted exponent of the value
-   * @param value Input
-   * @return (unsigned) right shifted exponent of the value
+   * Returns the (unsigned) right shifted exponent of the value.
+   * @param value input.
+   * @return (unsigned) right shifted exponent of the value.
    */
   public static long exponentBitsShifted(double value) {
     return exponentBits(value) >>> DOUBLE_EXPONENT_SHIFT;
@@ -132,9 +132,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the exponent of the value
-   * @param value Input
-   * @return exponent of the value
+   * Returns the exponent of the value.
+   * @param value input.
+   * @return exponent of the value.
    */
   public static long exponent(double value) {
     return exponentBitsShifted(value) - DOUBLE_EXPONENT_BIAS;
@@ -145,9 +145,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the sign bit of the value
-   * @param value Input
-   * @return sign bit of the value
+   * Returns the sign bit of the value.
+   * @param value input.
+   * @return sign bit of the value.
    */
   public static long signBits(double value) {
     return bits(value) & DOUBLE_SIGN_MASK;
@@ -158,9 +158,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the (unsigned) right shifted sign bit of the value
-   * @param value Input
-   * @return (unsigned) right shifted bit of the value
+   * Returns the (unsigned) right shifted sign bit of the value.
+   * @param value input.
+   * @return (unsigned) right shifted bit of the value.
    */
   public static long signBitsShifted(double value) {
     return signBits(value) >>> DOUBLE_SIGN_SHIFT;
@@ -171,9 +171,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the sign of the value
-   * @param value Input
-   * @return sign of the value
+   * Returns the sign of the value.
+   * @param value input.
+   * @return sign of the value.
    */
   public static long sign(double value) {
     return signBits(value) == 0L ? 1 : -1;
@@ -184,9 +184,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Check if the value is a NaN
-   * @param value Input
-   * @return true if value is NaN, false otherwise
+   * Check if the value is a NaN.
+   * @param value input.
+   * @return true if value is NaN, false otherwise.
    */
   public static boolean isNaN(double value) {
     return Double.isNaN(value);
@@ -197,9 +197,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Check if the value is infinite
-   * @param value Input
-   * @return true of value is infinite, false otherwise
+   * Check if the value is infinite.
+   * @param value input.
+   * @return true of value is infinite, false otherwise.
    */
   public static boolean isInfinite(double value) {
     return Double.isInfinite(value);
@@ -210,9 +210,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Check if the value is finite
-   * @param value Input
-   * @return true of value is finite, false otherwise
+   * Check if the value is finite.
+   * @param value input.
+   * @return true of value is finite, false otherwise.
    */
   public static boolean isFinite(double value) {
     return !isNaN(value) && !isInfinite(value);
@@ -223,9 +223,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Check if the value is subnormal
-   * @param value Input
-   * @return true of value is subnormal, false otherwise
+   * Check if the value is subnormal.
+   * @param value input.
+   * @return true of value is subnormal, false otherwise.
    */
 
   public static boolean isSubnormal(double value) {
@@ -237,9 +237,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Check if the value is normal
-   * @param value Input
-   * @return true of value is normal, false otherwise
+   * Check if the value is normal.
+   * @param value input.
+   * @return true of value is normal, false otherwise.
    */
   public static boolean isNormal(double value) {
     return isFinite(value) && !isSubnormal(value);
@@ -250,9 +250,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the adjacent positive floating-point number
-   * @param value Input
-   * @return adjacent positive floating-point number
+   * Returns the adjacent positive floating-point number.
+   * @param value input.
+   * @return adjacent positive floating-point number.
    */
   public static double nextPositive(double value) {
     return Math.nextAfter(value, Double.POSITIVE_INFINITY);
@@ -263,9 +263,9 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the adjacent negative floating-point number
-   * @param value Input
-   * @return adjacent negative floating-point number
+   * Returns the adjacent negative floating-point number.
+   * @param value input.
+   * @return adjacent negative floating-point number.
    */
   public static double nextNegative(double value) {
     return Math.nextAfter(value, Double.NEGATIVE_INFINITY);

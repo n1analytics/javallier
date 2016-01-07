@@ -32,85 +32,94 @@ public class BigIntegerUtil {
   public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
   /**
-   * Check whether n is positive
-   * @param n Number to check
-   * @return true if n is positive, false otherwise
+   * Checks whether {@code n} is positive.
+   *
+   * @param n number to check.
+   * @return true if {@code n} is positive, false otherwise.
    */
   public static boolean positive(BigInteger n) {
     return n.signum() > 0;
   }
 
   /**
-   * Check whether n is non-negative
-   * @param n Number to check
-   * @return true if n is positive or n is equal to 0, false otherwise
+   * Checks whether {@code n} is non-negative.
+   *
+   * @param n number to check.
+   * @return true if {@code n} is positive or {@code n} is equal to 0, false otherwise.
    */
   public static boolean nonNegative(BigInteger n) {
     return n.signum() >= 0;
   }
 
   /**
-   * Check whether n is negative
-   * @param n Number to check
-   * @return true if n is negative, false otherwise
+   * Checks whether {@code n} is negative.
+   *
+   * @param n number to check.
+   * @return true if {@code n} is negative, false otherwise.
    */
   public static boolean negative(BigInteger n) {
     return n.signum() < 0;
   }
 
   /**
-   * Check whether n is non-positive
-   * @param n Number to check
-   * @return true if n is negative or n is equal to 0, false otherwise
+   * Checks whether {@code n} is non-positive.
+   *
+   * @param n number to check.
+   * @return true if {@code n} is negative or {@code n} is equal to 0, false otherwise.
    */
   public static boolean nonPositive(BigInteger n) {
     return n.signum() <= 0;
   }
 
   /**
-   * Check whether a is greater than b
-   * @param a First number
-   * @param b Second number
-   * @return true if a is greater than b, false otherwise
+   * Checks whether {@code a} is greater than {@code b}.
+   *
+   * @param a first number.
+   * @param b second number.
+   * @return true if {@code a} is greater than {@code b}, false otherwise.
    */
   public static boolean greater(BigInteger a, BigInteger b) {
     return a.compareTo(b) > 0;
   }
 
   /**
-   * Check whether a is greater than or equal to b
-   * @param a First number
-   * @param b Second number
-   * @return true if a is greater than or equal to b, false otherwise
+   * Checks whether {@code a} is greater than or equal to {@code b}.
+   *
+   * @param a first number.
+   * @param b second number.
+   * @return true if {@code a} is greater than or equal to {@code b}, false otherwise.
    */
   public static boolean greaterOrEqual(BigInteger a, BigInteger b) {
     return a.compareTo(b) >= 0;
   }
 
   /**
-   * Check whether a is less than b
-   * @param a First number
-   * @param b Second number
-   * @return true if a is less than b, false otherwise
+   * Checks whether {@code a} is less than {@code b}.
+   *
+   * @param a first number.
+   * @param b second number.
+   * @return true if a is less than {@code b}, false otherwise.
    */
   public static boolean less(BigInteger a, BigInteger b) {
     return a.compareTo(b) < 0;
   }
 
   /**
-   * Check whether a is less than or equal to b
-   * @param a First number
-   * @param b Second number
-   * @return true if a is less than or equal to b, false otherwise
+   * Checks whether {@code a} is less than or equal to {@code b}.
+   *
+   * @param a first number.
+   * @param b second number.
+   * @return true if {@code a} is less than or equal to {@code b}, false otherwise.
    */
   public static boolean lessOrEqual(BigInteger a, BigInteger b) {
     return a.compareTo(b) <= 0;
   }
 
   /**
-   * Return a random strictly positive number less than n.
-   * @param n upper bound
-   * @return a random number less than n
+   * Returns a random strictly positive number less than {@code n}.
+   *
+   * @param n upper bound.
+   * @return a random number less than {@code n}.
    */
   public static BigInteger randomPositiveNumber(final BigInteger n) {
     if (lessOrEqual(n, BigInteger.ONE)) {
@@ -129,28 +138,26 @@ public class BigIntegerUtil {
   }
 
   /**
-   * The number of bits required to represent <pre>abs(n)</pre>, excluding the
-   * sign bit. This is useful because
-   * <pre>absBitLength(n) == absBitLength(n.negate)</pre> whereas the same is
-   * not necessarily true of <pre>n.bitLength()</pre> and
-   * <pre>n.negate().bitLength()</pre>.
+   * The number of bits required to represent {@code abs(n)}, excluding the
+   * sign bit. This is useful because {@code absBitLength(n) == absBitLength(n.negate)}
+   * whereas the same is not necessarily true of {@code n.bitLength()} and
+   * {@code n.negate().bitLength()}.
    *
-   * @param n input
-   * @return number of bits
+   * @param n input.
+   * @return number of bits.
    */
   public static int absBitLength(BigInteger n) {
     return n.abs().bitLength();
   }
 
   /**
-   * Converts a BigInteger to a <code>long</code>. Throws an
-   * <code>ArithmeticException</code> if the conversion can not be done
-   * exactly.
-   * @return The converted value.
-   * @throws ArithmeticException If <code>n</code> cannot be exactly
-   * represented as a <code>long</code>
+   * Converts a BigInteger to a long. Throws an ArithmeticException
+   * if the conversion can not be done exactly.
    *
-   * @param n Number to convert
+   * @param n Number to convert.
+   * @return The converted value.
+   * @throws ArithmeticException If {@code n} cannot be exactly.
+   * represented as a long.
    */
   public static long longValueExact(BigInteger n) throws ArithmeticException {
     // TODO Issue #13: optimisation?
@@ -164,12 +171,12 @@ public class BigIntegerUtil {
   }
 
   /**
-   * Computes the Integer part of the square root of BigInteger <code>n</code>.
+   * Computes the Integer part of the square root of BigInteger {@code n}.
    * This code is adapted from Faruk Akgul's code found at:
    * http://faruk.akgul.org/blog/javas-missing-algorithm-biginteger-sqrt/
    *
-   * @param n Number to square root
-   * @return The Integer part of the square root of <code>n</code>.
+   * @param n number to square root.
+   * @return the integer part of the square root of {@code n}.
    */
   public static BigInteger sqrt(BigInteger n) {
     BigInteger a = BigInteger.ONE;
