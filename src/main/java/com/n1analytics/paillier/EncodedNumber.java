@@ -33,10 +33,7 @@ public final class EncodedNumber {
    * encoded value must be a non-negative integer less than
    * <code>context.getModulus()</code>.
    * @param context The context used to encode <code>value</code>.
-   * @param value The encoded value.
-   *
-   * @param context Paillier context for this instance
-   * @param value value to encode
+   * @param value BigInteger to encode
    * @param exponent exponent to use
    */
   protected EncodedNumber(PaillierContext context, BigInteger value, int exponent) {

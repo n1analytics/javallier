@@ -13,10 +13,10 @@
  */
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
-
-import com.n1analytics.paillier.util.BigIntegerUtil;
 
 /**
  * Immutable class representing Paillier private key.

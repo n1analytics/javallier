@@ -1,10 +1,12 @@
 package com.n1analytics.paillier;
 
-import java.math.BigInteger;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import java.math.BigInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class RawPaillierTest {
 

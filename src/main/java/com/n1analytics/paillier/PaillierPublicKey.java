@@ -13,9 +13,9 @@
  */
 package com.n1analytics.paillier;
 
-import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
-
 import java.math.BigInteger;
+
+import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
 /**
  * Immutable class representing Paillier public key.

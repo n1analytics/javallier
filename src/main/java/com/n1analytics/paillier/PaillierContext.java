@@ -14,10 +14,10 @@
 package com.n1analytics.paillier;
 
 
-import java.math.BigInteger;
-
 import com.n1analytics.paillier.util.BigIntegerUtil;
 import com.n1analytics.paillier.util.HashChain;
+
+import java.math.BigInteger;
 
 /**
  * Represents an encoding scheme that allows signed fractional numbers to be
