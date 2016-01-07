@@ -13,20 +13,34 @@
  */
 package com.n1analytics.paillier.util;
 
+/**
+ * A class to store a hashchain
+ */
 public class HashChain {
 
   private int hash;
 
+  /**
+   * Construct a new {@code HashChain}, the hashcode is initialised to 0.
+   */
   public HashChain() {
     this.hash = 0;
   }
 
+  /**
+   * Chain {@code this} with the hashcode of another object.
+   * @param o object whose hash to be chained to {@code this}
+   * @return {@code this}.
+   */
   public HashChain chain(Object o) {
     this.hash = Long.valueOf((((long) this.hash) << 32) | o.hashCode()).hashCode();
     return this;
   }
 
-  @Override
+  /**
+   * Get the hashcode.
+   * @return hashcode.
+   */
   public int hashCode() {
     return hash;
   }

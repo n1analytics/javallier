@@ -16,7 +16,9 @@ package com.n1analytics.paillier.util;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-
+/**
+ * A class containing utility methods for BigInteger manipulation.
+ */
 public class BigIntegerUtil {
 
   /**
@@ -29,34 +31,78 @@ public class BigIntegerUtil {
    */
   public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
+  /**
+   * Check whether n is positive
+   * @param n Number to check
+   * @return true if n is positive, false otherwise
+   */
   public static boolean positive(BigInteger n) {
     return n.signum() > 0;
   }
 
+  /**
+   * Check whether n is non-negative
+   * @param n Number to check
+   * @return true if n is positive or n is equal to 0, false otherwise
+   */
   public static boolean nonNegative(BigInteger n) {
     return n.signum() >= 0;
   }
 
+  /**
+   * Check whether n is negative
+   * @param n Number to check
+   * @return true if n is negative, false otherwise
+   */
   public static boolean negative(BigInteger n) {
     return n.signum() < 0;
   }
 
+  /**
+   * Check whether n is non-positive
+   * @param n Number to check
+   * @return true if n is negative or n is equal to 0, false otherwise
+   */
   public static boolean nonPositive(BigInteger n) {
     return n.signum() <= 0;
   }
 
+  /**
+   * Check whether a is greater than b
+   * @param a First number
+   * @param b Second number
+   * @return true if a is greater than b, false otherwise
+   */
   public static boolean greater(BigInteger a, BigInteger b) {
     return a.compareTo(b) > 0;
   }
 
+  /**
+   * Check whether a is greater than or equal to b
+   * @param a First number
+   * @param b Second number
+   * @return true if a is greater than or equal to b, false otherwise
+   */
   public static boolean greaterOrEqual(BigInteger a, BigInteger b) {
     return a.compareTo(b) >= 0;
   }
 
+  /**
+   * Check whether a is less than b
+   * @param a First number
+   * @param b Second number
+   * @return true if a is less than b, false otherwise
+   */
   public static boolean less(BigInteger a, BigInteger b) {
     return a.compareTo(b) < 0;
   }
 
+  /**
+   * Check whether a is less than or equal to b
+   * @param a First number
+   * @param b Second number
+   * @return true if a is less than or equal to b, false otherwise
+   */
   public static boolean lessOrEqual(BigInteger a, BigInteger b) {
     return a.compareTo(b) <= 0;
   }
