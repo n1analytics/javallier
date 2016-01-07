@@ -15,7 +15,7 @@ cache:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot/
 
-script: ./test-fast.sh
+script: sbt test
 
 notifications:
   slack:
