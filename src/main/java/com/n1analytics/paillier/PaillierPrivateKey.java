@@ -149,7 +149,7 @@ public final class PaillierPrivateKey {
    * @param q
    *          prime q.
    */
-  private PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger p,
+  protected PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger p,
       BigInteger q) {
     if (publicKey == null) {
       throw new IllegalArgumentException("publicKey must not be null");
@@ -221,16 +221,24 @@ public final class PaillierPrivateKey {
     if(encrypted.getContext() instanceof MockPaillierContext){
       return new EncodedNumber(encrypted.getContext(), encrypted.ciphertext, encrypted.getExponent());
     }
-    
+    return new EncodedNumber(encrypted.getContext(), raw_decrypt(encrypted.ciphertext),
+        encrypted.getExponent());
+  }
+  
+  /**
+   * Implementation of the decryption function of the Paillier encryption scheme.
+   * Returns the plain text of a given cipher text.
+   * @param ciphertext to be decrypted.
+   * @return the decrypted plaintext.
+   */
+  public BigInteger raw_decrypt(BigInteger ciphertext){
     BigInteger decryptedToP = lFunction(
-        encrypted.ciphertext.modPow(p.subtract(BigInteger.ONE), pSquared), p)
+        ciphertext.modPow(p.subtract(BigInteger.ONE), pSquared), p)
         .multiply(hp).mod(p);
     BigInteger decryptedToQ = lFunction(
-        encrypted.ciphertext.modPow(q.subtract(BigInteger.ONE), qSquared), q)
+        ciphertext.modPow(q.subtract(BigInteger.ONE), qSquared), q)
         .multiply(hq).mod(q);
-    BigInteger decrypted = crt(decryptedToP, decryptedToQ);
-    return new EncodedNumber(encrypted.getContext(), decrypted,
-        encrypted.getExponent());
+    return crt(decryptedToP, decryptedToQ);
   }
 
   /**

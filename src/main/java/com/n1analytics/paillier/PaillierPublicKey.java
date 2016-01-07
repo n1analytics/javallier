@@ -13,6 +13,8 @@
  */
 package com.n1analytics.paillier;
 
+import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
+
 import java.math.BigInteger;
 
 /**
@@ -137,6 +139,66 @@ public final class PaillierPublicKey {
 
   public MockPaillierContext createMockSignedContext(int precision) {
     return new MockPaillierContext(this, true, precision);
+  }
+  
+  /**
+   * Implements the encryption function of the Paillier encryption scheme.
+   * @param plaintext to be encrypted.
+   * @return corresponding ciphertext.
+   */
+  public BigInteger raw_encrypt(BigInteger plaintext){
+    return raw_obfuscate(raw_encrypt_without_obfuscation(plaintext));
+  }
+  
+  /**
+   * The encryption function of the Paillier encryption scheme can be divided into 
+   * two parts:
+   *  - The first part, as implemented here, maps the plaintext into the encrypted space.
+   *    But be aware, that this function is invertible, that is, the ciphertext is not yet 
+   *    secure.
+   *  - Only after the second part, the 'raw_obfuscate' function, the ciphertext is secure 
+   *    and the corresponding plaintext can't be recovered without the secret key.
+   * The reason we split the encryption is that the second part is computationally significantly
+   * more expensive than the first part and since the obfuscation has to be done only once
+   * before you can securely share the generated ciphertext, there are scenarios, where
+   * obfuscating at encryption is unnecessary. 
+   *  
+   * @param plaintext to be encrypted.
+   * @return corresponding unobfuscated ciphertext.
+   */
+  public BigInteger raw_encrypt_without_obfuscation(BigInteger plaintext){
+    return modulus.multiply(plaintext).add(BigInteger.ONE).mod(modulusSquared);
+  }
+  
+  /**
+   * Implements the obfuscation function of the Paillier encryption scheme.
+   * It changes the value of a ciphertext without changing the corresponding plaintext.
+   * @param ciphertext to be ofuscated
+   * @return obfuscated ciphertext.
+   */
+  public BigInteger raw_obfuscate(BigInteger ciphertext) {
+    return randomPositiveNumber(modulus).modPow(modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
+  }
+  
+  /**
+   * Implements the addition function of two ciphertexts of the Paillier encryption scheme.
+   * @param ciphertext1
+   * @param ciphertext2
+   * @return ciphertext of the sum of the two plaintexts corresponding to ciphertext1 and 2.
+   */
+  public BigInteger raw_add(BigInteger ciphertext1, BigInteger ciphertext2){
+    return ciphertext1.multiply(ciphertext2).mod(modulusSquared);
+  }
+  
+  /**
+   * Implements the multiplication function of the Paillier encryption scheme.
+   * In the Paillier scheme you can only multiply an unencrypted value with an encrypted value.
+   * @param ciphertext of factor a
+   * @param plainfactor b
+   * @return product a*b
+   */
+  public BigInteger raw_multiply(BigInteger ciphertext, BigInteger plainfactor){
+    return ciphertext.modPow(plainfactor, modulusSquared);
   }
 
   @Override

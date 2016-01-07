@@ -13,12 +13,11 @@
  */
 package com.n1analytics.paillier;
 
-import com.n1analytics.paillier.util.BigIntegerUtil;
-import com.n1analytics.paillier.util.HashChain;
 
 import java.math.BigInteger;
 
-import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
+import com.n1analytics.paillier.util.BigIntegerUtil;
+import com.n1analytics.paillier.util.HashChain;
 
 /**
  * Represents an encoding scheme that allows signed fractional numbers to be
@@ -349,12 +348,7 @@ public class PaillierContext {
 
   public EncryptedNumber obfuscate(EncryptedNumber encrypted) {
     checkSameContext(encrypted);
-    final BigInteger modulus = publicKey.getModulus();
-    final BigInteger modulusSquared = publicKey.getModulusSquared();
-    final BigInteger value = encrypted.ciphertext;
-    final BigInteger obfuscated = randomPositiveNumber(modulus).modPow(modulus,
-                                                                       modulusSquared).multiply(
-            value).mod(modulusSquared);
+    final BigInteger obfuscated = publicKey.raw_obfuscate(encrypted.ciphertext);
     return new EncryptedNumber(this, obfuscated, encrypted.getExponent(), true);
   }
 
@@ -364,10 +358,8 @@ public class PaillierContext {
     final BigInteger modulus = publicKey.getModulus();
     final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value = encoded.getValue();
-    //the following encryption only works if the generator is chosen to be modulus+1.
-    //Luckily, the PublicKey definition in this library ensures this property. 
-    final BigInteger result = modulus.multiply(value).add(BigInteger.ONE).mod(modulusSquared);
-    return new EncryptedNumber(this, result, encoded.getExponent());
+    final BigInteger ciphertext = publicKey.raw_encrypt_without_obfuscation(value);
+    return new EncryptedNumber(this, ciphertext, encoded.getExponent(), false);
   }
 
   public EncryptedNumber encrypt(Number value) {
@@ -390,21 +382,18 @@ public class PaillierContext {
           throws PaillierContextMismatchException {
     checkSameContext(operand1);
     checkSameContext(operand2);
-    final BigInteger modulusSquared = publicKey.getModulusSquared();
     BigInteger value1 = operand1.ciphertext;
     BigInteger value2 = operand2.ciphertext;
     int exponent1 = operand1.getExponent();
     int exponent2 = operand2.getExponent();
     if (exponent1 > exponent2) {
-      value1 = value1.modPow(BigInteger.ONE.shiftLeft(exponent1 - exponent2),
-                             modulusSquared);
+      value1 = publicKey.raw_multiply(value1, BigInteger.ONE.shiftLeft(exponent1 - exponent2));
       exponent1 = exponent2;
     } else if (exponent1 < exponent2) {
-      value2 = value2.modPow(BigInteger.ONE.shiftLeft(exponent2 - exponent1),
-                             modulusSquared);
+      value2 = publicKey.raw_multiply(value2, BigInteger.ONE.shiftLeft(exponent2 - exponent1));
       exponent2 = exponent1;
     } // else do nothing
-    final BigInteger result = value1.multiply(value2).mod(modulusSquared);
+    final BigInteger result = publicKey.raw_add(value1, value2);
     return new EncryptedNumber(this, result, exponent1);
   }
 
@@ -490,10 +479,9 @@ public class PaillierContext {
           throws PaillierContextMismatchException {
     checkSameContext(operand1);
     checkSameContext(operand2);
-    final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value1 = operand1.ciphertext;
     final BigInteger value2 = operand2.getValue();
-    final BigInteger result = value1.modPow(value2, modulusSquared);
+    final BigInteger result = publicKey.raw_multiply(value1, value2);
     final int exponent = operand1.getExponent() + operand2.getExponent();
     return new EncryptedNumber(this, result, exponent);
   }
