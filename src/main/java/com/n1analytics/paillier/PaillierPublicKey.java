@@ -201,9 +201,9 @@ public final class PaillierPublicKey {
   /**
    * Implements the addition function of two ciphertexts of the Paillier encryption scheme.
    *
-   * @param ciphertext1
-   * @param ciphertext2
-   * @return ciphertext of the sum of the two plaintexts corresponding to ciphertext1 and 2.
+   * @param ciphertext1 first ciphertext.
+   * @param ciphertext2 second ciphertext.
+   * @return ciphertext of the sum of the two plaintexts corresponding to {@code ciphertext1} and {@code ciphertext2}.
    */
   public BigInteger raw_add(BigInteger ciphertext1, BigInteger ciphertext2){
     return ciphertext1.multiply(ciphertext2).mod(modulusSquared);
