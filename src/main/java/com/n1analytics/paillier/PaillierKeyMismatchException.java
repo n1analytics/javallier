@@ -57,7 +57,7 @@ public class PaillierKeyMismatchException extends PaillierRuntimeException {
    * Construct a new {@code PaillierKeyMismatchException} with a specific message and the exception cause.
    * @param message the detail message.
    * @param cause the cause.
-   * @param enableSuppression whether suppression is enabled or disabled
+   * @param enableSuppression whether suppression is enabled or disabled.
    * @param writableStackTrace whether the stack trace should be writable.
    */
   public PaillierKeyMismatchException(String message, Throwable cause,

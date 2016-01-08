@@ -56,7 +56,7 @@ public class EncryptException extends PaillierRuntimeException {
    * Constructs a new {@code EncryptException} with a specific message and the exception cause.
    * @param message the detail message.
    * @param cause the cause.
-   * @param enableSuppression whether suppression is enabled or disabled
+   * @param enableSuppression whether suppression is enabled or disabled.
    * @param writableStackTrace whether the stack trace should be writable.
    */
   public EncryptException(String message, Throwable cause, boolean enableSuppression,
