@@ -13,26 +13,52 @@
  */
 package com.n1analytics.paillier;
 
+/**
+ * Thrown when a decryption operation fails.
+ */
 public class DecryptException extends PaillierRuntimeException {
 
   private static final long serialVersionUID = 264081054288775421L;
 
+  /**
+   * Constructs a new {@code DecryptException} without a specific message.
+   */
   public DecryptException() {
     super();
   }
 
+  /**
+   * Constructs a new {@code DecryptException} with a specific message.
+   * @param message the detail message.
+   */
   public DecryptException(String message) {
     super(message);
   }
 
+  /**
+   * Constructs a new {@code DecryptException} with the exception cause.
+   * @param cause the cause.
+   */
   public DecryptException(Throwable cause) {
     super(cause);
   }
 
+  /**
+   * Constructs a new {@code DecryptException} with a specific message and the exception cause.
+   * @param message the detail message,
+   * @param cause the cause.
+   */
   public DecryptException(String message, Throwable cause) {
     super(message, cause);
   }
 
+  /**
+   * Constructs a new {@code DecryptException} with a specific message and the exception cause.
+   * @param message the detail message.
+   * @param cause the cause.
+   * @param enableSuppression whether suppression is enabled or disabled
+   * @param writableStackTrace whether the stack trace should be writable.
+   */
   public DecryptException(String message, Throwable cause, boolean enableSuppression,
                           boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
