@@ -18,42 +18,33 @@ import java.math.BigInteger;
 import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
 /**
- * Immutable class representing Paillier public key.
+ * A class representing Paillier public key.
  *
  * The attributes stored in the class are:
  * <ul>
  *     <li> n: the first parameter of the public key </li>
  *     <li> g: the second parameter of the public key </li>
- *     <li> maxInt: the maximum number that can be encrypted using this public key </li>
  *     <li> n<sup>2</sup>: the square of n, that is often used in Paillier computation </li>
  * </ul>
  *
- * Besides storing Paillier public key, the class contains the encryption method for input data of type double, long
- * and BigInteger. It also provides a mean to obtain a random number that is safe to use with this public key.
- *
- * Examples:
- * <ul>
- *     <li>
- *         To encrypt a long, <code>numLong</code>, using PaillierPublicKey, <code>publicKey</code>:
- *         <br>
- *         <code>EncryptedNumber encryptedNumber = publicKey.encrypted(numLong);</code>
- *     </li>
- *     <li>
- *         To encrypt a long, <code>numLong</code>, with a specified random number, <code>random</code>, to obfuscate
- *         the resulting EncryptedNumber, using PaillierPublicKey, <code>publicKey</code>:
- *         <br>
- *         <code>EncryptedNumber encryptedNumber = publicKey.encrypted(numLong, random);</code>
- *     </li>
- *     <li>
- *         To obtain a safe random number that can be used to obfuscate an EncryptedNumber:
- *         <code>BigInteger random = publicKey.getSafeRandom();</code>
- *     </li>
- * </ul>
+ * Besides storing Paillier public key, the class has methods to generate the corresponding encoding
+ * scheme (i.e., PaillierContext).
  */
 public final class PaillierPublicKey {
 
+  /**
+   * The modulus (n) of the public key.
+   */
   protected final BigInteger modulus;
+
+  /**
+   * The modulus squared (n<sup>2</sup>) of the public key.
+   */
   protected final BigInteger modulusSquared;
+
+  /**
+   * The generator (g) of the public key
+   */
   protected final BigInteger generator;
 
   public static interface Serializer {
@@ -62,8 +53,9 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Construct a Paillier public key.
-   * @param modulus Modules for key
+   * Constructs a Paillier public key.
+   *
+   * @param modulus of the key
    */
   public PaillierPublicKey(BigInteger modulus) {
     if (modulus == null) {
@@ -77,16 +69,16 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Gets the public key, modulus.
+   * Returns the modulus of the public key.
    *
-   * @return public key modulus.
+   * @return modulus.
    */
   public BigInteger getModulus() {
     return modulus;
   }
 
   /**
-   * Gets modulus<sup>2</sup>.
+   * Returns modulus<sup>2</sup>.
    *
    * @return modulus<sup>2</sup>.
    */
@@ -95,9 +87,9 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Gets the public key generator.
+   * Returns the generator of the public key.
    *
-   * @return public key generator.
+   * @return generator.
    */
   public BigInteger getGenerator() {
     return generator;
@@ -107,19 +99,43 @@ public final class PaillierPublicKey {
     serializer.serialize(modulus);
   }
 
+  /**
+   * Creates a new full precision, unsigned Paillier context. The precision of the new context
+   * equals to modulus's bit length.
+   *
+   * @return Paillier context.
+   */
   public PaillierContext createUnsignedContext() {
     return new PaillierContext(this, false, modulus.bitLength());
   }
 
+  /**
+   * Creates a new partial precision, unsigned Paillier context.
+   *
+   * @param precision of the Paillier context.
+   * @return of the Paillier context.
+   * @throws IllegalArgumentException if {@code precision} is invalid.
+   */
   public PaillierContext createUnsignedContext(int precision)
           throws IllegalArgumentException {
     return new PaillierContext(this, false, precision);
   }
 
+  /**
+   * Creates a new full precision, signed Paillier context.
+   *
+   * @return Paillier context.
+   */
   public PaillierContext createSignedContext() {
     return new PaillierContext(this, true, modulus.bitLength());
   }
 
+  /**
+   * Creates a new partial precision, signed Paillier context.
+   *
+   * @param precision of the Paillier context.
+   * @return of the Paillier context.
+   */
   public PaillierContext createSignedContext(int precision) {
     return new PaillierContext(this, true, precision);
   }
@@ -143,6 +159,7 @@ public final class PaillierPublicKey {
   
   /**
    * Implements the encryption function of the Paillier encryption scheme.
+   *
    * @param plaintext to be encrypted.
    * @return corresponding ciphertext.
    */
@@ -173,6 +190,7 @@ public final class PaillierPublicKey {
   /**
    * Implements the obfuscation function of the Paillier encryption scheme.
    * It changes the value of a ciphertext without changing the corresponding plaintext.
+   *
    * @param ciphertext to be ofuscated
    * @return obfuscated ciphertext.
    */
@@ -182,6 +200,7 @@ public final class PaillierPublicKey {
   
   /**
    * Implements the addition function of two ciphertexts of the Paillier encryption scheme.
+   *
    * @param ciphertext1
    * @param ciphertext2
    * @return ciphertext of the sum of the two plaintexts corresponding to ciphertext1 and 2.
@@ -193,9 +212,10 @@ public final class PaillierPublicKey {
   /**
    * Implements the multiplication function of the Paillier encryption scheme.
    * In the Paillier scheme you can only multiply an unencrypted value with an encrypted value.
-   * @param ciphertext of factor a
-   * @param plainfactor b
-   * @return product a*b
+   *
+   * @param ciphertext of factor a.
+   * @param plainfactor b.
+   * @return product a*b.
    */
   public BigInteger raw_multiply(BigInteger ciphertext, BigInteger plainfactor){
     return ciphertext.modPow(plainfactor, modulusSquared);

@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * Immutable class representing Paillier private key.
+ * A class representing Paillier private key.
  *
  * A private key (and it's corresponding public key) are generated via the
  * following procedure, given a public key length <code>modulusLength</code>:
@@ -103,8 +103,13 @@ public final class PaillierPrivateKey {
   protected final BigInteger pInverse; //modular inverse of p modulo q
   protected final BigInteger hp; //precomputed hp and hq as defined in Paillier's
   protected final BigInteger hq; //paper page 12: Decryption using Chinese-remaindering
-  
 
+  /**
+   * Constructs a Paillier private key given the associated public key and the totient.
+   *
+   * @param publicKey associated with this private key.
+   * @param totient of the private key.
+   */
   protected PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger totient) {
     // Some basic error checking. Note though that passing these tests does
     // not guarantee that the private key is valid.
@@ -142,12 +147,9 @@ public final class PaillierPrivateKey {
    * Constructs a Paillier private key given an associated public key and the
    * two prime numbers p and q of the factorization of the public key's modulus.
    * 
-   * @param publicKey
-   *          Public key associated with this private key.
-   * @param p
-   *          prime p.
-   * @param q
-   *          prime q.
+   * @param publicKey associated with this private key.
+   * @param p prime p.
+   * @param q prime q.
    */
   protected PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger p,
       BigInteger q) {
@@ -170,10 +172,10 @@ public final class PaillierPrivateKey {
 
   /**
    * Creates a Paillier keypair of the specified modulus key length.
-   * @param modulusLength the length of the public key modulus. Must be a
-   * positive multiple of 8.
+   *
+   * @param modulusLength the length of the public key modulus. Must be a positive multiple of 8.
    * @return private key with the associated public key (keypair).
-   * @throws IllegalArgumentException on illegal <code>modulusLength</code>
+   * @throws IllegalArgumentException on illegal {@code modulusLength}.
    */
   public static PaillierPrivateKey create(int modulusLength) {
     if (modulusLength < 8 || modulusLength % 8 != 0) {
@@ -198,7 +200,8 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Gets the public key associated with this private key.
+   * Returns the public key associated with this private key.
+   *
    * @return the associated public key.
    */
   public PaillierPublicKey getPublicKey() {
@@ -206,10 +209,11 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Returns a decrypted encrypted number (which is still encoded).
-   * @param encrypted number to be decrypted.
-   * @return the decrypted encoded number.
-   * @throws PaillierKeyMismatchException If the encrypted number was not
+   * Decrypts an encrypted number.
+   *
+   * @param encrypted EncryptedNumber to be decrypted.
+   * @return the decryption result.
+   * @throws PaillierKeyMismatchException if the encrypted number was not
    * encoded with the appropriate public key.
    */
   public EncodedNumber decrypt(EncryptedNumber encrypted)
@@ -228,6 +232,7 @@ public final class PaillierPrivateKey {
   /**
    * Implementation of the decryption function of the Paillier encryption scheme.
    * Returns the plain text of a given cipher text.
+   *
    * @param ciphertext to be decrypted.
    * @return the decrypted plaintext.
    */
@@ -261,12 +266,10 @@ public final class PaillierPrivateKey {
 
   /**
    * The Chinese Remainder Theorem as needed for decryption.
-   * 
-   * @param mp
-   *          the solution modulo p
-   * @param mq
-   *          the solution modulo q
-   * @return the solution modulo n=pq
+   *
+   * @param mp the solution modulo p.
+   * @param mq the solution modulo q.
+   * @return the solution modulo n=pq.
    */
   private BigInteger crt(BigInteger mp, BigInteger mq) {
     BigInteger u = mq.subtract(mp).multiply(pInverse).mod(q);
