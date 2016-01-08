@@ -353,10 +353,7 @@ public class PaillierContext {
   }
 
   public EncryptedNumber encrypt(EncodedNumber encoded) {
-
     checkSameContext(encoded);
-    final BigInteger modulus = publicKey.getModulus();
-    final BigInteger modulusSquared = publicKey.getModulusSquared();
     final BigInteger value = encoded.getValue();
     final BigInteger ciphertext = publicKey.raw_encrypt_without_obfuscation(value);
     return new EncryptedNumber(this, ciphertext, encoded.getExponent(), false);
@@ -394,7 +391,7 @@ public class PaillierContext {
       exponent2 = exponent1;
     } // else do nothing
     final BigInteger result = publicKey.raw_add(value1, value2);
-    return new EncryptedNumber(this, result, exponent1);
+    return new EncryptedNumber(this, result, exponent1, operand1.isSafe && operand2.isSafe);
   }
 
   public EncryptedNumber add(EncryptedNumber operand1, EncodedNumber operand2)
@@ -437,7 +434,7 @@ public class PaillierContext {
     checkSameContext(operand1);
     return new EncryptedNumber(operand1.getContext(), operand1.ciphertext.modInverse(
             operand1.getContext().getPublicKey().getModulusSquared()),
-                               operand1.getExponent());
+                               operand1.getExponent(), operand1.isSafe);
   }
 
   public EncodedNumber additiveInverse(EncodedNumber operand1)
