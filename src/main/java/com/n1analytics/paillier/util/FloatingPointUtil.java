@@ -14,57 +14,69 @@
 package com.n1analytics.paillier.util;
 
 /**
- * A class containing utility methods to manipulate floating point numbers.
+ * A class containing the common methods to manipulate floating point numbers according to
+ * the IEEE 754 floating-point "double format" bit layout, including:
+ * <ul>
+ *     <li>The methods to obtain the sign, significand and the exponent of a floating point number </li>
+ *     <li>The methods to check the properties of a floating point number, i.e., {@code isNormal}} etc</li>
+ *     <li>The methods adjacent positive and negative floating point number</li>
+ * </ul>
  */
 public class FloatingPointUtil {
 
   /**
-   * The number of bits that represents the fraction in double.
+   * The number of bits that represents the significand in a {@code double}.
    */
   public static final int DOUBLE_FRACTION_BITS = 52;
 
   /**
-   * The number of bits that represents the exponent in double.
+   * The number of bits that represents the exponent in {@code double}.
    */
   public static final int DOUBLE_EXPONENT_BITS = 11;
 
   /**
-   * The number of bits that represents the sign in double.
+   * The number of bits that represents the sign in {@code double}.
    */
   public static final int DOUBLE_SIGN_BITS = 1;
 
   /**
-   * The number of bit shift required to obtain the fraction component of a double.
+   * The number of bit shift required to obtain the significand component of a {@code double}.
    */
   public static final int DOUBLE_FRACTION_SHIFT = 0;
 
   /**
-   * The number of bit shift required to obtain the exponent component of a double.
+   * The number of bit shift required to obtain the exponent component of a {@code double}.
    */
   public static final int DOUBLE_EXPONENT_SHIFT = 52;
 
   /**
-   * The number of bit shift required to obtain the sign component of a double.
+   * The number of bit shift required to obtain the sign component of a {@code double}.
    */
   public static final int DOUBLE_SIGN_SHIFT = 63;
 
+  /**
+   * The exponent bias of a {@code double}.
+   */
   public static final long DOUBLE_EXPONENT_BIAS = 1023;
 
   /**
-   * The mask required to obtain the fraction component from a double.
+   * The mask required to obtain the significand component from a {@code double}.
    */
   public static final long DOUBLE_FRACTION_MASK = 0x000FFFFFFFFFFFFFL;
 
   /**
-   * The mask required to obtain the exponent component from a double.
+   * The mask required to obtain the exponent component from a {@code double}.
    */
   public static final long DOUBLE_EXPONENT_MASK = 0x7FF0000000000000L;
 
   /**
-   * The mask required to obtain the sign component from a double.
+   * The mask required to obtain the sign component from a {@code double}.
    */
   public static final long DOUBLE_SIGN_MASK = 0x8000000000000000L;
 
+  /**
+   * The maximum integer that can be represented in a {@code double}, i.e., <code>2<sup>53</sup></code>
+   */
   public static final long DOUBLE_MAX_INT = 0x001FFFFFFFFFFFFFL;
 
 //	public static final int FLOAT_FRACTION_BITS = 23;
@@ -81,6 +93,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns a bit representation of the value according to the IEEE 754 floating-point "double format" bit layout.
+   *
    * @param value input.
    * @return bit representation of the value.
    */
@@ -93,7 +106,8 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the fraction component of the bit representation of the value.
+   * Returns the significand component of the bit representation of the value.
+   *
    * @param value input.
    * @return fraction component of the bit representation.
    */
@@ -107,6 +121,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the exponent component of the bit representation of the value.
+   *
    * @param value input.
    * @return exponent component of the bit representation.
    */
@@ -119,9 +134,10 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the (unsigned) right shifted exponent of the value.
+   * Returns the unsigned right shifted exponent of the value.
+   *
    * @param value input.
-   * @return (unsigned) right shifted exponent of the value.
+   * @return unsigned right shifted exponent of the value.
    */
   public static long exponentBitsShifted(double value) {
     return exponentBits(value) >>> DOUBLE_EXPONENT_SHIFT;
@@ -133,6 +149,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the exponent of the value.
+   *
    * @param value input.
    * @return exponent of the value.
    */
@@ -146,6 +163,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the sign bit of the value.
+   *
    * @param value input.
    * @return sign bit of the value.
    */
@@ -158,9 +176,10 @@ public class FloatingPointUtil {
 //	}
 
   /**
-   * Returns the (unsigned) right shifted sign bit of the value.
+   * Returns the unsigned right shifted sign bit of the value.
+   *
    * @param value input.
-   * @return (unsigned) right shifted bit of the value.
+   * @return unsigned right shifted bit of the value.
    */
   public static long signBitsShifted(double value) {
     return signBits(value) >>> DOUBLE_SIGN_SHIFT;
@@ -172,6 +191,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the sign of the value.
+   *
    * @param value input.
    * @return sign of the value.
    */
@@ -185,6 +205,7 @@ public class FloatingPointUtil {
 
   /**
    * Check if the value is a NaN.
+   *
    * @param value input.
    * @return true if value is NaN, false otherwise.
    */
@@ -198,6 +219,7 @@ public class FloatingPointUtil {
 
   /**
    * Check if the value is infinite.
+   *
    * @param value input.
    * @return true of value is infinite, false otherwise.
    */
@@ -211,6 +233,7 @@ public class FloatingPointUtil {
 
   /**
    * Check if the value is finite.
+   *
    * @param value input.
    * @return true of value is finite, false otherwise.
    */
@@ -224,6 +247,7 @@ public class FloatingPointUtil {
 
   /**
    * Check if the value is subnormal.
+   *
    * @param value input.
    * @return true of value is subnormal, false otherwise.
    */
@@ -238,6 +262,7 @@ public class FloatingPointUtil {
 
   /**
    * Check if the value is normal.
+   *
    * @param value input.
    * @return true of value is normal, false otherwise.
    */
@@ -251,6 +276,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the adjacent positive floating-point number.
+   *
    * @param value input.
    * @return adjacent positive floating-point number.
    */
@@ -264,6 +290,7 @@ public class FloatingPointUtil {
 
   /**
    * Returns the adjacent negative floating-point number.
+   *
    * @param value input.
    * @return adjacent negative floating-point number.
    */
