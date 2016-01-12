@@ -18,17 +18,40 @@ import com.n1analytics.paillier.util.HashChain;
 import java.math.BigInteger;
 
 /**
- * A class representing encrypted number.
+ * A class representing encrypted number. The attributes of this class are:
+ * <ul>
+ *     <li>A PaillierContext <code>context</code> associated to this encrypted number.</li>
+ *     <li>A BigInteger <code>ciphertext</code>.</li>
+ *     <li>An integer <code>exponent</code> of the encrypted number.</li>
+ *     <li>A boolean <code>isSafe</code> that denotes whether the encrypted number has been obfuscated.</li>
+ * </ul>
+ *
+ * This class defines the methods:
+ * <ul>
+ *     <li>
+ *         To check whether the PaillierContext of an EncodedNumber or an EncryptedNumber
+ *         is the same as this PaillierContext
+ *     </li>
+ *     <li>
+ *         To decrypt this encrypted number
+ *     </li>
+ *     <li>
+ *         To perform arithmetic operations computation (support addition, subtraction,
+ *         limited multiplication and limited division)
+ *     </li>
+ * </ul>
  */
 public final class EncryptedNumber {
-
+  /**
+   * A serializer interface for {@code EncryptedNumber}.
+   */
   public static interface Serializer {
 
     void serialize(PaillierContext context, BigInteger value, int exponent);
   }
 
   /**
-   * The Paillier context used to encrypt this number.
+   * The Paillier context associated to this encrypted number.
    */
   protected final PaillierContext context;
 
@@ -43,7 +66,7 @@ public final class EncryptedNumber {
   protected final int exponent;
 
   /**
-   * Indicates whether the encrypted number has been obfuscated.
+   * Denotes whether the encrypted number has been obfuscated.
    */
   protected final boolean isSafe;
 
@@ -52,10 +75,10 @@ public final class EncryptedNumber {
    * number, the ciphertext and the exponent representing the precision of the
    * ciphertext.
    *
-   * @param context PaillierContext used to encrypt this encrypted number.
+   * @param context PaillierContext associated to this encrypted number.
    * @param ciphertext the encrypted representation of the encoded number.
-   * @param exponent the exponent of the encrypted number.
-   * @param isSafe set to true if ciphertext is obfuscated.
+   * @param exponent of the encrypted number.
+   * @param isSafe set to true if ciphertext is obfuscated, false otherwise.
    */
   public EncryptedNumber(PaillierContext context, BigInteger ciphertext, int exponent,
                          boolean isSafe) {
@@ -84,45 +107,45 @@ public final class EncryptedNumber {
    * encoded number) and the exponent representing the precision of the
    * ciphertext.
    *
-   * @param context PaillierContext used to encrypt this encrypted number.
+   * @param context PaillierContext associated to this encrypted number.
    * @param ciphertext the encrypted representation of the encoded number.
-   * @param exponent the exponent of the ciphertext.
+   * @param exponent the exponent of the encrypted number.
    */
   public EncryptedNumber(PaillierContext context, BigInteger ciphertext, int exponent) {
     this(context, ciphertext, exponent, false);
   }
 
   /**
-   * Returns the context with which this EncryptedNumber is encrypted.
+   * Returns the Paillier context with which this {@code EncryptedNumber} is encrypted.
    *
-   * @return the Paillier context.
+   * @return the {@code context}.
    */
   public PaillierContext getContext() {
     return context;
   }
 
   /**
-   * Returns the ciphertext.
+   * Returns the {@code ciphertext}.
    *
-   * @return ciphertext.
+   * @return the {@code ciphertext}.
    */
   public BigInteger calculateCiphertext() {
     return isSafe ? ciphertext : obfuscate().ciphertext;
   }
 
   /**
-   * Returns the exponent.
+   * Returns the {@code exponent}.
    *
-   * @return exponent.
+   * @return the {@code exponent}.
    */
   public int getExponent() {
     return exponent;
   }
 
   /**
-   * Checks whether another EncryptedNumber has the same context as this EncryptedNuber.
+   * Checks whether another {@code EncryptedNumber} has the same context as this {@code EncryptedNumber}.
    *
-   * @param other EncryptedNumber to compare to.
+   * @param other {@code EncryptedNumber} to compare to.
    * @return {@code other}.
    * @throws PaillierContextMismatchException if the context is different.
    */
@@ -132,9 +155,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Checks whether an EncodedNumber has the same context as this EncryptedNUmber.
+   * Checks whether an {@code EncodedNumber} has the same context as this {@code EncryptedNumber}.
    *
-   * @param other EncodedNumber to compare to.
+   * @param other {@code EncodedNumber} to compare to.
    * @return {@code other}.
    * @throws PaillierContextMismatchException if the context is different.
    */
@@ -143,7 +166,7 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Decrypts this EncryptedNumber using a private key.
+   * Decrypts this {@code EncryptedNumber} using a private key.
    *
    * @param key private key to decrypt.
    * @return the decryption result.
@@ -153,20 +176,20 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Obfuscates this EncryptedNumber by multiplying it with {@code r<sup>n</sup>},
+   * Obfuscates this {@code EncryptedNumber} by multiplying it with <code>r<sup>n</sup></code>,
    * where {@code n} is the modulus of the public key and {@code r} is a random positive
    * number less than {@code n}.
    *
-   * @return an obfuscated version of this encrypted number.
+   * @return the obfuscated {@code EncryptedNumber}.
    */
   public EncryptedNumber obfuscate() {
     return context.obfuscate(this);
   }
 
   /**
-   * Adds another EncryptedNumber to this EncryptedNumber.
+   * Adds another {@code EncryptedNumber} to this {@code EncryptedNumber}.
    *
-   * @param other EncryptedNumber to be added.
+   * @param other {@code EncryptedNumber} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(EncryptedNumber other) {
@@ -174,9 +197,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Adds an EncodedNumber to this EncryptedNumber.
+   * Adds an {@code EncodedNumber} to this {@code EncryptedNumber}.
    *
-   * @param other EncodedNumber to be added.
+   * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(EncodedNumber other) {
@@ -184,9 +207,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Adds a Number to this EncryptedNumber.
+   * Adds a {@code Number} to this {@code EncryptedNumber}.
    *
-   * @param other Number to be added.
+   * @param other {@code Number} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(Number other) {
@@ -194,9 +217,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Adds a BigInteger to this EncryptedNumber.
+   * Adds a {@code BigInteger} to this {@code EncryptedNumber}.
    *
-   * @param other BigInteger to be added.
+   * @param other {@code BigInteger} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(BigInteger other) {
@@ -204,9 +227,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Adds a double to this EncryptedNumber.
+   * Adds a {@code double} to this {@code EncryptedNumber}.
    *
-   * @param other double to be added.
+   * @param other {@code double} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(double other) {
@@ -214,9 +237,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Adds a long to this EncryptedNumber.
+   * Adds a {@code long} to this {@code EncryptedNumber}.
    *
-   * @param other long to be added.
+   * @param other {@code long} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(long other) {
@@ -224,7 +247,7 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Returns the additive inverse of <code>this</code>.
+   * Returns the additive inverse of this {@code EncryptedNumber}.
    *
    * @return the additive inverse of this.
    */
@@ -233,9 +256,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts another EncryptedNumber from this EncryptedNumber.
+   * Subtracts another {@code EncryptedNumber} from this {@code EncryptedNumber}.
    *
-   * @param other EncryptedNumber to be subtracted from this.
+   * @param other {@code EncryptedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncryptedNumber other) {
@@ -243,9 +266,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts an EncodedNumber from this EncryptedNumber.
+   * Subtracts an {@code EncodedNumber} from this {@code EncryptedNumber}.
    *
-   * @param other EncodedNumber to be subtracted from this.
+   * @param other {@code EncodedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncodedNumber other) {
@@ -253,9 +276,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts a Number from this EncryptedNumber.
+   * Subtracts a {@code Number} from this {@code EncryptedNumber}.
    *
-   * @param other Number to be subtracted from this.
+   * @param other {@code Number} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(Number other) {
@@ -263,9 +286,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts a BigInteger from this EncryptedNumber.
+   * Subtracts a {@code BigInteger} from this {@code EncryptedNumber}.
    *
-   * @param other BigInteger to be subtracted from this.
+   * @param other {@code BigInteger} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(BigInteger other) {
@@ -273,9 +296,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts a double from this EncryptedNumber.
+   * Subtracts a {@code double} from this {@code EncryptedNumber}.
    *
-   * @param other double to be subtracted from this.
+   * @param other {@code double} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(double other) {
@@ -283,9 +306,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Subtracts a long from this EncryptedNumber.
+   * Subtracts a {@code long} from this {@code EncryptedNumber}.
    *
-   * @param other long to be subtracted from this.
+   * @param other {@code long} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(long other) {
@@ -293,9 +316,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Multiplies an EncodedNumber with this EncryptedNumber.
+   * Multiplies an {@code EncodedNumber} with this {@code EncryptedNumber}.
    *
-   * @param other EncodedNumber to be multiplied with.
+   * @param other {@code EncodedNumber} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(EncodedNumber other) {
@@ -303,9 +326,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Multiplies a Number with this EncryptedNumber.
+   * Multiplies a {@code Number} with this {@code EncryptedNumber}.
    *
-   * @param other Number to be multiplied with.
+   * @param other {@code Number} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(Number other) {
@@ -313,9 +336,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Multiplies a BigInteger with this EncryptedNumber.
+   * Multiplies a {@code BigInteger} with this {@code EncryptedNumber}.
    *
-   * @param other BigInteger to be multiplied with.
+   * @param other {@code BigInteger} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(BigInteger other) {
@@ -323,9 +346,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Multiplies a double with this EncryptedNumber.
+   * Multiplies a {@code double} with this {@code EncryptedNumber}.
    *
-   * @param other double to be multiplied with.
+   * @param other {@code double} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(double other) {
@@ -333,9 +356,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Multiplies a long with this EncryptedNumber.
+   * Multiplies a {@code long} with this {@code EncryptedNumber}.
    *
-   * @param other long to be multiplied with.
+   * @param other {@code long} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(long other) {
@@ -358,9 +381,9 @@ public final class EncryptedNumber {
     */
 
   /**
-   * Divides this EncryptedNumber with a double.
+   * Divides this {@code EncryptedNumber} with a {@code double}.
    *
-   * @param other double to divide this with.
+   * @param other {@code double} to divide this with.
    * @return the division result.
    */
   public EncryptedNumber divide(double other) {
@@ -368,9 +391,9 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Divides this EncryptedNumber with a long.
+   * Divides this {@code EncryptedNumber} with a {@code long}.
    *
-   * @param other long to divide this with.
+   * @param other {@code long} to divide this with.
    * @return the division result.
    */
   public EncryptedNumber divide(long other) {

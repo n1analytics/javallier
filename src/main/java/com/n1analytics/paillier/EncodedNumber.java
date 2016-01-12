@@ -20,7 +20,20 @@ import java.math.BigInteger;
 /**
  * A class representing encoded numbers, which enables Paillier to operate on
  * negative integers and floating point numbers as well as non-negative
- * integers.
+ * integers. The attributes of this class are:
+ * <ul>
+ *     <li>A PaillierContext <code>context</code> used to encode this number.</li>
+ *     <li>A BigInteger <code>value</code> that is the value of the encoded number</li>
+ *     <li>An integer <code>exponent</code> that is the exponent of the encoded number</li>
+ * </ul>
+ *
+ * This class defines the methods:
+ * <ul>
+ *     <li>To check whether another EncodedNumber or an EncryptedNumber has the same PaillierContext</li>
+ *     <li>To decode to a BigInteger, long, double and Number</li>
+ *     <li>To perform arithmetic operations computation (support addition, subtraction,
+ *         limited multiplication and limited division)</li>
+ * </ul>
  */
 public final class EncodedNumber {
 
@@ -44,9 +57,9 @@ public final class EncodedNumber {
    * encoded value must be a non-negative integer less than
    * {@code context.getModulus()}.
    *
-   * @param context the context used to encode value.
-   * @param value BigInteger to encode
-   * @param exponent exponent to use
+   * @param context used to encode value.
+   * @param value of the encoded number.
+   * @param exponent of the encoded number.
    */
   protected EncodedNumber(PaillierContext context, BigInteger value, int exponent) {
     if (context == null) {
@@ -67,47 +80,48 @@ public final class EncodedNumber {
   }
 
   /**
-   * Returns the context with which this number is encoded.
+   * Returns the Paillier {@code context} with which this number is encoded.
    *
-   * @return the context.
+   * @return the {@code context}.
    */
   public PaillierContext getContext() {
     return context;
   }
 
   /**
-   * Returns the encoded value.
+   * Returns the encoded {@code value}.
    *
-   * @return the encoded value.
+   * @return the encoded {@code value}.
    */
   public BigInteger getValue() {
     return value;
   }
 
   /**
-   * Get the exponent.
+   * Returns the {@code exponent}.
    *
-   * @return exponent.
+   * @return {@code exponent}.
    */
   public int getExponent() {
     return exponent;
   }
 
   /**
-   * Checks whether this EncdoedNumber is valid.
+   * Checks whether this encoded number is valid.
    *
-   * @return true if EncodedNumber is valid, false otherwise.
+   * @return true if encoded number is valid, false otherwise.
    */
   public boolean isValid() {
     return context.isValid(this);
   }
 
   /**
-   * Checks whether an EncryptedNumber has the same context as this EncodedNumber.
+   * Checks whether an {@code EncryptedNumber} has the same context as this {@code EncodedNumber}.
+   * Throws a PaillierContextMismatchException if the context are different.
    *
-   * @param other EncryptedNumber to compare to.
+   * @param other {@code EncryptedNumber} to compare to.
    * @return {@code other}.
-   * @throws PaillierContextMismatchException if the context is different.
+   * @throws PaillierContextMismatchException if the context are different.
    */
   public EncryptedNumber checkSameContext(EncryptedNumber other)
           throws PaillierContextMismatchException {
@@ -115,18 +129,19 @@ public final class EncodedNumber {
   }
 
   /**
-   * Checks whether another EncodedNumber has the same context as this EncodedNumber.
+   * Checks whether another {@code EncodedNumber} has the same context as this {@code EncodedNumber}.
+   * Throws a PaillierContextMismatchException if the context are different.
    *
-   * @param other EncodedNumber to compare to.
+   * @param other {@code EncodedNumber} to compare to.
    * @return {@code other}.
-   * @throws PaillierContextMismatchException if the context is different.
+   * @throws PaillierContextMismatchException if the context are different.
    */
   public EncodedNumber checkSameContext(EncodedNumber other) throws ArithmeticException {
     return context.checkSameContext(other);
   }
 
   /**
-   * Decodes this EncodedNumber to a fixed point representation.
+   * Decodes this {@code EncodedNumber} to a fixed point {@code Number} representation.
    *
    * @return the decoded number.
    */
@@ -135,7 +150,7 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this EncodedNumber to an approximated BigInteger representation.
+   * Decodes this {@code EncodedNumber} to an approximated {@code BigInteger} representation.
    *
    * @return the decoded number.
    */
@@ -144,18 +159,18 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this EncodedNumber to a BigInteger representation. Throws an ArithmeticException
-   * if this EncodedNumber cannot be represented as a BigInteger.
+   * Decodes this {@code EncodedNumber} to a {@code BigInteger} representation. Throws an ArithmeticException
+   * if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
    *
    * @return the decoded number.
-   * @throws ArithmeticException if the number cannot be decoded exactly.
+   * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
    */
   public BigInteger decodeBigInteger() throws ArithmeticException {
     return decode().decodeBigInteger();
   }
 
   /**
-   * Decodes this EncodedNumber to the approximated double representation.
+   * Decodes this {@code EncodedNumber} to the approximated {@code double} representation.
    * @return the decoded number.
    */
   public double decodeApproximateDouble() {
@@ -163,19 +178,19 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this EncodedNumber to a double representation. Throws an ArithmeticException
-   * if this EncodedNumber cannot be represented as a valid double.
+   * Decodes this {@code EncodedNumber} to a {@code double} representation. Throws an ArithmeticException
+   * if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
    *
    * @return the decoded number.
-   * @throws ArithmeticException if the number cannot be decoded exactly.
+   * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
    */
   public double decodeDouble() throws ArithmeticException {
     return decode().decodeDouble();
   }
 
   /**
-   * Decodes this EncodedNumber to an approximated long representation. If the number
-   * cannot be represented exactly as a long, it is converted to the long representation
+   * Decodes this {@code EncodedNumber} to an approximated {@code long} representation. If the number
+   * cannot be represented exactly as a {@code long}, it is converted to the {@code long} representation
    * of the lowest 64 bits.
    *
    * @return the decoded number.
@@ -185,11 +200,11 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this EncodedNumber to a long representation. Throws an ArithmeticException
-   * if this cannot be represented as a valid double.
+   * Decodes this {@code EncodedNumber} to a {@code long} representation. Throws an ArithmeticException
+   * if this cannot be represented as a valid {@code long}.
    *
    * @return the decoded number.
-   * @throws ArithmeticException if the number cannot be decoded exactly
+   * @throws ArithmeticException if this cannot be represented as a valid {@code long}.
    */
   public long decodeLong() throws ArithmeticException {
     return decode().decodeLong();
@@ -206,17 +221,17 @@ public final class EncodedNumber {
   }
 
   /**
-   * Encrypts this EncodedNumber.
-   * @return encrypted number.
+   * Encrypts this {@code EncodedNumber}.
+   * @return the encrypted number.
    */
   public EncryptedNumber encrypt() {
     return context.encrypt(this);
   }
 
   /**
-   * Adds an EncryptedNumber to this EncodedNumber.
+   * Adds an {@code EncryptedNumber} to this {@code EncodedNumber}.
    *
-   * @param other EncryptedNumber to be added.
+   * @param other {@code EncryptedNumber} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(EncryptedNumber other) {
@@ -224,9 +239,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Adds another EncodedNumber to this EncodedNumber.
+   * Adds another {@code EncodedNumber} to this {@code EncodedNumber}.
    *
-   * @param other EncodedNumber to be added.
+   * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
   public EncodedNumber add(EncodedNumber other) {
@@ -234,9 +249,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Adds a Number to this EncodedNumber.
+   * Adds a {@code Number} to this {@code EncodedNumber}.
    *
-   * @param other EncodedNumber to be added.
+   * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
   public EncodedNumber add(Number other) {
@@ -244,9 +259,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Adds a BigInteger to this EncodedNumber.
+   * Adds a {@code BigInteger} to this {@code EncodedNumber}.
    *
-   * @param other EncodedNumber to be added.
+   * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
   public EncodedNumber add(BigInteger other) {
@@ -254,9 +269,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Adds a double to this EncodedNumber.
+   * Adds a {@code double} to this {@code EncodedNumber}.
    *
-   * @param other double to be added.
+   * @param other {@code double} to be added.
    * @return the addition result.
    */
   public EncodedNumber add(double other) {
@@ -264,9 +279,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Adds a long to this EncodedNumber.
+   * Adds a {@code long} to this {@code EncodedNumber}.
    *
-   * @param other long to be added.
+   * @param other {@code long} to be added.
    * @return the addition result.
    */
   public EncodedNumber add(long other) {
@@ -274,18 +289,18 @@ public final class EncodedNumber {
   }
 
   /**
-   * Returns the additive inverse of this EncodedNumber.
+   * Returns the additive inverse of this {@code EncodedNumber}.
    *
-   * @return additive inverse of this EncodedNumber.
+   * @return additive inverse of this {@code EncodedNumber}.
    */
   public EncodedNumber additiveInverse() {
     return context.additiveInverse(this);
   }
 
   /**
-   * Subtracts an EncryptedNumber from this EncodedNumber.
+   * Subtracts an {@code EncryptedNumber} from this {@code EncodedNumber}.
    *
-   * @param other EncryptedNumber to be subtracted from this.
+   * @param other {@code EncryptedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncryptedNumber other) {
@@ -293,9 +308,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Subtracts another EncodedNumber from this EncodedNumber.
+   * Subtracts another {@code EncodedNumber} from this {@code EncodedNumber}.
    *
-   * @param other EncodedNumber to be subtracted from this.
+   * @param other {@code EncodedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(EncodedNumber other) {
@@ -303,9 +318,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Subtracts a Number from this EncodedNumber.
+   * Subtracts a {@code Number} from this {@code EncodedNumber}.
    *
-   * @param other Number to be subtracted from this.
+   * @param other {@code Number} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(Number other) {
@@ -313,9 +328,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Subtracts a BigInteger from this EncodedNumber.
+   * Subtracts a {@code BigInteger} from this {@code EncodedNumber}.
    *
-   * @param other BigInteger to be subtracted from this EncodedNumber.
+   * @param other {@code BigInteger} to be subtracted from this {@code EncodedNumber}.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(BigInteger other) {
@@ -323,9 +338,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Subtracts a double from this EncodedNumber.
+   * Subtracts a {@code double} from this {@code EncodedNumber}.
    *
-   * @param other double to be subtracted from this.
+   * @param other {@code double} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(double other) {
@@ -333,9 +348,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Subtracts a long from this EncodedNumber.
+   * Subtracts a {@code long} from this {@code EncodedNumber}.
    *
-   * @param other long to be subtracted from this.
+   * @param other {@code long} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(long other) {
@@ -346,9 +361,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies an EncryptedNumber with this EncodedNumber.
+   * Multiplies an {@code EncryptedNumber} with this {@code EncodedNumber}.
    *
-   * @param other EncryptedNumber to be multiplied with.
+   * @param other {@code EncryptedNumber} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(EncryptedNumber other) {
@@ -356,9 +371,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies another EncodedNumber with this EncodedNumber.
+   * Multiplies another {@code EncodedNumber} with this {@code EncodedNumber}.
    *
-   * @param other EncodedNumber to be multiplied with.
+   * @param other {@code EncodedNumber} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(EncodedNumber other) {
@@ -366,9 +381,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies a Number with this EncodedNumber.
+   * Multiplies a {@code Number} with this {@code EncodedNumber}.
    *
-   * @param other Number to be multiplied with.
+   * @param other {@code Number} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(Number other) {
@@ -376,9 +391,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies a BigInteger with this EncodedNumber.
+   * Multiplies a {@code BigInteger} with this {@code EncodedNumber}.
    *
-   * @param other BigIntger to be multiplied with.
+   * @param other {@code BigInteger} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(BigInteger other) {
@@ -386,9 +401,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies a double with this EncodedNumber.
+   * Multiplies a {@code double} with this {@code EncodedNumber}.
    *
-   * @param other double to be multiplied with.
+   * @param other {@code double} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(double other) {
@@ -396,9 +411,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Multiplies a long with this EncodedNumber.
+   * Multiplies a {@code long} with this {@code EncodedNumber}.
    *
-   * @param other long to be multiplied with.
+   * @param other {@code long} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(long other) {
@@ -425,9 +440,9 @@ public final class EncodedNumber {
     */
 
   /**
-   * Divides this EncodedNumber with a double.
+   * Divides this {@code EncodedNumber} with a {@code double}.
    *
-   * @param other double to divide this with.
+   * @param other {@code double} to divide this with.
    * @return the division result.
    */
   public EncodedNumber divide(double other) {
@@ -435,9 +450,9 @@ public final class EncodedNumber {
   }
 
   /**
-   * Divides this EncodedNumber with a long.
+   * Divides this {@code EncodedNumber} with a {@code long}.
    *
-   * @param other long to divide this with.
+   * @param other {@code long} to divide this with.
    * @return the division result.
    */
   public EncodedNumber divide(long other) {
