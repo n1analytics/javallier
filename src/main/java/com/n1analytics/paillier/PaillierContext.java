@@ -51,7 +51,7 @@ import java.math.BigInteger;
  *     <li>To decode an EncodedNumber to a Number, BigInteger, long or double</li>
  *     <li>To encrypt a BigInteger, long, double, Number and EncodedNumber</li>
  *     <li>To perform arithmetic computation (support addition, subtraction,
- *     limited multiplication and limited division</li>
+ *     limited multiplication and limited division)</li>
  * </ul>
  *
  * Note you can create a PaillierContext directly from the create methods
@@ -796,10 +796,9 @@ public class PaillierContext {
    * @return the addition result.
    * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
    * {@code operand1} or {@code operand2} does not match this{@code PaillierContext}.
-   * @throws EncodeException
    */
   public EncodedNumber add(EncodedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException, EncodeException {
+          throws PaillierContextMismatchException {
     checkSameContext(operand1);
     checkSameContext(operand2);
     final BigInteger modulus = publicKey.getModulus();
