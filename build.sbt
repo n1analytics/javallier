@@ -1,6 +1,6 @@
 name := "javallier"
 
-version := "0.4.1"
+version := "0.4.2"
 
 description := "A Java library for Paillier partially homomorphic encryption."
 
@@ -53,6 +53,10 @@ pomExtra := (
     <developer>
       <id>wilko77</id>
       <name>Wilko Henecka</name>
+    </developer>
+    <developer>
+      <id>gusmith</id>
+      <name>Guillaume Smith</name>
     </developer>
   </developers>)
 
