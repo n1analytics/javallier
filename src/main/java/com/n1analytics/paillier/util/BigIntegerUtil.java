@@ -17,17 +17,26 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * A class containing utility methods for BigInteger manipulation.
+ * A class containing the common methods for {@code BigInteger} manipulation, including:
+ * <ul>
+ *     <li>The {@code BigInteger} representation of the minimum and maximum {@code long} values</li>
+ *     <li>The methods to check the property of a {@code BigInteger}, i.e., {@code positive}, {@code negative}, etc</li>
+ *     <li>The methods comparing two {@code BigInteger}, i.e., {@code greaterThan}, {@code lessThan}, etc</li>
+ *     <li>The method to generate strictly random positive number</li>
+ *     <li>The method to determine the bit length of an absolute value of a {@code BigInteger}</li>
+ *     <li>The method to convert a {@code BigInteger} to an exact {@code long} representation</li>
+ *     <li>The method to compute square root</li>
+ * </ul>
  */
 public class BigIntegerUtil {
 
   /**
-   * Minimum long value as a BigInteger;
+   * Minimum {@code long} value as a {@code BigInteger}.
    */
   public static final BigInteger LONG_MIN_VALUE = BigInteger.valueOf(Long.MIN_VALUE);
 
   /**
-   * Maximum long value as a BigInteger.
+   * Maximum {@code long} value as a {@code BigInteger}.
    */
   public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
@@ -151,7 +160,7 @@ public class BigIntegerUtil {
   }
 
   /**
-   * Converts a BigInteger to a long. Throws an ArithmeticException
+   * Converts a {@code BigInteger} to a {@code long}. Throws an ArithmeticException
    * if the conversion can not be done exactly.
    *
    * @param n Number to convert.
@@ -171,7 +180,7 @@ public class BigIntegerUtil {
   }
 
   /**
-   * Computes the Integer part of the square root of BigInteger {@code n}.
+   * Computes the Integer part of the square root of {@code BigInteger} {@code n}.
    * This code is adapted from Faruk Akgul's code found at:
    * http://faruk.akgul.org/blog/javas-missing-algorithm-biginteger-sqrt/
    *
