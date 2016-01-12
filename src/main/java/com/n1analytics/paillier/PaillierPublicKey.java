@@ -20,15 +20,15 @@ import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 /**
  * A class representing Paillier public key.
  *
- * The attributes stored in the class are:
+ * The attributes stored in this class are:
  * <ul>
  *     <li> n: the first parameter of the public key </li>
  *     <li> g: the second parameter of the public key </li>
- *     <li> n<sup>2</sup>: the square of n, that is often used in Paillier computation </li>
+ *     <li> n<sup>2</sup>: the square of n, that is often used in Paillier computation. </li>
  * </ul>
  *
  * Besides storing Paillier public key, the class has methods to generate the corresponding encoding
- * scheme (i.e., PaillierContext).
+ * scheme (i.e., Paillier context).
  */
 public final class PaillierPublicKey {
 
@@ -47,6 +47,9 @@ public final class PaillierPublicKey {
    */
   protected final BigInteger generator;
 
+  /**
+   * A serializer interface for {@code PaillierPublicKey}.
+   */
   public static interface Serializer {
 
     void serialize(BigInteger modulus);
@@ -55,7 +58,7 @@ public final class PaillierPublicKey {
   /**
    * Constructs a Paillier public key.
    *
-   * @param modulus of the key
+   * @param modulus of the public key
    */
   public PaillierPublicKey(BigInteger modulus) {
     if (modulus == null) {
@@ -71,16 +74,16 @@ public final class PaillierPublicKey {
   /**
    * Returns the modulus of the public key.
    *
-   * @return modulus.
+   * @return the modulus.
    */
   public BigInteger getModulus() {
     return modulus;
   }
 
   /**
-   * Returns modulus<sup>2</sup>.
+   * Returns the modulus<sup>2</sup>.
    *
-   * @return modulus<sup>2</sup>.
+   * @return the modulus<sup>2</sup>.
    */
   public BigInteger getModulusSquared() {
     return modulusSquared;
@@ -89,21 +92,24 @@ public final class PaillierPublicKey {
   /**
    * Returns the generator of the public key.
    *
-   * @return generator.
+   * @return the generator.
    */
   public BigInteger getGenerator() {
     return generator;
   }
 
+  /**
+   * A serializer interface for {@code PaillierPublicKey}.
+   */
   public void serialize(Serializer serializer) {
     serializer.serialize(modulus);
   }
 
   /**
    * Creates a new full precision, unsigned Paillier context. The precision of the new context
-   * equals to modulus's bit length.
+   * equals to the modulus's bit length.
    *
-   * @return Paillier context.
+   * @return the Paillier context.
    */
   public PaillierContext createUnsignedContext() {
     return new PaillierContext(this, false, modulus.bitLength());
@@ -113,7 +119,7 @@ public final class PaillierPublicKey {
    * Creates a new partial precision, unsigned Paillier context.
    *
    * @param precision of the Paillier context.
-   * @return of the Paillier context.
+   * @return the Paillier context.
    * @throws IllegalArgumentException if {@code precision} is invalid.
    */
   public PaillierContext createUnsignedContext(int precision)
@@ -122,9 +128,10 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Creates a new full precision, signed Paillier context.
+   * Creates a new full precision, signed Paillier context. The precision of the new context
+   * equals to the modulus's bit length.
    *
-   * @return Paillier context.
+   * @return the Paillier context.
    */
   public PaillierContext createSignedContext() {
     return new PaillierContext(this, true, modulus.bitLength());
@@ -134,25 +141,48 @@ public final class PaillierPublicKey {
    * Creates a new partial precision, signed Paillier context.
    *
    * @param precision of the Paillier context.
-   * @return of the Paillier context.
+   * @return the Paillier context.
    */
   public PaillierContext createSignedContext(int precision) {
     return new PaillierContext(this, true, precision);
   }
-  
+
+  /**
+   * Creates a new unsigned, full precision {@code MockPaillierContext}.
+   *
+   * @return the  {@code MockPaillierContext}.
+   */
   public MockPaillierContext createMockUnsignedContext() {
     return new MockPaillierContext(this, false, modulus.bitLength());
   }
 
+  /**
+   * Creates a new unsigned, partial precision  {@code MockPaillierContext}.
+   *
+   * @param precision of the {@code MockPaillierContext}.
+   * @return the {@code MockPaillierContext}.
+   * @throws IllegalArgumentException if the precision is not valid
+   */
   public MockPaillierContext createMockUnsignedContext(int precision)
           throws IllegalArgumentException {
     return new MockPaillierContext(this, false, precision);
   }
 
+  /**
+   * Creates a new signed, full precision {@code MockPaillierContext}.
+   *
+   * @return the {@code MockPaillierContext}.
+   */
   public MockPaillierContext createMockSignedContext() {
     return new MockPaillierContext(this, true, modulus.bitLength());
   }
 
+  /**
+   * Creates a new signed, partial precision {@code MockPaillierContext}.
+   *
+   * @param precision of the {@code MockPaillierContext}.
+   * @return {@code MockPaillierContext}.
+   */
   public MockPaillierContext createMockSignedContext(int precision) {
     return new MockPaillierContext(this, true, precision);
   }

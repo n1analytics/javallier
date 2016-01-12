@@ -90,18 +90,51 @@ import java.security.SecureRandom;
  */
 public final class PaillierPrivateKey {
 
+  /**
+   * A serializer interface for {@code PaillierPrivateKey}.
+   */
   static interface Serializer {
-
     void serialize(PaillierPublicKey publickey, BigInteger p, BigInteger q);
   }
 
+  /**
+   * The corresponding public key.
+   */
   protected final PaillierPublicKey publicKey;
-  protected final BigInteger p; //p and q are the two primes such that 
+
+  /**
+   * The first prime number, {@code p} such that {@code p*q = publicKey.modulus}.
+   */
+  protected final BigInteger p; //p and q are the two primes such that
+
+  /**
+   * The first prime number, {@code q} such that  {@code p*q = publicKey.modulus}.
+   */
   protected final BigInteger q; //p*q = publicKey.modulus
+
+  /**
+   * The value <code>p<sup>2</sup></code>
+   */
   protected final BigInteger pSquared;
+
+  /**
+   * The value <code>q<sup>2</sup></code>
+   */
   protected final BigInteger qSquared;
+
+  /**
+   * The modular inverse of <code>p modulo q</code>
+   */
   protected final BigInteger pInverse; //modular inverse of p modulo q
+
+  /**
+   * Precomputed <code>hp</code> as defined in Paillier's paper page 12: Decryption using Chinese-remaindering.
+   */
   protected final BigInteger hp; //precomputed hp and hq as defined in Paillier's
+
+  /**
+   * Precomputed <code>hq</code> as defined in Paillier's paper page 12: Decryption using Chinese-remaindering.
+   */
   protected final BigInteger hq; //paper page 12: Decryption using Chinese-remaindering
 
   /**
@@ -174,7 +207,7 @@ public final class PaillierPrivateKey {
    * Creates a Paillier keypair of the specified modulus key length.
    *
    * @param modulusLength the length of the public key modulus. Must be a positive multiple of 8.
-   * @return private key with the associated public key (keypair).
+   * @return a Paillier keypair consists of a private key and the corresponding public key.
    * @throws IllegalArgumentException on illegal {@code modulusLength}.
    */
   public static PaillierPrivateKey create(int modulusLength) {
@@ -209,7 +242,8 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Decrypts an encrypted number.
+   * Decrypts an encrypted number. Throws PaillierKeyMismatchException if the encrypted number was not
+   * encoded with the appropriate public key.
    *
    * @param encrypted EncryptedNumber to be decrypted.
    * @return the decryption result.
