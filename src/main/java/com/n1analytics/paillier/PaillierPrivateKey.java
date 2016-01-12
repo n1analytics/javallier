@@ -310,6 +310,11 @@ public final class PaillierPrivateKey {
     return mp.add(u.multiply(p));
   }
 
+  /**
+   * Serializes the {@code PaillierPrivateKey}.
+   *
+   * @param serializer to serialize the {@code PaillierPrivateKey}.
+   */
   public void serialize(Serializer serializer) {
     serializer.serialize(publicKey, p, q);
   }

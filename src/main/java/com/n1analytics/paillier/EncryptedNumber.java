@@ -400,6 +400,11 @@ public final class EncryptedNumber {
     return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
+  /**
+   * Serializes the {@code EncryptedNumber}.
+   *
+   * @param serializer to serialize the {@code EncryptedNumber}.
+   */
   public void serialize(Serializer serializer) {
     serializer.serialize(context, calculateCiphertext(), exponent);
   }

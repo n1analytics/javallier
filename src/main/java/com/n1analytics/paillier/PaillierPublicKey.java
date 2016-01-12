@@ -99,7 +99,9 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * A serializer interface for {@code PaillierPublicKey}.
+   * Serializes the {@code PaillierPublicKey}.
+   *
+   * @param serializer to serialize the {@code PaillierPublicKey}.
    */
   public void serialize(Serializer serializer) {
     serializer.serialize(modulus);
