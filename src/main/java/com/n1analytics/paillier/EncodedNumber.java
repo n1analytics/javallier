@@ -23,8 +23,9 @@ import java.math.BigInteger;
  * integers. The attributes of this class are:
  * <ul>
  *     <li>A PaillierContext <code>context</code> used to encode this number.</li>
- *     <li>A BigInteger <code>value</code> that is the value of the encoded number</li>
- *     <li>An integer <code>exponent</code> that is the exponent of the encoded number</li>
+ *     <li>A BigInteger <code>value</code> that is the value of the encoded number,
+ *         must be a non-negative integer less than <code>context.getModulus()</code>.</li>
+ *     <li>An integer <code>exponent</code> that is the exponent of the encoded number.</li>
  * </ul>
  *
  * This class defines the methods:
@@ -58,7 +59,7 @@ public final class EncodedNumber {
    * {@code context.getModulus()}.
    *
    * @param context used to encode value.
-   * @param value of the encoded number.
+   * @param value of the encoded number must be a non-negative integer less than {@code context.getModulus()}.
    * @param exponent of the encoded number.
    */
   protected EncodedNumber(PaillierContext context, BigInteger value, int exponent) {

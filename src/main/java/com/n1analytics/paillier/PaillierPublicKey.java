@@ -22,9 +22,10 @@ import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
  *
  * The attributes stored in this class are:
  * <ul>
- *     <li> n: the first parameter of the public key </li>
- *     <li> g: the second parameter of the public key </li>
- *     <li> n<sup>2</sup>: the square of n, that is often used in Paillier computation. </li>
+ *     <li>A BigInteger <code>modulus</code> (n) that is the first parameter of the public key.</li>
+ *     <li>A BigInteger <code>generator</code> (g) that is the second parameter of the public key.</li>
+ *     <li>A BigInteger <code>modulusSquared</code> (n<sup>2</sup>) that is the square of the modulus,
+ *         often used in Paillier computation.</li>
  * </ul>
  *
  * Besides storing Paillier public key, the class has methods to generate the corresponding encoding
