@@ -22,47 +22,64 @@ import java.math.BigInteger;
 // TODO Issue #7: maybe limit range of valid exponents so we don't blow up memory
 // TODO Issue #16: take a RoundingMode maybe?
 
+/**
+ * A class representing fixed-point numbers. The attributes of this class are:
+ * <ul>
+ *     <li>A BigInteger <code>significand</code> that represents the significand of the fixed-point number.</li>
+ *     <li>An integer <code>exponent</code> that represents the exponent of the fixed-point number.</li>
+ * </ul>
+ *
+ * This class defines the methods:
+ * <ul>
+ *     <li>To generate the fixed-point representation of zero and one</li>
+ *     <li>To generate the smallest positive and negative fixed-point number that can be encoded
+ *     with respect to the specified exponent</li>
+ *     <li>To encode a BigInteger, long or double to a fixed-point number</li>
+ *     <li>To decode to a BigInteger, long or double</li>
+ *     <li>To perform arithmetic operations computation (support addition, subtraction, multiplication and division)</li>
+ * </ul>
+ */
 public final class Number {
 
   /**
    * Minimum exponent a non-zero subnormal double may have:
-   *   Double.MIN_VALUE = 2^-1074.
+   *   <code>Double.MIN_VALUE = 2<sup>-1074</sup></code>.
    */
   public static final int DOUBLE_MIN_VALUE_EXPONENT = -1074;
 
   /**
    * Minimum exponent a normalised double may have:
-   *   Double.MIN_NORMAL = 2^-1022.
+   *   <code>Double.MIN_NORMAL = 2<sup>-1022</sup></code>.
    */
   public static final int DOUBLE_MIN_NORMAL_EXPONENT = -1022;
 
   /**
    * Maximum exponent a finite double may have:
-   *   Double.MAX_VALUE = (2-(2^-52)) * 2^1023.
+   *   <code>Double.MAX_VALUE = (2-(2<sup>-52</sup>)) * 2<sup>1023</sup></code>.
    */
   public static final int DOUBLE_MAX_VALUE_EXPONENT = 1023;
 
   /**
-   * Number of bits in the two's-complement representation of Double.MAX_VALUE
-   * when encode with DOUBLE_MIN_VALUE_EXPONENT.
+   * Number of bits in the two's-complement representation of <code>Double.MAX_VALUE</code>
+   * when encode with <code>DOUBLE_MIN_VALUE_EXPONENT</code>.
    */
   public static final int DOUBLE_MAX_PRECISION = 2098;
 
   /**
-   * The significand of this Number.
+   * The significand of this fixed-point number.
    */
   protected final BigInteger significand;
 
   /**
-   * The exponent of this Number.
+   * The exponent of this fixed-point number.
    */
   protected final int exponent;
 
   /**
-   * Constructs a Number with a significand and an exponent.
+   * Constructs a fixed-point number with a significand and an exponent.
    *
-   * @param significand of this Number.
-   * @param exponent of this Number.
+   * @param significand of this fixed-point number.
+   * @param exponent of this fixed-point number.
    */
   public Number(BigInteger significand, int exponent) {
     if (significand == null) {
@@ -73,27 +90,27 @@ public final class Number {
   }
 
   /**
-   * Returns the significand of this number.
+   * Returns the {@code significand} of this fixed-point number.
    *
-   * @return the significand.
+   * @return the {@code significand}.
    */
   public BigInteger getSignificand() {
     return significand;
   }
 
   /**
-   * Returns the exponent of this number.
+   * Returns the {@code exponent} of this fixed-point number.
    *
-   * @return the exponent.
+   * @return the {@code exponent}.
    */
   public int getExponent() {
     return exponent;
   }
 
   /**
-   * Returns the signum function of this Number.
+   * Returns the signum function of this fixed-point number.
    *
-   * @return -1, 0, or 1 as the value of this Number is negative, zero, or
+   * @return -1, 0, or 1 as the value of this {@code Number} is negative, zero, or
    * positive.
    */
   public int signum() {
@@ -120,22 +137,22 @@ public final class Number {
   }
 
   /**
-   * The smallest positive fixed point number that can be encoded with respect
+   * The smallest positive fixed-point number that can be encoded with respect
    * to the specified exponent.
    *
    * @param exponent the exponent of the fixed-point representation.
-   * @return {@code Number(2<sup>exponent</sup>, exponent)}.
+   * @return <code>Number(2<sup>exponent</sup>, exponent)</code>.
    */
   public static Number positiveEpsilon(int exponent) {
     return new Number(BigInteger.ONE, exponent);
   }
 
   /**
-   * The negative fixed point number closest to zero that can be encoded with
+   * The negative fixed-point number closest to zero that can be encoded with
    * respect to the specified exponent.
    *
    * @param exponent the exponent of the fixed-point representation.
-   * @return {@code Number(-1 * 2<sup>exponent</sup>, exponent)}.
+   * @return <code>Number(-1 * 2<sup>exponent</sup>, exponent)</code>.
    */
   public static Number negativeEpsilon(int exponent) {
     return new Number(BigInteger.ONE.negate(), exponent);
@@ -144,13 +161,12 @@ public final class Number {
   /**
    * The number one with respect to {@code exponent}.
    *
-   * Results in a Number object whose significand is
-   * {@code 2<sup>-exponent</sup>} and whose exponent is {@code exponent}.
+   * Results in a {@code Number} object whose significand is
+   * <code>2<sup>-exponent</sup></code> and whose exponent is {@code exponent}.
    *
    * @param exponent The exponent of the fixed-point representation.
-   * @return {@code Number(2<sup>-exponent</sup>, exponent)}.
-   * @throws IllegalArgumentException if {@code exponent} is greater than
-   * zero.
+   * @return <code>Number(2<sup>-exponent</sup>, exponent)</code>.
+   * @throws IllegalArgumentException if {@code exponent} is greater than zero.
    */
   public static Number one(int exponent) throws IllegalArgumentException {
     if (exponent > 0) {
@@ -169,7 +185,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a BigInteger {@code value} to its minimal fixed-point
+   * Encodes a {@code BigInteger} {@code value} to its minimal fixed-point
    * representation.
    *
    * The minimal fixed-point representation is the one with the highest
@@ -183,7 +199,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a BigInteger as a fixed-point number with the supplied
+   * Encodes a {@code BigInteger} as a fixed-point {@code Number} with the supplied
    * {@code exponent}.
    *
    * Note that if {@code exponent} is too large then some (or all) of the
@@ -198,7 +214,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a BigInteger as a fixed-point Number using at
+   * Encodes a {@code BigInteger} as a fixed-point {@code Number} using at
    * most {@code precision} bits for the significand.
    *
    * If the number of significant bits in {@code value} is less than or equal
@@ -227,7 +243,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a long to its minimal fixed-point representation.
+   * Encodes a {@code long} to its minimal fixed-point representation.
    *
    * The minimal representation is the one with the highest exponent that
    * exactly represent {@code value}
@@ -241,7 +257,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a long as a fixed-point Number with the supplied exponent.
+   * Encodes a {@code long} as a fixed-point {@code Number} with the supplied exponent.
    *
    * Note that if {@code exponent} is too large then some (or all) of the
    * significant bits of {@code value} will be lost.
@@ -256,7 +272,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a long as a fixed-point Number using at most
+   * Encodes a {@code long} as a fixed-point {@code Number} using at most
    * {@code precision} bits for the significand.
    *
    * If the number of significant bits in {@code value} is less than or equal
@@ -277,7 +293,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a double {@code value} to its minimal fixed-point
+   * Encodes a {@code double} {@code value} to its minimal fixed-point
    * representation.
    *
    * The minimal fixed-point representation is the one with the highest
@@ -291,7 +307,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a double as a fixed-point Number with the supplied exponent.
+   * Encodes a {@code double} as a fixed-point {@code Number} with the supplied exponent.
    *
    * Note that if {@code exponent} is too large then some (or all) of the
    * significant bits of {@code value} will be lost.
@@ -306,7 +322,7 @@ public final class Number {
   }
 
   /**
-   * Encodes a double as a fixed-point Number using at most
+   * Encodes a {@code double} as a fixed-point {@code Number} using at most
    * {@code precision} bits for the significand.
    *
    * If the number of significant bits in {@code value} is less than or equal
@@ -373,11 +389,12 @@ public final class Number {
   }
 
   /**
-   * Decodes this Number to the exact BigInteger representation. Throws ArithmeticException
-   * if this Number cannot be represented as a BigInteger.
+   * Decodes this {@code Number} to the exact {@code BigInteger} representation. Throws ArithmeticException
+   * if this {@code Number} cannot be represented as a {@code BigInteger} (i.e., if {@code exponent < 0} and
+   * the {@code significand.getLowestSetBit() < abs(exponent)}).
    *
    * @return the decoded number.
-   * @throws ArithmeticException if this Number cannot be represented as a BigInteger.
+   * @throws ArithmeticException if this {@code Number} cannot be represented as a {@code BigInteger}.
    */
 
   public BigInteger decodeBigInteger() throws ArithmeticException {
@@ -391,7 +408,7 @@ public final class Number {
   }
 
   /**
-   * Decodes this Number to the approximate BigInteger representation.
+   * Decodes this {@code Number} to the approximate {@code BigInteger} representation.
    *
    * @return the decoded number.
    */
@@ -400,20 +417,22 @@ public final class Number {
   }
 
   /**
-   * Decodes this Number to the exact long representation. Throws ArithmeticException
-   * if this Number cannot be represented as a long.
+   * Decodes this {@code Number} to the exact {@code long} representation. Throws ArithmeticException
+   * if this {@code Number} cannot be represented as a {@code long} (i.e., if the {@code BigInteger}
+   * representation of the decoded number is not between {@code Long.MIN_VALUE} and
+   * the {@code Long.MAX_VALUE}).
    *
    * @return the decoded number.
-   * @throws ArithmeticException if this Number cannot be represented as a long.
+   * @throws ArithmeticException if this {@code Number} cannot be represented as a {@code long}.
    */
   public long decodeLong() throws ArithmeticException {
     return BigIntegerUtil.longValueExact(decodeBigInteger());
   }
 
   /**
-   * Decodes this Number to the approximate long representation.
-   * If the number cannot be represented exactly as a long, it is converted
-   * to the long representation of the lowest 64 bits.
+   * Decodes this {@code Number} to the approximate {@code long} representation.
+   * If the number cannot be represented exactly as a {@code long}, it is converted
+   * to the {@code long} representation of the lowest 64 bits.
    *
    * @return the decoded number.
    */
@@ -428,18 +447,21 @@ public final class Number {
   //
 
   /**
-   * Decodes this Number to the exact double representation. Throws ArithmeticException
-   * if this Number cannot be represented as a double.
+   * Decodes this {@code Number} to the exact {@code double} representation. Throws ArithmeticException
+   * if this {@code Number} cannot be represented as a {@code double} (i.e., if the number is less than
+   * {@code Double.MIN_VALUE} or greater than {@code Double.MAX_VALUE}).
    *
    * @return the decoded number.
-   * @throws ArithmeticException if this cannot be represented as a @code double.
+   * @throws ArithmeticException if this cannot be represented as a @code {@code double}.
    */
   public double decodeDouble() throws ArithmeticException {
     return decodeDoubleImpl(true);
   }
 
   /**
-   * Decodes this Number to the approximate double representation.
+   * Decodes this {@code Number} to the approximate {@code double} representation. Returns 0 if the number is
+   * less than {@code Double.MIN_VALUE}. Returns {@code Double.NEGATIVE_INFINITY} or
+   * {@code Double.POSITIVE_INFINITY} if the number is greater than {@code Double.MAX_VALUE}.
    *
    * @return the decoded number.
    */
@@ -448,9 +470,9 @@ public final class Number {
   }
 
   /**
-   * Implements the actual decoding to double.
+   * Implements the actual decoding to {@code double}.
    *
-   * @param exact whether this Number needs to be decoded exactly or not.
+   * @param exact whether this {@code Number} needs to be decoded exactly or not.
    * @return the decoded number.
    */
   private double decodeDoubleImpl(boolean exact) {
@@ -506,7 +528,7 @@ public final class Number {
   }
 
   /**
-   * Returns a Number whose value is the absolute value of this Number.
+   * Returns a {@code Number} whose value is the absolute value of this {@code Number}.
    *
    * @return {@code abs(this)}
    */
@@ -515,9 +537,9 @@ public final class Number {
   }
 
   /**
-   * Adds an EncryptedNumber to this Number.
+   * Adds an {@code EncryptedNumber} to this {@code Number}.
    *
-   * @param other EncryptedNumber to be added.
+   * @param other {@code EncryptedNumber} to be added.
    * @return the addition result.
    */
   public EncryptedNumber add(EncryptedNumber other) {
@@ -525,9 +547,9 @@ public final class Number {
   }
 
   /**
-   * Adds an EncodedNumber to this Number.
+   * Adds an {@code EncodedNumber} to this {@code Number}.
    *
-   * @param other EncodedNumber to be added.
+   * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
 
@@ -536,10 +558,17 @@ public final class Number {
   }
 
   /**
-   * Adds another Number to this NUmber. If the two Numbers have different exponents,
-   * reduce the higher exponent to match with the lower exponent.
+   * Adds another {@code Number} to this {@code Number}.
    *
-   * @param other Number to be added.
+   * If the two {@code Number}s have the same exponent, returns a new {@code Number} where
+   * {@code significand = this.significand + other.significand} and {@code exponent = this.exponent}.
+   * If this {@code Number}'s exponent is less than the {@code other}'s exponent,
+   * re-encode the {@code other} with this {@code exponent} before performing the addition.
+   * If the {@code other}'s exponent is less than this {@code Number}'s exponent,
+   * re-encode this {@code Number} with the {@code other}'s  {@code exponent} before performing
+   * the addition.
+   *
+   * @param other {@code Number} to be added.
    * @return the addition result.
    */
   public Number add(Number other) {
@@ -557,9 +586,9 @@ public final class Number {
   }
 
   /**
-   * Adds a BigInteger to this Number.
+   * Adds a {@code BigInteger} to this {@code Number}.
    *
-   * @param other BigInteger to be added.
+   * @param other {@code BigInteger} to be added.
    * @return the addition result.
    */
   public Number add(BigInteger other) {
@@ -567,9 +596,9 @@ public final class Number {
   }
 
   /**
-   * Adds a double to this Number.
+   * Adds a {@code double} to this {@code Number}.
    *
-   * @param other double to be added.
+   * @param other {@code double} to be added.
    * @return the addition result.
    */
   public Number add(double other) {
@@ -577,9 +606,9 @@ public final class Number {
   }
 
   /**
-   * Adds a long to this Number.
+   * Adds a {@code long} to this {@code Number}.
    *
-   * @param other long to be added.
+   * @param other {@code long} to be added.
    * @return the addition result.
    */
   public Number add(long other) {
@@ -587,7 +616,7 @@ public final class Number {
   }
 
   /**
-   * Negates this Number, return a Number whose significand's value is {@code (-significand)}.
+   * Negates this {@code Number}, return a {@code Number} whose significand's value is {@code (-significand)}.
    *
    * @return {@code (-this)}
    */
@@ -596,9 +625,9 @@ public final class Number {
   }
 
   /**
-   * Subtracts an EncryptedNumber from this Number.
+   * Subtracts an {@code EncryptedNumber} from this {@code Number}.
    *
-   * @param other EncryptedNumber to be subtracted from this.
+   * @param other {@code EncryptedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncryptedNumber other) {
@@ -606,9 +635,9 @@ public final class Number {
   }
 
   /**
-   * Subtracts an EncodedNumber from this Number.
+   * Subtracts an {@code EncodedNumber} from this {@code Number}.
    *
-   * @param other EncodedNumber to be subtracted from this.
+   * @param other {@code EncodedNumber} to be subtracted from this.
    * @return the subtraction result.
    */
   public EncodedNumber subtract(EncodedNumber other) {
@@ -616,7 +645,7 @@ public final class Number {
   }
 
   /**
-   * Subtracts a Number from this Number.
+   * Subtracts a {@code Number} from this {@code Number}.
    *
    * @param other Number to be subtracted from this.
    * @return the subtraction result.
@@ -626,9 +655,9 @@ public final class Number {
   }
 
   /**
-   * Subtracts a BigInteger from this Number.
+   * Subtracts a {@code BigInteger} from this {@code Number}.
    *
-   * @param other BigInteger to be subtracted from this.
+   * @param other {@code BigInteger} to be subtracted from this.
    * @return the subtraction result.
    */
   public Number subtract(BigInteger other) {
@@ -636,9 +665,9 @@ public final class Number {
   }
 
   /**
-   * Subtracts a double from this Number.
+   * Subtracts a {@code double} from this {@code Number}.
    *
-   * @param other double to be subtracted from this.
+   * @param other {@code double} to be subtracted from this.
    * @return the subtraction result.
    */
   public Number subtract(double other) {
@@ -646,9 +675,9 @@ public final class Number {
   }
 
   /**
-   * Subtracts a  long  from this Number.
+   * Subtracts a {@code long} from this {@code Number}.
    *
-   * @param other long to be subtracted from this.
+   * @param other {@code long} to be subtracted from this.
    * @return the subtraction result.
    */
   public Number subtract(long other) {
@@ -658,9 +687,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies an EncryptedNumber with this.
+   * Multiplies an {@code EncryptedNumber} with this.
    *
-   * @param other EncryptedNumber to be multiplied with.
+   * @param other {@code EncryptedNumber} to be multiplied with.
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(EncryptedNumber other) {
@@ -668,9 +697,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies an EncodedNumber with this Number.
+   * Multiplies an {@code EncodedNumber} with this {@code Number}.
    *
-   * @param other EncodedNumber to be multiplied with.
+   * @param other {@code EncodedNumber} to be multiplied with.
    * @return the multiplication result.
    */
   public EncodedNumber multiply(EncodedNumber other) {
@@ -678,7 +707,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies another Number with this Number.
+   * Multiplies another {@code Number} with this {@code Number}.
+   * Returns a new {@code Number} where {@code significand = this.significand * other.significand}
+   * and {@code exponent = this.exponent + other.exponent}.
    *
    * @param other Number to be multiplied with.
    * @return the multiplication result.
@@ -688,9 +719,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies a BigInteger with this Number.
+   * Multiplies a {@code BigInteger} with this {@code Number}.
    *
-   * @param other BigInteger to be multiplied with.
+   * @param other {@code BigInteger} to be multiplied with.
    * @return the multiplication result.
    */
   public Number multiply(BigInteger other) {
@@ -698,9 +729,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies a double with this Number.
+   * Multiplies a {@code double} with this {@code Number}.
    *
-   * @param other double to be multiplied with.
+   * @param other {@code double} to be multiplied with.
    * @return the multiplication result.
    */
   public Number multiply(double other) {
@@ -708,9 +739,9 @@ public final class Number {
   }
 
   /**
-   * Multiplies a long with this Number.
+   * Multiplies a {@code long} with this {@code Number}.
    *
-   * @param other long to be multiplied with.
+   * @param other {@code long} to be multiplied with.
    * @return the multiplication result.
    */
   public Number multiply(long other) {
@@ -740,9 +771,9 @@ public final class Number {
 	*/
 
   /**
-   * Divides this Number with a double.
+   * Divides this {@code Number} with a {@code double}.
    *
-   * @param other double to divide this with.
+   * @param other {@code double} to divide this with.
    * @return the division result.
    */
   public Number divide(double other) {
@@ -750,9 +781,9 @@ public final class Number {
   }
 
   /**
-   * Divides this Number with a long.
+   * Divides this {@code Number} with a {@code long}.
    *
-   * @param other long to divide this with.
+   * @param other {@code long} to divide this with.
    * @return the division result.
    */
   public Number divide(long other) {
