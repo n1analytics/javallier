@@ -18,22 +18,14 @@ import com.n1analytics.paillier.util.HashChain;
 import java.math.BigInteger;
 
 /**
- * A class representing encoded numbers, which enables Paillier to operate on
- * negative integers and floating point numbers as well as non-negative
- * integers. The attributes of this class are:
- * <ul>
- *     <li>A PaillierContext <code>context</code> used to encode this number.</li>
- *     <li>A BigInteger <code>value</code> that is the value of the encoded number,
- *         must be a non-negative integer less than <code>context.getModulus()</code>.</li>
- *     <li>An integer <code>exponent</code> that is the exponent of the encoded number.</li>
- * </ul>
+ * Represents encoded numbers, enabling Paillier encrypted operations on
+ * signed integers and signed floating point numbers.
  *
- * This class defines the methods:
+ * This class defines public methods:
  * <ul>
  *     <li>To check whether another EncodedNumber or an EncryptedNumber has the same PaillierContext</li>
- *     <li>To decode to a BigInteger, long, double and Number</li>
- *     <li>To perform arithmetic operations computation (support addition, subtraction,
- *         limited multiplication and limited division)</li>
+ *     <li>To decode exactly and approximately to a BigInteger, long, double and Number</li>
+ *     <li>To perform arithmetic operations; addition, subtraction, limited multiplication and limited division.</li>
  * </ul>
  */
 public final class EncodedNumber {
@@ -44,7 +36,7 @@ public final class EncodedNumber {
   protected final PaillierContext context;
 
   /**
-   * The value of the encoded number.
+   * The value of the encoded number. Must be a non-negative integer less than <code>context.getModulus()</code>
    */
   protected final BigInteger value;
 
@@ -81,17 +73,13 @@ public final class EncodedNumber {
   }
 
   /**
-   * Returns the Paillier {@code context} with which this number is encoded.
-   *
-   * @return the {@code context}.
+   * @return the {@code context} with which this number is encoded.
    */
   public PaillierContext getContext() {
     return context;
   }
 
   /**
-   * Returns the encoded {@code value}.
-   *
    * @return the encoded {@code value}.
    */
   public BigInteger getValue() {
@@ -99,8 +87,6 @@ public final class EncodedNumber {
   }
 
   /**
-   * Returns the {@code exponent}.
-   *
    * @return {@code exponent}.
    */
   public int getExponent() {
@@ -108,7 +94,7 @@ public final class EncodedNumber {
   }
 
   /**
-   * Checks whether this encoded number is valid.
+   * Checks whether this encoded number is valid in the current context.
    *
    * @return true if encoded number is valid, false otherwise.
    */
@@ -121,8 +107,8 @@ public final class EncodedNumber {
    * Throws a PaillierContextMismatchException if the context are different.
    *
    * @param other {@code EncryptedNumber} to compare to.
-   * @return {@code other}.
-   * @throws PaillierContextMismatchException if the context are different.
+   * @return {@code other}, provided the contexts match.
+   * @throws PaillierContextMismatchException if the contexts are different.
    */
   public EncryptedNumber checkSameContext(EncryptedNumber other)
           throws PaillierContextMismatchException {
@@ -137,21 +123,23 @@ public final class EncodedNumber {
    * @return {@code other}.
    * @throws PaillierContextMismatchException if the context are different.
    */
-  public EncodedNumber checkSameContext(EncodedNumber other) throws ArithmeticException {
+  public EncodedNumber checkSameContext(EncodedNumber other)
+          throws PaillierContextMismatchException {
     return context.checkSameContext(other);
   }
 
   /**
-   * Decodes this {@code EncodedNumber} to a fixed point {@code Number} representation.
+   * Decode to a fixed point {@code Number} representation.
    *
-   * @return the decoded number.
+   * @return the decoded {@code Number}.
+   * @throws ArithmeticException
    */
   public Number decode() throws ArithmeticException {
     return context.decode(this);
   }
 
   /**
-   * Decodes this {@code EncodedNumber} to an approximated {@code BigInteger} representation.
+   * Decodes to an approximated {@code BigInteger} representation.
    *
    * @return the decoded number.
    */
@@ -160,8 +148,7 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this {@code EncodedNumber} to a {@code BigInteger} representation. Throws an ArithmeticException
-   * if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
+   * Decodes to a {@code BigInteger} representation.
    *
    * @return the decoded number.
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
@@ -171,7 +158,7 @@ public final class EncodedNumber {
   }
 
   /**
-   * Decodes this {@code EncodedNumber} to the approximated {@code double} representation.
+   * Decodes to the approximated {@code double} representation.
    * @return the decoded number.
    */
   public double decodeApproximateDouble() {
