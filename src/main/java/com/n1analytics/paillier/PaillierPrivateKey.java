@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * A class representing Paillier private key.
+ * An immutable class representing Paillier private key.
  *
  * A private key (and it's corresponding public key) are generated via the
  * following procedure, given a public key length <code>modulusLength</code>:
@@ -105,12 +105,12 @@ public final class PaillierPrivateKey {
   /**
    * The first prime number, {@code p} such that {@code p*q = publicKey.modulus}.
    */
-  protected final BigInteger p; //p and q are the two primes such that
+  protected final BigInteger p;
 
   /**
    * The first prime number, {@code q} such that  {@code p*q = publicKey.modulus}.
    */
-  protected final BigInteger q; //p*q = publicKey.modulus
+  protected final BigInteger q;
 
   /**
    * The value <code>p<sup>2</sup></code>
@@ -125,17 +125,17 @@ public final class PaillierPrivateKey {
   /**
    * The modular inverse of <code>p modulo q</code>
    */
-  protected final BigInteger pInverse; //modular inverse of p modulo q
+  protected final BigInteger pInverse;
 
   /**
    * Precomputed <code>hp</code> as defined in Paillier's paper page 12: Decryption using Chinese-remaindering.
    */
-  protected final BigInteger hp; //precomputed hp and hq as defined in Paillier's
+  protected final BigInteger hp;
 
   /**
    * Precomputed <code>hq</code> as defined in Paillier's paper page 12: Decryption using Chinese-remaindering.
    */
-  protected final BigInteger hq; //paper page 12: Decryption using Chinese-remaindering
+  protected final BigInteger hq;
 
   /**
    * Constructs a Paillier private key given the associated public key and the totient.
