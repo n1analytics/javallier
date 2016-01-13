@@ -723,9 +723,7 @@ public class PaillierContext {
   /**
    * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
    * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent. Throws
-   * PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
+   * are not the same, reduce the higher exponent to match with the lower exponent.
    *
    * @param operand1 first {@code EncryptedNumber}.
    * @param operand2 second {@code EncryptedNumber}.
@@ -754,8 +752,7 @@ public class PaillierContext {
 
   /**
    * Adds an {@code EncryptedNumber} and an {@code EncodedNumber}. Encrypts the {@code EncodedNumber}
-   * before adding them together. Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
+   * before adding them together.
    *
    * @param operand1 an {@code EncryptedNumber}.
    * @param operand2 an {@code EncodedNumber}.
@@ -770,8 +767,7 @@ public class PaillierContext {
 
   /**
    * Adds an {@code EncodedNumber} and an {@code EncryptedNumber}. Encrypts the {@code EncodedNumber}
-   * before adding them together. Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
+   * before adding them together.
    *
    * @param operand1 an {@code EncodedNumber}.
    * @param operand2 an {@code EncryptedNumber}.
@@ -787,9 +783,7 @@ public class PaillierContext {
   /**
    * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
    * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent. Throws
-   * PaillierContextMismatchException if the {@code PaillierContext} of either {@code operand1} or
-   * {@code operand2} does not match this {@code PaillierContext}.
+   * are not the same, reduce the higher exponent to match with the lower exponent.
    *
    * @param operand1 first {@code EncodedNumber}.
    * @param operand2 second {@code EncodedNumber}.
@@ -823,9 +817,7 @@ public class PaillierContext {
   }
 
   /**
-   * Returns the additive inverse of {@code EncryptedNumber}. Throws PaillierContextMismatchException
-   * if the {@code PaillierContext} of either {@code operand1} or {@code operand2} does not match this
-   * {@code PaillierContext}.
+   * Returns the additive inverse of {@code EncryptedNumber}.
    *
    * @param operand1 input.
    * @return the additive inverse result.
@@ -841,9 +833,7 @@ public class PaillierContext {
   }
 
   /**
-   * Returns the additive inverse of an {@code EncodedNumber}. Throws PaillierContextMismatchException
-   * if the {@code PaillierContext} of either {@code operand1} or {@code operand2} does not match this
-   * {@code PaillierContext}.
+   * Returns the additive inverse of an {@code EncodedNumber}.
    *
    * @param operand1 input.
    * @return the additive inverse.
@@ -864,8 +854,6 @@ public class PaillierContext {
 
   /**
    * Subtracts an {@code EncryptedNumber} ({@code operand2}) from another {@code EncryptedNumber} ({@code operand1}).
-   * Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    *
    * @param operand1 first {@code EncryptedNumber}.
    * @param operand2 second {@code EncryptedNumber}.
@@ -883,8 +871,6 @@ public class PaillierContext {
 
   /**
    * Subtracts an {@code EncodedNumber} ({@code operand2}) from an {@code EncryptedNumber} ({@code operand1}).
-   * Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    *
    * @param operand1 an {@code EncryptedNumber}.
    * @param operand2 an {@code EncodedNumber}.
@@ -899,8 +885,6 @@ public class PaillierContext {
 
   /**
    * Subtracts an {@code EncryptedNumber} ({@code operand2}) from an {@code EncodedNumber} ({@code operand1}).
-   * Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    *
    * @param operand1 an {@code EncodedNumber}.
    * @param operand2 an {@code EncryptedNumber}.
@@ -915,8 +899,6 @@ public class PaillierContext {
 
   /**
    * Subtracts an {@code EncodedNumber} ({@code operand2}) from another {@code EncodedNumber} ({@code operand1}).
-   * Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    *
    * @param operand1 first {@code EncodedNumber}.
    * @param operand2 second {@code EncodedNumber}.
@@ -931,8 +913,6 @@ public class PaillierContext {
 
   /**
    * Multiplies an EncyptedNumber with an {@code EncodedNumber}.
-   * Throws PaillierContextMismatchException if the {@code PaillierContext}
-   * of either {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    *
    * @param operand1 an {@code EncryptedNumber}.
    * @param operand2 an {@code EncodedNumber}.
@@ -952,9 +932,7 @@ public class PaillierContext {
   }
 
   /**
-   * Multiplies an {@code EncodedNumber} with an {@code EncryptedNumber}. Throws PaillierContextMismatchException
-   * if the {@code PaillierContext} of either {@code operand1} or {@code operand2} does not match this
-   * {@code PaillierContext}.
+   * Multiplies an {@code EncodedNumber} with an {@code EncryptedNumber}.
    *
    * @param operand1 an {@code EncodedNumber}.
    * @param operand2 an {@code EncryptedNumber}.
@@ -968,9 +946,7 @@ public class PaillierContext {
   }
 
   /**
-   * Multiplies two {@code EncodedNumber}s. Throws PaillierContextMismatchException
-   * if the {@code PaillierContext} of either {@code operand1} or {@code operand2} does not match this
-   * {@code PaillierContext}.
+   * Multiplies two {@code EncodedNumber}s.
    *
    * @param operand1 an {@code EncodedNumber}.
    * @param operand2 an {@code EncodedNumber}.
