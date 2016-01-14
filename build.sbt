@@ -18,7 +18,7 @@ publishMavenStyle := true
 
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.13",
-  "commons-cli" % "commons-cli" % "1.4-SNAPSHOT",
+  "commons-cli" % "commons-cli" % "1.3.1",
   "com.novocode" % "junit-interface" % "0.11" % Test
 )
 
