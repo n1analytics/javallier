@@ -40,8 +40,19 @@ Or run just fast tests:
 
     $ ./test-fast.sh
 
+Command Line Tool
+-----------------
+
+Run with sbt:
+
+    sbt "runMain com.n1analytics.paillier.cli.Main"
+
+
 Release
 -------
+
+Releases will be signed by Brian Thorne with the PGP key
+[C18347DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
 
 * http://www.scala-sbt.org/release/docs/Using-Sonatype.html
 * http://central.sonatype.org/pages/releasing-the-deployment.html

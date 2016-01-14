@@ -78,11 +78,11 @@ public class JavallierCLI {
           help(command);
         }
         System.exit(0);
-
       }
 
       if (line.hasOption("v")) {
-        log.log(Level.INFO, "Using cli argument -v=" + line.getOptionValue("v"));
+        log.info("Using cli argument -v");
+        log.setLevel(Level.FINER);
       }
 
     } catch (ParseException exp) {
@@ -90,6 +90,12 @@ public class JavallierCLI {
       System.err.println("Parsing failed.  Reason: " + exp.getMessage());
       // print the list of available options
       help(commands.values());
+    }
+
+    try {
+      command.run(argsList);
+    } catch (Exception e) {
+      log.warning("Failed to run command");
     }
 
   }
@@ -195,8 +201,8 @@ public class JavallierCLI {
     }
 
     public void run(List<String> args) {
-      System.out.println("Running the create command");
-      System.out.println(args);
+      log.info("Running the create command");
+      log.info(args.toString());
     }
 
     public String getOptions() {
