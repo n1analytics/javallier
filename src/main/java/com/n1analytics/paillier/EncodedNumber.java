@@ -138,14 +138,14 @@ public final class EncodedNumber {
     return context.decode(this);
   }
 
-  /**
-   * Decodes to an approximated {@code BigInteger} representation.
-   *
-   * @return the decoded number.
-   */
-  public BigInteger decodeApproximateBigInteger() {
-    return decode().decodeApproximateBigInteger();
-  }
+//  /**
+//   * Decodes to an approximated {@code BigInteger} representation.
+//   *
+//   * @return the decoded number.
+//   */
+//  public BigInteger decodeApproximateBigInteger() {
+//    return decode().decodeApproximateBigInteger();
+//  }
 
   /**
    * Decodes to a {@code BigInteger} representation.
@@ -157,13 +157,13 @@ public final class EncodedNumber {
     return decode().decodeBigInteger();
   }
 
-  /**
-   * Decodes to the approximated {@code double} representation.
-   * @return the decoded number.
-   */
-  public double decodeApproximateDouble() {
-    return decode().decodeApproximateDouble();
-  }
+//  /**
+//   * Decodes to the approximated {@code double} representation.
+//   * @return the decoded number.
+//   */
+//  public double decodeApproximateDouble() {
+//    return decode().decodeApproximateDouble();
+//  }
 
   /**
    * Decodes this {@code EncodedNumber} to a {@code double} representation. Throws an ArithmeticException
@@ -176,16 +176,16 @@ public final class EncodedNumber {
     return decode().decodeDouble();
   }
 
-  /**
-   * Decodes this {@code EncodedNumber} to an approximated {@code long} representation. If the number
-   * cannot be represented exactly as a {@code long}, it is converted to the {@code long} representation
-   * of the lowest 64 bits.
-   *
-   * @return the decoded number.
-   */
-  public long decodeApproximateLong() {
-    return decode().decodeApproximateLong();
-  }
+//  /**
+//   * Decodes this {@code EncodedNumber} to an approximated {@code long} representation. If the number
+//   * cannot be represented exactly as a {@code long}, it is converted to the {@code long} representation
+//   * of the lowest 64 bits.
+//   *
+//   * @return the decoded number.
+//   */
+//  public long decodeApproximateLong() {
+//    return decode().decodeApproximateLong();
+//  }
 
   /**
    * Decodes this {@code EncodedNumber} to a {@code long} representation. Throws an ArithmeticException
