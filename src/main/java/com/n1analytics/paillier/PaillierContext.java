@@ -14,7 +14,6 @@
 package com.n1analytics.paillier;
 
 
-import com.n1analytics.paillier.util.BigIntegerUtil;
 import com.n1analytics.paillier.util.HashChain;
 
 import java.math.BigInteger;
@@ -259,45 +258,45 @@ public class PaillierContext {
     return new Number(maxSignificand, exponent);
   }
 
-  /**
-   * Returns the maximum approximated {@code BigInteger} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the maximum {@code BigInteger} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public BigInteger getMaxBigInteger(int exponent) {
-    return getMax(exponent).decodeApproximateBigInteger();
-  }
-
-  /**
-   * Returns the maximum approximated {@code double} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the maximum approximated {@code double} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public double getMaxDouble(int exponent) {
-    return getMax(exponent).decodeApproximateDouble();
-  }
-
-  /**
-   * Returns the maximum approximated {@code long} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the maximum approximated {@code long} representation of the maximum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public long getMaxLong(int exponent) {
-    BigInteger max = getMaxBigInteger(exponent);
-    if (max.compareTo(BigIntegerUtil.LONG_MAX_VALUE) >= 0) {
-      return Long.MAX_VALUE;
-    }
-    return max.longValue();
-  }
+//  /**
+//   * Returns the maximum approximated {@code BigInteger} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the maximum {@code BigInteger} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public BigInteger getMaxBigInteger(int exponent) {
+//    return getMax(exponent).decodeApproximateBigInteger();
+//  }
+//
+//  /**
+//   * Returns the maximum approximated {@code double} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the maximum approximated {@code double} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public double getMaxDouble(int exponent) {
+//    return getMax(exponent).decodeApproximateDouble();
+//  }
+//
+//  /**
+//   * Returns the maximum approximated {@code long} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the maximum approximated {@code long} representation of the maximum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public long getMaxLong(int exponent) {
+//    BigInteger max = getMaxBigInteger(exponent);
+//    if (max.compareTo(BigIntegerUtil.LONG_MAX_VALUE) >= 0) {
+//      return Long.MAX_VALUE;
+//    }
+//    return max.longValue();
+//  }
 
   /**
    * Returns the minimum {@code Number} for a given {@code exponent}, where the {@code Number}'s {@code significand}
@@ -311,45 +310,45 @@ public class PaillierContext {
     return new Number(minSignificand, exponent);
   }
 
-  /**
-   * Returns the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public BigInteger getMinBigInteger(int exponent) {
-    return getMin(exponent).decodeApproximateBigInteger();
-  }
-
-  /**
-   * Returns the minimum approximated {@code double} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the minimum approximated {@code double} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public double getMinDouble(int exponent) {
-    return getMin(exponent).decodeApproximateDouble();
-  }
-
-  /**
-   * Returns the minimum approximated {@code long} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   *
-   * @param exponent input.
-   * @return the minimum approximated {@code long} representation of the minimum {@code Number}
-   * for a given {@code exponent}.
-   */
-  public long getMinLong(int exponent) {
-    BigInteger min = getMinBigInteger(exponent);
-    if (min.compareTo(BigIntegerUtil.LONG_MIN_VALUE) <= 0) {
-      return Long.MIN_VALUE;
-    }
-    return min.longValue();
-  }
+//  /**
+//   * Returns the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public BigInteger getMinBigInteger(int exponent) {
+//    return getMin(exponent).decodeApproximateBigInteger();
+//  }
+//
+//  /**
+//   * Returns the minimum approximated {@code double} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the minimum approximated {@code double} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public double getMinDouble(int exponent) {
+//    return getMin(exponent).decodeApproximateDouble();
+//  }
+//
+//  /**
+//   * Returns the minimum approximated {@code long} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   *
+//   * @param exponent input.
+//   * @return the minimum approximated {@code long} representation of the minimum {@code Number}
+//   * for a given {@code exponent}.
+//   */
+//  public long getMinLong(int exponent) {
+//    BigInteger min = getMinBigInteger(exponent);
+//    if (min.compareTo(BigIntegerUtil.LONG_MIN_VALUE) <= 0) {
+//      return Long.MIN_VALUE;
+//    }
+//    return min.longValue();
+//  }
 
   /**
    * Checks whether another {@code PaillierContext} is the same as this {@code PaillierContext}.
@@ -588,18 +587,18 @@ public class PaillierContext {
     return decode(encoded).decodeBigInteger();
   }
 
-  /**
-   * Decodes to the approximated {@code BigInteger} representation.Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public BigInteger decodeApproximateBigInteger(EncodedNumber encoded)
-          throws DecodeException {
-    return decode(encoded).decodeApproximateBigInteger();
-  }
+//  /**
+//   * Decodes to the approximated {@code BigInteger} representation.Throws a DecodeException
+//   * if the {@code EncodedNumber} cannot be decoded.
+//   *
+//   * @param encoded the {@code EncodedNumber} to be decoded.
+//   * @return the decoding result.
+//   * @throws DecodeException if the {@code encoded} cannot be decoded.
+//   */
+//  public BigInteger decodeApproximateBigInteger(EncodedNumber encoded)
+//          throws DecodeException {
+//    return decode(encoded).decodeApproximateBigInteger();
+//  }
 
   /**
    * Decodes to the exact {@code double} representation.Throws a DecodeException
@@ -613,17 +612,17 @@ public class PaillierContext {
     return decode(encoded).decodeDouble();
   }
 
-  /**
-   * Decodes to the approximated {@code double} representation. Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public double decodeApproximateDouble(EncodedNumber encoded) throws DecodeException {
-    return decode(encoded).decodeApproximateDouble();
-  }
+//  /**
+//   * Decodes to the approximated {@code double} representation. Throws a DecodeException
+//   * if the {@code EncodedNumber} cannot be decoded.
+//   *
+//   * @param encoded the {@code EncodedNumber} to be decoded.
+//   * @return the decoding result.
+//   * @throws DecodeException if the {@code encoded} cannot be decoded.
+//   */
+//  public double decodeApproximateDouble(EncodedNumber encoded) throws DecodeException {
+//    return decode(encoded).decodeApproximateDouble();
+//  }
 
   /**
    * Decodes to the exact {@code long} representation. Throws a DecodeException
@@ -637,17 +636,17 @@ public class PaillierContext {
     return decode(encoded).decodeLong();
   }
 
-  /**
-   * Decodes to the approximated {@code long} representation. Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public long decodeApproximateLong(EncodedNumber encoded) throws DecodeException {
-    return decode(encoded).decodeApproximateLong();
-  }
+//  /**
+//   * Decodes to the approximated {@code long} representation. Throws a DecodeException
+//   * if the {@code EncodedNumber} cannot be decoded.
+//   *
+//   * @param encoded the {@code EncodedNumber} to be decoded.
+//   * @return the decoding result.
+//   * @throws DecodeException if the {@code encoded} cannot be decoded.
+//   */
+//  public long decodeApproximateLong(EncodedNumber encoded) throws DecodeException {
+//    return decode(encoded).decodeApproximateLong();
+//  }
 
   /**
    * Obfuscates an {@code EncryptedNumber}.
