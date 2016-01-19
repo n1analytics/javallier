@@ -5,6 +5,7 @@ package com.n1analytics.paillier.cli;
 //import org.apache.commons.cli.Options;
 //import org.apache.commons.cli.CommandLineParser;
 
+import com.n1analytics.paillier.PaillierPrivateKey;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class JavallierCLI {
     this.args = args;
 
     // create the global Options
-    this.options.addOption("h", "help", false, "HELP");
+    options.addOption("h", "help", false, "HELP");
     options.addOption("v", "verbose", false, "Enable logging");
     options.addOption("o", "output", true, "Output to given file instead of stdout");
 
@@ -55,8 +56,9 @@ public class JavallierCLI {
     commands.put("add", new AddCommand("add"));
     commands.put("addenc", new AddEncCommand("addenc"));
 
-    Command command = null;
+    Command command = commands.get("help");
     List<String> argsList = Arrays.asList(args);
+    List<String> leftOverArgs;
     if (argsList.size() > 0) {
       command = commands.get(argsList.get(0));
     }
@@ -68,8 +70,12 @@ public class JavallierCLI {
     try {
       CommandLine line = parser.parse(options, args);
 
-      if (line.hasOption("help")) {
+      if (line.hasOption("v")) {
+        log.setLevel(Level.FINER);
+        log.info("Using cli argument -v");
+      }
 
+      if (line.hasOption("help")) {
         // If there is a command listed (e.g. genpkey --help)
         // then show the help for that command
         if (command == null) {
@@ -80,9 +86,13 @@ public class JavallierCLI {
         System.exit(0);
       }
 
-      if (line.hasOption("v")) {
-        log.info("Using cli argument -v");
-        log.setLevel(Level.FINER);
+      // Capture all the other args
+      leftOverArgs = line.getArgList();
+
+      try {
+        command.run(leftOverArgs);
+      } catch (Exception e) {
+        log.warning("Failed to run command");
       }
 
     } catch (ParseException exp) {
@@ -92,11 +102,7 @@ public class JavallierCLI {
       help(commands.values());
     }
 
-    try {
-      command.run(argsList);
-    } catch (Exception e) {
-      log.warning("Failed to run command");
-    }
+
 
   }
 
@@ -203,6 +209,11 @@ public class JavallierCLI {
     public void run(List<String> args) {
       log.info("Running the create command");
       log.info(args.toString());
+
+
+
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(1024);
+      log.info("Keypair generated");
     }
 
     public String getOptions() {
