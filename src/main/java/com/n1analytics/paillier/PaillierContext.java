@@ -466,6 +466,8 @@ public class PaillierContext {
    */
   public boolean isValid(double value) {
     // TODO Issue #12: optimise
+    if(Double.isInfinite(value) || Double.isNaN(value))
+      return false;
     try {
       return isValid(Number.encode(value));
     } catch (EncodeException e) {
