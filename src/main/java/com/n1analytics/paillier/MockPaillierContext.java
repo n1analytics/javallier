@@ -74,10 +74,12 @@ public class MockPaillierContext extends PaillierContext {
     int exponent1 = operand1.getExponent();
     int exponent2 = operand2.getExponent();
     if (exponent1 > exponent2) {
-      value1 = value1.multiply(BigInteger.ONE.shiftLeft(exponent1 - exponent2)).mod(modulus);
+//      value1 = value1.multiply(BigInteger.ONE.shiftLeft(exponent1 - exponent2)).mod(modulus);
+      value1 = value1.multiply(Number.getRescalingFactor(exponent1 - exponent2));
       exponent1 = exponent2;
     } else if (exponent1 < exponent2) {
-      value2 = value2.multiply(BigInteger.ONE.shiftLeft(exponent2 - exponent1)).mod(modulus);
+//      value2 = value2.multiply(BigInteger.ONE.shiftLeft(exponent2 - exponent1)).mod(modulus);
+      value2 = value2.multiply(Number.getRescalingFactor(exponent2 - exponent1));
       exponent2 = exponent1;
     } // else do nothing
     BigInteger result = value1.add(value2);

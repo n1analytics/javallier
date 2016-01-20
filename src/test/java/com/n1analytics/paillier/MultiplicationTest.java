@@ -176,6 +176,7 @@ public class MultiplicationTest {
           assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -202,6 +203,7 @@ public class MultiplicationTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -274,6 +276,7 @@ public class MultiplicationTest {
           assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -301,6 +304,7 @@ public class MultiplicationTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -371,6 +375,7 @@ public class MultiplicationTest {
           assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -395,6 +400,7 @@ public class MultiplicationTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -463,6 +469,7 @@ public class MultiplicationTest {
           assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -488,6 +495,7 @@ public class MultiplicationTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -556,6 +564,7 @@ public class MultiplicationTest {
           assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -580,6 +589,7 @@ public class MultiplicationTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
