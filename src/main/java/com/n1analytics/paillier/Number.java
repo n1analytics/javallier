@@ -402,17 +402,15 @@ public final class Number {
   }
 
   public static Number encode(BigInteger scalar, int maxExponent) {
-    if(maxExponent >= 0)
-      return innerEncode(new BigDecimal(scalar), getExponent(0, maxExponent));
-
-    throw new EncodeException("maxExponent must be a positive integer");
+    if(maxExponent < 0)
+      throw new EncodeException("Input value cannot be encoded.");
+    return innerEncode(new BigDecimal(scalar), getExponent(0, maxExponent));
   }
 
   public static Number encode(BigInteger scalar, double precision) {
-    if(precision >= 1)
-      return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
-
-    throw new EncodeException("maxExponent must be greater than 1");
+    if(precision > 1 && precision <= 0)
+      throw new EncodeException("Input value cannot be encoded.");
+    return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
   }
 
   public static Number encode(long scalar) {
@@ -420,24 +418,34 @@ public final class Number {
   }
 
   public static Number encode(long scalar, int maxExponent) {
+    if (maxExponent < 0)
+      throw new EncodeException("Input value cannot be encoded.");
     return encode(BigInteger.valueOf(scalar), maxExponent);
   }
 
   public static Number encode(long scalar, double precision) {
+    if (precision > 1 && precision <= 0)
+      throw new EncodeException("Input value cannot be encoded.");
     return encode(BigInteger.valueOf(scalar), precision);
   }
 
   public static Number encode(double scalar) {
-    return innerEncode(new BigDecimal(String.valueOf(scalar)), getDoublePrecExponent(scalar));
+    if (Double.isInfinite(scalar) || Double.isNaN(scalar))
+      throw new EncodeException("Input value cannot be encoded.");
+    return innerEncode(new BigDecimal(scalar), getDoublePrecExponent(scalar));
   }
 
   public static Number encode(double scalar, int maxExponent) {
-    return innerEncode(new BigDecimal(String.valueOf(scalar)),
+    if (Double.isInfinite(scalar) || Double.isNaN(scalar) || maxExponent < 0)
+      throw new EncodeException("Input value cannot be encoded.");
+    return innerEncode(new BigDecimal(scalar),
             getExponent(getDoublePrecExponent(scalar), maxExponent));
   }
 
   public static Number encode(double scalar, double precision) {
-    return innerEncode(new BigDecimal(String.valueOf(scalar)), getPrecExponent(precision));
+    if (Double.isInfinite(scalar) || Double.isNaN(scalar) || (precision > 1 && precision <= 0))
+      throw new EncodeException("Input value cannot be encoded.");
+    return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
   }
 
   private static int getPrecExponent(double precision) {
