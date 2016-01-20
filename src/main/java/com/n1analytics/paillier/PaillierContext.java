@@ -717,17 +717,36 @@ public class PaillierContext {
     return encrypt(encode(value));
   }
 
-  /**
-   * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
-   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent.
-   *
-   * @param operand1 first {@code EncryptedNumber}.
-   * @param operand2 second {@code EncryptedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
+//  /**
+//   * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
+//   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
+//   * are not the same, reduce the higher exponent to match with the lower exponent.
+//   *
+//   * @param operand1 first {@code EncryptedNumber}.
+//   * @param operand2 second {@code EncryptedNumber}.
+//   * @return the addition result.
+//   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
+//   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
+//   */
+//  public EncryptedNumber add(EncryptedNumber operand1, EncryptedNumber operand2)
+//          throws PaillierContextMismatchException {
+//    checkSameContext(operand1);
+//    checkSameContext(operand2);
+//    BigInteger value1 = operand1.ciphertext;
+//    BigInteger value2 = operand2.ciphertext;
+//    int exponent1 = operand1.getExponent();
+//    int exponent2 = operand2.getExponent();
+//    if (exponent1 > exponent2) {
+//      value1 = publicKey.raw_multiply(value1, BigInteger.ONE.shiftLeft(exponent1 - exponent2));
+//      exponent1 = exponent2;
+//    } else if (exponent1 < exponent2) {
+//      value2 = publicKey.raw_multiply(value2, BigInteger.ONE.shiftLeft(exponent2 - exponent1));
+//      exponent2 = exponent1;
+//    } // else do nothing
+//    final BigInteger result = publicKey.raw_add(value1, value2);
+//    return new EncryptedNumber(this, result, exponent1, operand1.isSafe && operand2.isSafe);
+//  }
+
   public EncryptedNumber add(EncryptedNumber operand1, EncryptedNumber operand2)
           throws PaillierContextMismatchException {
     checkSameContext(operand1);
@@ -737,11 +756,10 @@ public class PaillierContext {
     int exponent1 = operand1.getExponent();
     int exponent2 = operand2.getExponent();
     if (exponent1 > exponent2) {
-      value1 = publicKey.raw_multiply(value1, BigInteger.ONE.shiftLeft(exponent1 - exponent2));
+      value1 = publicKey.raw_multiply(value1, Number.getRescalingFactor(exponent1 - exponent2));
       exponent1 = exponent2;
     } else if (exponent1 < exponent2) {
-      value2 = publicKey.raw_multiply(value2, BigInteger.ONE.shiftLeft(exponent2 - exponent1));
-      exponent2 = exponent1;
+      value2 = publicKey.raw_multiply(value2, Number.getRescalingFactor(exponent2 - exponent1));
     } // else do nothing
     final BigInteger result = publicKey.raw_add(value1, value2);
     return new EncryptedNumber(this, result, exponent1, operand1.isSafe && operand2.isSafe);
@@ -777,17 +795,42 @@ public class PaillierContext {
     return add(encrypt(operand1), operand2);
   }
 
-  /**
-   * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
-   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent.
-   *
-   * @param operand1 first {@code EncodedNumber}.
-   * @param operand2 second {@code EncodedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this{@code PaillierContext}.
-   */
+//  /**
+//   * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
+//   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
+//   * are not the same, reduce the higher exponent to match with the lower exponent.
+//   *
+//   * @param operand1 first {@code EncodedNumber}.
+//   * @param operand2 second {@code EncodedNumber}.
+//   * @return the addition result.
+//   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
+//   * {@code operand1} or {@code operand2} does not match this{@code PaillierContext}.
+//   */
+//  public EncodedNumber add(EncodedNumber operand1, EncodedNumber operand2)
+//          throws PaillierContextMismatchException {
+//    checkSameContext(operand1);
+//    checkSameContext(operand2);
+//    final BigInteger modulus = publicKey.getModulus();
+//    BigInteger value1 = operand1.getValue();
+//    BigInteger value2 = operand2.getValue();
+//    int exponent1 = operand1.getExponent();
+//    int exponent2 = operand2.getExponent();
+//    if (exponent1 > exponent2) {
+//      value1 = value1.shiftLeft(exponent1 - exponent2);
+////			if(value1.compareTo(publicKey.getModulus()) > 0)
+////				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
+//      exponent1 = exponent2;
+//    } else if (exponent1 < exponent2) {
+//      value2 = value2.shiftLeft(exponent2 - exponent1);
+////			if(value2.compareTo(publicKey.getModulus()) > 0)
+////				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
+//      exponent2 = exponent1;
+//    } // else do nothing
+//    // TODO Issue #11: check that nothing overflows
+//    final BigInteger result = value1.add(value2).mod(modulus);
+//    return new EncodedNumber(this, result, exponent1);
+//  }
+
   public EncodedNumber add(EncodedNumber operand1, EncodedNumber operand2)
           throws PaillierContextMismatchException {
     checkSameContext(operand1);
@@ -798,17 +841,11 @@ public class PaillierContext {
     int exponent1 = operand1.getExponent();
     int exponent2 = operand2.getExponent();
     if (exponent1 > exponent2) {
-      value1 = value1.shiftLeft(exponent1 - exponent2);
-//			if(value1.compareTo(publicKey.getModulus()) > 0)
-//				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
+      value1 = value1.multiply(Number.getRescalingFactor(exponent1 - exponent2));
       exponent1 = exponent2;
     } else if (exponent1 < exponent2) {
-      value2 = value2.shiftLeft(exponent2 - exponent1);
-//			if(value2.compareTo(publicKey.getModulus()) > 0)
-//				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
-      exponent2 = exponent1;
-    } // else do nothing
-    // TODO Issue #11: check that nothing overflows
+      value2 = value2.multiply(Number.getRescalingFactor(exponent2 - exponent1));
+    }
     final BigInteger result = value1.add(value2).mod(modulus);
     return new EncodedNumber(this, result, exponent1);
   }

@@ -390,7 +390,7 @@ public final class Number {
 //  }
 
     /** The base for the encoded number */
-  private static final int BASE = 17;
+  private static final int BASE = 16;
 
   private static final double LOG_2_BASE = Math.log((double) BASE)/ Math.log(2.0);
 
@@ -405,14 +405,14 @@ public final class Number {
     if(maxExponent >= 0)
       return innerEncode(new BigDecimal(scalar), getExponent(0, maxExponent));
 
-    throw new ArithmeticException("maxExponent must be a positive integer");
+    throw new EncodeException("maxExponent must be a positive integer");
   }
 
   public static Number encode(BigInteger scalar, double precision) {
     if(precision >= 1)
       return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
 
-    throw new ArithmeticException("maxExponent must be greater than 1");
+    throw new EncodeException("maxExponent must be greater than 1");
   }
 
   public static Number encode(long scalar) {
@@ -608,26 +608,41 @@ public final class Number {
 //    return Double.longBitsToDouble(decodedBits);
 //  }
 
+  public Number decreaseExponentTo(int newExp) {
+    if(newExp > exponent){
+      throw new IllegalArgumentException("New exponent: "+ newExp +
+              "should be more negative than old exponent: " + exponent + ".");
+    }
+
+    int expDiff = exponent - newExp;
+    BigInteger bigFactor = getRescalingFactor(expDiff);
+    BigInteger newEnc = significand.multiply(bigFactor);
+    return new Number(newEnc, newExp);
+  }
+
+  public static BigInteger getRescalingFactor(int expDiff) {
+    return (new BigInteger(String.valueOf(BASE))).pow(expDiff);
+  }
+
   public BigInteger decodeBigInteger() {
     return significand.multiply((new BigInteger(String.valueOf(BASE))).pow(exponent));
   }
 
   public long decodeLong() {
-    BigInteger decoded = significand.multiply((new BigInteger(String.valueOf(BASE))).pow(exponent));
+    BigInteger decoded = decodeBigInteger();
     if(BigIntegerUtil.less(decoded, BigIntegerUtil.LONG_MIN_VALUE) ||
             BigIntegerUtil.greater(decoded, BigIntegerUtil.LONG_MAX_VALUE)) {
-      throw new ArithmeticException("Decoded value is too big to represent as a long.");
+      throw new DecodeException("Decoded value cannot be represented as long.");
     }
     return decoded.longValue();
   }
 
   public double decodeDouble() {
-    double mantissaDouble = significand.doubleValue();
-    if(mantissaDouble == Double.NEGATIVE_INFINITY || mantissaDouble == Double.POSITIVE_INFINITY){
-      throw new ArithmeticException("Mantissa value is too big to represent as a double.");
+    double decoded = significand.doubleValue() * Math.pow((double) BASE, (double) exponent);
+    if(Double.isInfinite(decoded) || Double.isNaN(decoded)) {
+      throw new DecodeException("Decoded value cannot be represented as double.");
     }
-
-    return mantissaDouble * Math.pow((double) BASE, (double) exponent);
+    return decoded;
   }
 
   /**
@@ -660,32 +675,47 @@ public final class Number {
     return other.add(this);
   }
 
-  /**
-   * Adds another {@code Number} to this {@code Number}.
-   *
-   * If the two {@code Number}s have the same exponent, returns a new {@code Number} where
-   * {@code significand = this.significand + other.significand} and {@code exponent = this.exponent}.
-   * If this {@code Number}'s exponent is less than the {@code other}'s exponent,
-   * re-encode the {@code other} with this {@code exponent} before performing the addition.
-   * If the {@code other}'s exponent is less than this {@code Number}'s exponent,
-   * re-encode this {@code Number} with the {@code other}'s  {@code exponent} before performing
-   * the addition.
-   *
-   * @param other {@code Number} to be added.
-   * @return the addition result.
-   */
+//  /**
+//   * Adds another {@code Number} to this {@code Number}.
+//   *
+//   * If the two {@code Number}s have the same exponent, returns a new {@code Number} where
+//   * {@code significand = this.significand + other.significand} and {@code exponent = this.exponent}.
+//   * If this {@code Number}'s exponent is less than the {@code other}'s exponent,
+//   * re-encode the {@code other} with this {@code exponent} before performing the addition.
+//   * If the {@code other}'s exponent is less than this {@code Number}'s exponent,
+//   * re-encode this {@code Number} with the {@code other}'s  {@code exponent} before performing
+//   * the addition.
+//   *
+//   * @param other {@code Number} to be added.
+//   * @return the addition result.
+//   */
+//  public Number add(Number other) {
+//    if (exponent == other.exponent) {
+//      return new Number(significand.add(other.significand), exponent);
+//    }
+//    if (exponent < other.exponent) {
+//      return new Number(
+//              significand.add(other.significand.shiftLeft(other.exponent - exponent)),
+//              exponent);
+//    }
+//    return new Number(
+//            other.significand.add(significand.shiftLeft(exponent - other.exponent)),
+//            other.exponent);
+//  }
+
   public Number add(Number other) {
-    if (exponent == other.exponent) {
-      return new Number(significand.add(other.significand), exponent);
+    BigInteger significand1 = significand;
+    BigInteger significand2 = other.getSignificand();
+    int exponent1 = exponent;
+    int exponent2 = other.getExponent();
+
+    if(exponent1 < exponent2) {
+      return new Number(significand1.add(significand2.multiply(getRescalingFactor(exponent2 - exponent1))), exponent1);
+    } else if(exponent1 > exponent2) {
+      return new Number(significand2.add(significand1.multiply(getRescalingFactor(exponent1 - exponent2))), exponent2);
+    } else {
+      return new Number(significand1.add(significand2), exponent1);
     }
-    if (exponent < other.exponent) {
-      return new Number(
-              significand.add(other.significand.shiftLeft(other.exponent - exponent)),
-              exponent);
-    }
-    return new Number(
-            other.significand.add(significand.shiftLeft(exponent - other.exponent)),
-            other.exponent);
   }
 
   /**

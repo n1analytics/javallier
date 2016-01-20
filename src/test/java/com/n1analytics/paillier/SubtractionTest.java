@@ -208,6 +208,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       ciphertTextB = context.encrypt(b);
@@ -228,8 +230,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -246,6 +250,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       ciphertTextB = context.encrypt(b);
@@ -253,9 +259,9 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
-            continue;
-        }
+      if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+          continue;
+      }
 
       try {
         decodedResult = decryptedResult.decodeDouble();
@@ -266,8 +272,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -296,6 +304,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -322,6 +331,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -418,6 +428,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
@@ -438,8 +450,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -456,6 +470,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
@@ -476,8 +492,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -506,6 +524,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -532,6 +551,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -629,6 +649,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       numberB = Number.encode(b);
@@ -649,8 +671,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -668,6 +692,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       numberB = Number.encode(b);
@@ -688,8 +714,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       }
@@ -718,6 +746,7 @@ public class SubtractionTest {
         decodedResult = decryptedResult.decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -744,6 +773,7 @@ public class SubtractionTest {
         decodedResult = decryptedResult.decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -839,6 +869,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       encodedA = context.encode(a);
       encodedB = context.encode(b);
@@ -857,8 +889,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -875,6 +909,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       encodedA = context.encode(a);
       encodedB = context.encode(b);
@@ -893,8 +929,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -921,6 +959,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -944,6 +983,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -1034,6 +1074,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       encodedA = context.encode(a);
       numberB = Number.encode(b);
@@ -1052,8 +1094,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -1071,6 +1115,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       encodedA = context.encode(a);
       numberB = Number.encode(b);
@@ -1089,8 +1135,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -1118,6 +1166,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -1142,6 +1191,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -1233,6 +1283,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = a - b;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       numberA = Number.encode(a);
       numberB = Number.encode(b);
@@ -1251,8 +1303,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -1269,6 +1323,8 @@ public class SubtractionTest {
       b = randomFiniteDouble();
 
       plainResult = b - a;
+      if(Double.isInfinite(plainResult))
+        continue;
 
       numberA = Number.encode(a);
       numberB = Number.encode(b);
@@ -1287,8 +1343,10 @@ public class SubtractionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
+        if (!Double.isNaN(decodedResult)) {
+          if (!Double.isInfinite(decodedResult)) {
+            assertEquals(plainResult, decodedResult, tolerance);
+          }
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -1315,6 +1373,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
@@ -1338,6 +1397,7 @@ public class SubtractionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
+      } catch (DecodeException e) {
       }
     }
   }
