@@ -403,13 +403,13 @@ public final class Number {
 
   public static Number encode(BigInteger scalar, int maxExponent) {
     if(maxExponent < 0)
-      throw new EncodeException("Input value cannot be encoded.");
+      throw new EncodeException("Max exponent must be >= 0.");
     return innerEncode(new BigDecimal(scalar), getExponent(0, maxExponent));
   }
 
   public static Number encode(BigInteger scalar, double precision) {
-    if(precision > 1 && precision <= 0)
-      throw new EncodeException("Input value cannot be encoded.");
+    if(precision > 1 || precision <= 0)
+      throw new EncodeException("Precision must be 10^-i where i > 0.");
     return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
   }
 
@@ -419,13 +419,13 @@ public final class Number {
 
   public static Number encode(long scalar, int maxExponent) {
     if (maxExponent < 0)
-      throw new EncodeException("Input value cannot be encoded.");
+      throw new EncodeException("Max exponent must be >= 0.");
     return encode(BigInteger.valueOf(scalar), maxExponent);
   }
 
   public static Number encode(long scalar, double precision) {
-    if (precision > 1 && precision <= 0)
-      throw new EncodeException("Input value cannot be encoded.");
+    if (precision > 1 || precision <= 0)
+      throw new EncodeException("Precision must be 10^-i where i > 0.");
     return encode(BigInteger.valueOf(scalar), precision);
   }
 
@@ -436,15 +436,23 @@ public final class Number {
   }
 
   public static Number encode(double scalar, int maxExponent) {
-    if (Double.isInfinite(scalar) || Double.isNaN(scalar) || maxExponent < 0)
+    if (Double.isInfinite(scalar) || Double.isNaN(scalar))
       throw new EncodeException("Input value cannot be encoded.");
+
+    if (maxExponent < 0)
+      throw new EncodeException("Max exponent must be >= 0.");
+
     return innerEncode(new BigDecimal(scalar),
             getExponent(getDoublePrecExponent(scalar), maxExponent));
   }
 
   public static Number encode(double scalar, double precision) {
-    if (Double.isInfinite(scalar) || Double.isNaN(scalar) || (precision > 1 && precision <= 0))
+    if (Double.isInfinite(scalar) || Double.isNaN(scalar))
       throw new EncodeException("Input value cannot be encoded.");
+
+    if (precision > 1 || precision <= 0)
+      throw new EncodeException("Precision  " + precision + ", it must be 10^-i where i > 0.");
+
     return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
   }
 
@@ -646,7 +654,18 @@ public final class Number {
   }
 
   public double decodeDouble() {
+//    double decoded;
+//    double decodingFactor = Math.pow((double) BASE, (double) exponent);
+//
+//    if(Double.isFinite(significand.doubleValue()) && !Double.isNaN(significand.doubleValue())) {
+//      decoded = significand.doubleValue() * decodingFactor;
+//    } else {
+//      BigDecimal newSignificand = new BigDecimal(significand);
+//      decoded = newSignificand.multiply(new BigDecimal(decodingFactor)).doubleValue();
+//    }
+
     double decoded = significand.doubleValue() * Math.pow((double) BASE, (double) exponent);
+
     if(Double.isInfinite(decoded) || Double.isNaN(decoded)) {
       throw new DecodeException("Decoded value cannot be represented as double.");
     }
