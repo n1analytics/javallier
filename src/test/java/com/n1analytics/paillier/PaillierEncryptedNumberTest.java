@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 public class PaillierEncryptedNumberTest {
 
   // Epsilon value for comparing floating point numbers
-  private static final double EPSILON = 1e-5;
+  private static final double EPSILON = 1e-3;
 
   static final Random random = new Random();
 
@@ -125,7 +125,7 @@ public class PaillierEncryptedNumberTest {
     EncryptedNumber ciphertext = context.encrypt(data);
 
     exception.expect(PaillierKeyMismatchException.class);
-    otherPrivateKey.decrypt(ciphertext).decodeLong();
+    otherPrivateKey.decrypt(ciphertext).decodeApproximateLong();
   }
 
   @Test
@@ -138,7 +138,7 @@ public class PaillierEncryptedNumberTest {
     EncryptedNumber ciphertext = aContext.encrypt(data);
 
     exception.expect(PaillierKeyMismatchException.class);
-    privateKey.decrypt(ciphertext).decodeLong();
+    privateKey.decrypt(ciphertext).decodeApproximateLong();
   }
 
   @Test
@@ -163,7 +163,7 @@ public class PaillierEncryptedNumberTest {
   @Test
   public void testEncryptIntPositiveOverflowAdd() throws Exception {
     EncryptedNumber ciphertext1 = partialContext.encrypt(
-            partialContext.getMaxSignificand());
+            partialContext.getMaxBigInteger(0));
     EncryptedNumber ciphertext2 = partialContext.encrypt(BigInteger.ONE);
 
     EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
@@ -175,7 +175,7 @@ public class PaillierEncryptedNumberTest {
   @Test
   public void testEncryptIntNegativeOverflowAdd() throws Exception {
     EncryptedNumber ciphertext1 = partialContext.encrypt(
-            partialContext.getMinSignificand());
+            partialContext.getMaxBigInteger(0).negate());
     EncryptedNumber ciphertext2 = partialContext.encrypt(BigInteger.ONE.negate());
 
     EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
@@ -191,19 +191,19 @@ public class PaillierEncryptedNumberTest {
     assert onePlusEps > 1;
 
     EncryptedNumber ciphertext1 = context.encrypt(onePlusEps);
-    double decryption1 = privateKey.decrypt(ciphertext1).decodeDouble();
+    double decryption1 = privateKey.decrypt(ciphertext1).decodeApproximateDouble();
     assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption1));
 
     EncryptedNumber ciphertext2 = ciphertext1.add(eps);
-    double decryption2 = privateKey.decrypt(ciphertext2).decodeDouble();
+    double decryption2 = privateKey.decrypt(ciphertext2).decodeApproximateDouble();
     assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption2));
 
     EncryptedNumber ciphertext3 = ciphertext1.add(eps / 5.0d);
-    double decryption3 = privateKey.decrypt(ciphertext3).decodeDouble();
+    double decryption3 = privateKey.decrypt(ciphertext3).decodeApproximateDouble();
     assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption3));
 
     EncryptedNumber ciphertext4 = ciphertext3.add(eps * 4.0d / 5.0d);
-    double decryption4 = privateKey.decrypt(ciphertext4).decodeDouble();
+    double decryption4 = privateKey.decrypt(ciphertext4).decodeApproximateDouble();
     assertNotEquals(onePlusEps, decryption4, 0.0d);
     assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption4));
   }
@@ -213,14 +213,14 @@ public class PaillierEncryptedNumberTest {
     EncryptedNumber ciphertext1 = context.encrypt(3.);
     EncryptedNumber ciphertext2 = ciphertext1.multiply(0);
 
-    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testMulZeroRight() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(3.);
     EncryptedNumber ciphertext2 = context.encode(0).multiply(ciphertext1);
-    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   public void testEncryptDecryptLong(TestConfiguration conf, long value) {
@@ -232,7 +232,7 @@ public class PaillierEncryptedNumberTest {
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encrypted negative integer with unsigned encoding");
       }
-      assertEquals(value, ciphertext.decrypt(thisPrivateKey).decodeLong());
+      assertEquals(value, ciphertext.decrypt(thisPrivateKey).decodeApproximateLong());
     } catch (EncodeException e) {
 
     }
@@ -268,17 +268,10 @@ public class PaillierEncryptedNumberTest {
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encrypted negative integer with unsigned encoding");
       }
-
-      double tolerance;
-      double result = ciphertext.decrypt(thisPrivateKey).decodeDouble();
-      if (Math.getExponent(result) > 0) {
-        tolerance = EPSILON * Math.pow(2.0, Math.getExponent(result));
-      } else {
-        tolerance = EPSILON;
-      }
-
-      assertEquals(value, result, tolerance);
+      assertEquals(value, ciphertext.decrypt(thisPrivateKey).decodeApproximateDouble(),
+                   0.0);
     } catch (EncodeException e) {
+
     }
   }
 
@@ -338,7 +331,7 @@ public class PaillierEncryptedNumberTest {
         fail("ERROR: Successfully encrypted negative integer with unsigned encoding");
       }
       assertEquals(value,
-                   ciphertext.decrypt(thisPrivateKey).decodeBigInteger());
+                   ciphertext.decrypt(thisPrivateKey).decodeApproximateBigInteger());
     } catch (EncodeException e) {
 
     }
@@ -348,7 +341,7 @@ public class PaillierEncryptedNumberTest {
   public void testBigIntegerConstants() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
-        testEncryptDecryptBigInteger(conf, conf.context().getMinSignificand());
+        testEncryptDecryptBigInteger(conf, conf.context().getMinBigInteger(0));
         testEncryptDecryptBigInteger(conf, LONG_MIN_VALUE);
         testEncryptDecryptBigInteger(conf, LONG_MIN_VALUE.add(BigInteger.ONE));
         testEncryptDecryptBigInteger(conf, BigInteger.TEN.negate());
@@ -358,7 +351,7 @@ public class PaillierEncryptedNumberTest {
         testEncryptDecryptBigInteger(conf, BigInteger.ZERO);
         testEncryptDecryptBigInteger(conf, LONG_MAX_VALUE.subtract(BigInteger.ONE));
         testEncryptDecryptBigInteger(conf, LONG_MAX_VALUE);
-        testEncryptDecryptBigInteger(conf, conf.context().getMaxSignificand());
+        testEncryptDecryptBigInteger(conf, conf.context().getMaxBigInteger(0));
       }
     }
   }
@@ -383,7 +376,7 @@ public class PaillierEncryptedNumberTest {
   public void testMultipleAddWithEncryptDecryptInt0() throws Exception {
     EncryptedNumber ciphertext = (encryptionList[0].add(encryptionList[1])).add(
             encryptionList[2]);
-    BigInteger decryption = privateKey.decrypt(ciphertext).decodeBigInteger();
+    BigInteger decryption = privateKey.decrypt(ciphertext).decodeApproximateBigInteger();
 
     BigInteger expectedResult = (plaintextList[0].add(plaintextList[1])).add(
             plaintextList[2]);
@@ -394,7 +387,7 @@ public class PaillierEncryptedNumberTest {
   public void testMultipleAddWithEncryptDecryptInt1() throws Exception {
     EncryptedNumber ciphertext = (encryptionList[3].add(encryptionList[4])).add(
             encryptionList[5]);
-    BigInteger decryption = privateKey.decrypt(ciphertext).decodeBigInteger();
+    BigInteger decryption = privateKey.decrypt(ciphertext).decodeApproximateBigInteger();
 
     BigInteger expectedResult = (plaintextList[3].add(plaintextList[4])).add(
             plaintextList[5]);
@@ -407,7 +400,7 @@ public class PaillierEncryptedNumberTest {
             encryptionList[2]);
     EncryptedNumber ciphertext2 = encryptionList[3].add(encryptionList[4]);
     EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
-    BigInteger decryption = privateKey.decrypt(ciphertext3).decodeBigInteger();
+    BigInteger decryption = privateKey.decrypt(ciphertext3).decodeApproximateBigInteger();
 
     BigInteger expectedResult1 = (plaintextList[0].add(plaintextList[1])).add(
             plaintextList[2]);
@@ -424,7 +417,7 @@ public class PaillierEncryptedNumberTest {
     EncryptedNumber ciphertext2 = (encryptionList[3].add(encryptionList[4])).add(
             encryptionList[5]);
     EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
-    BigInteger decryption = privateKey.decrypt(ciphertext3).decodeBigInteger();
+    BigInteger decryption = privateKey.decrypt(ciphertext3).decodeApproximateBigInteger();
 
     BigInteger expectedResult1 = (plaintextList[0].add(plaintextList[1])).add(
             plaintextList[2]);
@@ -464,28 +457,28 @@ public class PaillierEncryptedNumberTest {
 
 //        Add many positive and negative numbers to reach maxInt.
     EncryptedNumber ciphertext1 = context.encrypt(
-            context.getMaxSignificand().subtract(sum3Pos2Neg3));
+            context.getMaxBigInteger(0).subtract(sum3Pos2Neg3));
     EncryptedNumber ciphertext2 = ciphertextSum3Pos2Neg3.add(ciphertext1);
-    BigInteger decryption = privateKey.decrypt(ciphertext2).decodeBigInteger();
-    assertEquals(context.getMaxSignificand(), decryption);
+    BigInteger decryption = privateKey.decrypt(ciphertext2).decodeApproximateBigInteger();
+    assertEquals(context.getMaxBigInteger(0), decryption);
 
 //        Add many positive and negative numbers to reach -maxInt.
     EncryptedNumber ciphertext3 = context.encrypt(
-            (context.getMinSignificand()).add(sum3Pos3Neg3));
+            (context.getMaxBigInteger(0).negate()).add(sum3Pos3Neg3));
     EncryptedNumber ciphertext4 = ciphertext3.subtract(ciphertextSum3Pos3Neg3);
     BigInteger decryption2 = privateKey.decrypt(
-            ciphertext4).decodeBigInteger();
-    assertEquals(context.getMinSignificand(), decryption2);
+            ciphertext4).decodeApproximateBigInteger();
+    assertEquals(context.getMaxBigInteger(0).negate(), decryption2);
   }
 
   @Test
   public void testAddWithEncryptedIntAndEncodedNumberDiffExp0() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(15);
-    EncodedNumber encoded2 = context.encode(Number.encode(1, 50));
-    assert encoded2.getExponent() > 200;
-    assert ciphertext1.getExponent() > 200;
+    EncodedNumber encoded2 = context.encode(Number.encodeToExponent(1, -50));
+    assert encoded2.getExponent() > -200;
+    assert ciphertext1.getExponent() > -200;
 
-    EncodedNumber encoded3 = context.encode(Number.encode(1, 200));
+    EncodedNumber encoded3 = context.encode(Number.encodeToExponent(1, -200));
     EncryptedNumber ciphertext3 = ciphertext1.add(encoded3);
     double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
     assertEquals(16, (long) decryption);
@@ -493,10 +486,10 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testAddWithEncryptedIntAndEncodedNumberDiffExp1() throws Exception {
-    EncodedNumber encoded1 = context.encode(Number.encode(1, 10));
-    EncryptedNumber ciphertext1 = context.encrypt(Number.encode(15, 100));
-    assert encoded1.getExponent() == 10;
-    assert ciphertext1.getExponent() == 100;
+    EncodedNumber encoded1 = context.encode(Number.encodeToExponent(1, -10));
+    EncryptedNumber ciphertext1 = context.encrypt(Number.encodeToExponent(15, -100));
+    assert encoded1.getExponent() == -10;
+    assert ciphertext1.getExponent() == -100;
 
     EncryptedNumber ciphertext2 = ciphertext1.add(encoded1);
     assertEquals(16, privateKey.decrypt(ciphertext2).decodeLong());
@@ -504,8 +497,8 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testAddWithDifferentPrecisionFloat4() throws Exception {
-    Number number1 = Number.encode(0.1, 1e-3);
-    Number number2 = Number.encode(0.2, 1e-20);
+    Number number1 = Number.encodeToPrecision(0.1, 10);
+    Number number2 = Number.encodeToPrecision(0.2, 1000);
 
     EncryptedNumber ciphertext1 = context.encrypt(number1);
     EncryptedNumber ciphertext2 = context.encrypt(number2);
@@ -518,13 +511,13 @@ public class PaillierEncryptedNumberTest {
     assertEquals(oldExponent, ciphertext1.getExponent());
 
     double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
-    assertEquals(0.3, decryption, 1e-3);
+    assertEquals(0.3, decryption, EPSILON);
   }
 
   @Test
   public void testSubWithDifferentPrecisionFloat0() throws Exception {
-    Number number1 = Number.encode(0.1, 1e-3);
-    Number number2 = Number.encode(0.2, 1e-20);
+    Number number1 = Number.encodeToPrecision(0.1, 10);
+    Number number2 = Number.encodeToPrecision(0.2, 1000);
 
     EncryptedNumber ciphertext1 = context.encrypt(number1);
     EncryptedNumber ciphertext2 = context.encrypt(number2);
@@ -535,7 +528,7 @@ public class PaillierEncryptedNumberTest {
     assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
 
     double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
-    assertEquals(-0.1, decryption, 1e-3);
+    assertEquals(-0.1, decryption, EPSILON);
   }
 
   @Test
@@ -593,76 +586,76 @@ public class PaillierEncryptedNumberTest {
   public void testAddLongToEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.add(4);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testAddDoubleToEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.add(4.0);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testAddBigIntegerToEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.add(new BigInteger("4"));
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testSubtractLongFromEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.subtract(-4);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testSubtractDoubleFromEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.0);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testSubtractBigIntegerFromEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.subtract(new BigInteger("-4"));
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testMultiplyLongByEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.multiply(4);
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testMultiplyDoubleByEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.multiply(4.0);
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testMultiplyBigIntegerByEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.multiply(new BigInteger("4"));
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testDivideLongByEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.divide(4);
-    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 
   @Test
   public void testDivideDoubleByEncryptedNumber() throws Exception {
     EncryptedNumber ciphertext1 = context.encrypt(-1.98);
     EncryptedNumber ciphertext2 = ciphertext1.divide(4.0);
-    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeApproximateDouble(), 0.0);
   }
 }

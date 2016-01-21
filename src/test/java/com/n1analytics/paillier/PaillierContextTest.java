@@ -104,17 +104,17 @@ public class PaillierContextTest {
 
   @Test
   public void testEncodeDecode() throws Exception {
-    EncodedNumber encodedNumber = signedFull.encode(10);
+    EncodedNumber encodedNumber = signedFull.encode(10.0);
 
     assertEquals(10, signedFull.decodeLong(encodedNumber));
-//    assertEquals(10, signedFull.decodeApproximateLong(encodedNumber));
+    assertEquals(10, signedFull.decodeApproximateLong(encodedNumber));
 
     assertEquals(new BigInteger("10"), signedFull.decodeBigInteger(encodedNumber));
-//    assertEquals(new BigInteger("10"),
-//                 signedFull.decodeApproximateBigInteger(encodedNumber));
+    assertEquals(new BigInteger("10"),
+                 signedFull.decodeApproximateBigInteger(encodedNumber));
 
     assertEquals(10.0, signedFull.decodeDouble(encodedNumber), 0.0);
-//    assertEquals(10.0, signedFull.decodeApproximateDouble(encodedNumber), 0.0);
+    assertEquals(10.0, signedFull.decodeApproximateDouble(encodedNumber), 0.0);
   }
 
   @Test
@@ -193,8 +193,8 @@ public class PaillierContextTest {
     PaillierContext context = publicKey.createUnsignedContext();
 
     // Note: the context is created such that the max long value is within the range of long
-//    assertEquals(context.getMaxLong(0),
-//                 publicKey.getModulus().subtract(BigInteger.ONE).longValue());
+    assertEquals(context.getMaxLong(0),
+                 publicKey.getModulus().subtract(BigInteger.ONE).longValue());
   }
 
   @Test

@@ -90,6 +90,7 @@ public class PaillierEncodedNumberTest {
   }
 
   public void testLong(TestConfiguration conf, long value) {
+    Number valueFixed = Number.encode(value);
     BigInteger valueBig = BigInteger.valueOf(value);
     double valueDouble = (double) value;
 
@@ -97,7 +98,6 @@ public class PaillierEncodedNumberTest {
     // less than zero and the encoding is unsigned then it must
     // throw an ArithmeticException.
     try {
-      Number valueFixed = Number.encode(value);
       EncodedNumber encoded = conf.context().encode(value);
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encoded negative integer with unsigned encoding");
@@ -108,10 +108,10 @@ public class PaillierEncodedNumberTest {
         expected = conf.modulus().add(expected);
       }
       assertEquals(expected, encoded.getValue());
-//      assertEquals(value, encoded.decodeApproximateLong());
+      assertEquals(value, encoded.decodeApproximateLong());
       assertEquals(value, encoded.decodeLong());
       assertEquals(valueFixed, encoded.decode());
-//      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
+      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
       assertEquals(valueBig, encoded.decodeBigInteger());
       // NOTE: If value has 11 or less leading zeros then it is not exactly
       //      representable as a float and the various rounding modes come
@@ -129,13 +129,13 @@ public class PaillierEncodedNumberTest {
       //		Double.doubleToLongBits(encoded.decode().decodeDouble()));
       //}
       if (Long.numberOfLeadingZeros(value) > 10) {
-//        assertEquals(valueDouble, encoded.decodeApproximateDouble(), 0);
+        assertEquals(valueDouble, encoded.decodeApproximateDouble(), 0);
         assertEquals(valueDouble, encoded.decodeDouble(), 0);
       } else {
         // NOTE for the moment we allow the least significant bit of the
         //      decoded double to differ:
         double delta = (double) (1 << (11 - Long.numberOfLeadingZeros(value)));
-//        assertEquals(valueDouble, encoded.decodeApproximateDouble(), delta);
+        assertEquals(valueDouble, encoded.decodeApproximateDouble(), delta);
         assertEquals(valueDouble, encoded.decodeDouble(), delta);
       }
     } catch (EncodeException e) {
@@ -172,12 +172,12 @@ public class PaillierEncodedNumberTest {
   }
 
   public void testDouble(TestConfiguration conf, double value) {
-    try {
-      Number valueFixed = Number.encode(value);
-//      BigInteger valueBig = valueFixed.getSignificand().shiftLeft(valueFixed.getExponent());
-//      long valueLong = valueBig.longValue();
+    Number valueFixed = Number.encode(value);
+    BigInteger valueBig = valueFixed.getSignificand().shiftLeft(valueFixed.getExponent());
+    long valueLong = valueBig.longValue();
 
-        EncodedNumber encoded = conf.context().encode(value);
+    try {
+      EncodedNumber encoded = conf.context().encode(value);
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encoded negative double with unsigned encoding");
       }
@@ -189,10 +189,10 @@ public class PaillierEncodedNumberTest {
 
       assertEquals(conf.context(), encoded.getContext());
       assertEquals(expected, encoded.getValue());
-      assertEquals(value, encoded.decodeDouble(), EPSILON);
+      assertEquals(value, encoded.decodeApproximateDouble(), 0);
       assertEquals(valueFixed, encoded.decode());
-//      assertEquals(valueBig, encoded.decodeBigInteger());
-//      assertEquals(valueLong, encoded.decodeLong());
+      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
+      assertEquals(valueLong, encoded.decodeApproximateLong());
     } catch (ArithmeticException e) {
       if (value >= 0 || conf.signed()) {
         throw e;
@@ -265,21 +265,18 @@ public class PaillierEncodedNumberTest {
       assertEquals(new Number(max, exponent), context.getMax(0));
       assertEquals(new Number(ZERO, exponent), context.getMin(0));
 
-      assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
-      assertEquals(ZERO, context.getMinSignificand());
+      assertEquals(max.shiftLeft(exponent), context.getMaxBigInteger(0));
+      assertEquals(ZERO, context.getMinBigInteger(0));
 
       long maxLong = max.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
               exponent).longValue();
-      long actualMaxLong = context.getMaxSignificand().compareTo(
-              BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
-              exponent).longValue();
-      assertEquals(maxLong, actualMaxLong);
-      assertEquals(ZERO.longValue(), context.getMinSignificand().longValue());
+      assertEquals(maxLong, context.getMaxLong(0));
+      assertEquals(ZERO.longValue(), context.getMinLong(0));
 
-      assertEquals(max.doubleValue(), context.getMaxSignificand().doubleValue(),
-                   EPSILON * context.getMaxSignificand().doubleValue());
-      assertEquals(ZERO.doubleValue(), context.getMinSignificand().doubleValue(), 0.0);
+      assertEquals(max.doubleValue(), context.getMaxDouble(0),
+                   EPSILON * context.getMaxDouble(0));
+      assertEquals(ZERO.doubleValue(), context.getMinDouble(0), 0.0);
 
       // TODO Issue #15: encode/decode
 
@@ -289,21 +286,18 @@ public class PaillierEncodedNumberTest {
       assertEquals(new Number(max, exponent), context.getMax(0));
       assertEquals(new Number(ZERO, exponent), context.getMin(0));
 
-      assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
-      assertEquals(ZERO, context.getMinSignificand());
+      assertEquals(max.shiftLeft(exponent), context.getMaxBigInteger(0));
+      assertEquals(ZERO, context.getMinBigInteger(0));
 
       long maxLong = max.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
               exponent).longValue();
-      long actualMaxLong = context.getMaxSignificand().compareTo(
-              BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
-              exponent).longValue();
-      assertEquals(maxLong, actualMaxLong);
-      assertEquals(ZERO.longValue(), context.getMinSignificand().longValue());
+      assertEquals(maxLong, context.getMaxLong(0));
+      assertEquals(ZERO.longValue(), context.getMinLong(0));
 
-      assertEquals(max.doubleValue(), context.getMaxSignificand().doubleValue(),
-                   EPSILON * context.getMaxSignificand().doubleValue());
-      assertEquals(ZERO.doubleValue(), context.getMinSignificand().doubleValue(), 0.0);
+      assertEquals(max.doubleValue(), context.getMaxDouble(0),
+                   EPSILON * context.getMaxDouble(0));
+      assertEquals(ZERO.doubleValue(), context.getMinDouble(0), 0.0);
     } else if (configuration.signedFullPrecision()) {
       BigInteger max = context.getPublicKey().getModulus().shiftRight(1);
       BigInteger min = max.negate();
@@ -311,29 +305,22 @@ public class PaillierEncodedNumberTest {
       assertEquals(new Number(max, exponent), context.getMax(0));
       assertEquals(new Number(min, exponent), context.getMin(0));
 
-      assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
-      assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
+      assertEquals(max.shiftLeft(exponent), context.getMaxBigInteger(0));
+      assertEquals(min.shiftLeft(exponent), context.getMinBigInteger(0));
 
       long maxLong = max.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
               exponent).longValue();
-      long actualMaxLong = context.getMaxSignificand().compareTo(
-              BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
-              exponent).longValue();
-      assertEquals(maxLong, actualMaxLong);
+      assertEquals(maxLong, context.getMaxLong(0));
       long minLong = min.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MIN_VALUE) <= 0 ? Long.MIN_VALUE : min.shiftLeft(
               exponent).longValue();
-      long actualMinLong = context.getMinSignificand().compareTo(
-              BigIntegerUtil.LONG_MIN_VALUE) <= 0 ? Long.MIN_VALUE : min.shiftLeft(
-              exponent).longValue();
-      assertEquals(minLong, actualMinLong);
+      assertEquals(minLong, context.getMinLong(0));
 
-
-      assertEquals(max.doubleValue(), context.getMaxSignificand().doubleValue(),
-                   EPSILON * context.getMaxSignificand().doubleValue());
-      assertEquals(min.doubleValue(), context.getMinSignificand().doubleValue(),
-                   EPSILON * Math.abs(context.getMinSignificand().doubleValue()));
+      assertEquals(max.doubleValue(), context.getMaxDouble(0),
+                   EPSILON * context.getMaxDouble(0));
+      assertEquals(min.doubleValue(), context.getMinDouble(0),
+                   EPSILON * Math.abs(context.getMinDouble(0)));
     } else if (configuration.signedPartialPrecision()) {
       BigInteger max = ONE.shiftLeft(precision - 1).subtract(ONE);
       BigInteger min = max.negate();
@@ -341,28 +328,22 @@ public class PaillierEncodedNumberTest {
       assertEquals(new Number(max, exponent), context.getMax(0));
       assertEquals(new Number(min, exponent), context.getMin(0));
 
-      assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
-      assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
+      assertEquals(max.shiftLeft(exponent), context.getMaxBigInteger(0));
+      assertEquals(min.shiftLeft(exponent), context.getMinBigInteger(0));
 
       long maxLong = max.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
               exponent).longValue();
-      long actualMaxLong = context.getMaxSignificand().compareTo(
-              BigIntegerUtil.LONG_MAX_VALUE) >= 0 ? Long.MAX_VALUE : max.shiftLeft(
-              exponent).longValue();
-      assertEquals(maxLong, actualMaxLong);
+      assertEquals(maxLong, context.getMaxLong(0));
       long minLong = min.shiftLeft(exponent).compareTo(
               BigIntegerUtil.LONG_MIN_VALUE) <= 0 ? Long.MIN_VALUE : min.shiftLeft(
               exponent).longValue();
-      long actualMinLong = context.getMinSignificand().compareTo(
-              BigIntegerUtil.LONG_MIN_VALUE) <= 0 ? Long.MIN_VALUE : min.shiftLeft(
-              exponent).longValue();
-      assertEquals(minLong, actualMinLong);
+      assertEquals(minLong, context.getMinLong(0));
 
-      assertEquals(max.doubleValue(), context.getMaxSignificand().doubleValue(),
-                   EPSILON * context.getMaxSignificand().doubleValue());
-      assertEquals(min.doubleValue(), context.getMinSignificand().doubleValue(),
-                   EPSILON * Math.abs(context.getMinSignificand().doubleValue()));
+      assertEquals(max.doubleValue(), context.getMaxDouble(0),
+                   EPSILON * context.getMaxDouble(0));
+      assertEquals(min.doubleValue(), context.getMinDouble(0),
+                   EPSILON * Math.abs(context.getMinDouble(0)));
     } else {
       fail("Invalid defConfig!");
     }

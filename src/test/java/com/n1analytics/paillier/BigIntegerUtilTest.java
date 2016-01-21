@@ -86,15 +86,15 @@ public class BigIntegerUtilTest {
     assertFalse(BigIntegerUtil.lessOrEqual(BigOne, BigNegativeOne));
   }
 
-//  @Test
-//  public void testAbsBitLength() throws Exception {
-//    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne));
-//    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne.negate()));
-//
-//    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero));
-//    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero.negate()));
-//    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigNegativeOne));
-//  }
+  @Test
+  public void testAbsBitLength() throws Exception {
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne));
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigOne.negate()));
+
+    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero));
+    assertEquals(BigZero.bitLength(), BigIntegerUtil.absBitLength(BigZero.negate()));
+    assertEquals(BigOne.bitLength(), BigIntegerUtil.absBitLength(BigNegativeOne));
+  }
 
   @Test
   public void testSqrt() throws Exception {

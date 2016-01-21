@@ -195,8 +195,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       ciphertTextA = context.encrypt(a);
       ciphertTextB = context.encrypt(b);
@@ -217,10 +215,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       }
@@ -249,7 +245,6 @@ public class AdditionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -305,8 +300,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
@@ -327,10 +320,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       }
@@ -359,7 +350,6 @@ public class AdditionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -416,8 +406,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       ciphertTextA = context.encrypt(a);
       numberB = Number.encode(b);
@@ -438,10 +426,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       }
@@ -470,7 +456,6 @@ public class AdditionTest {
         decodedResult = decryptedResult.decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -525,8 +510,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encodedA = context.encode(a);
       encodedB = context.encode(b);
@@ -545,10 +528,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -575,7 +556,6 @@ public class AdditionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -628,8 +608,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encodedA = context.encode(a);
       numberB = Number.encode(b);
@@ -648,10 +626,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -679,7 +655,6 @@ public class AdditionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -732,8 +707,6 @@ public class AdditionTest {
       b = randomFiniteDouble();
 
       plainResult = a + b;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       numberA = Number.encode(a);
       numberB = Number.encode(b);
@@ -752,10 +725,8 @@ public class AdditionTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -782,7 +753,6 @@ public class AdditionTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }

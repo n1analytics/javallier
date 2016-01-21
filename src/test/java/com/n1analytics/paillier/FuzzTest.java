@@ -60,8 +60,6 @@ public class FuzzTest {
       }
 
       plainResult = (a + b) * c;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(numberC);
       decryptedResult = privateKey.decrypt(encryptedResult);
@@ -75,10 +73,8 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -109,8 +105,6 @@ public class FuzzTest {
       }
 
       plainResult = a * b + c;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encryptedResult1 = ciphertextA.multiply(numberB);
       encryptedResult2 = encryptedResult1.add(ciphertextC);
@@ -125,10 +119,8 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -161,8 +153,6 @@ public class FuzzTest {
       }
 
       plainResult = a + b * (c + d);
-      if(Double.isInfinite(plainResult))
-        continue;
 
       additionResult = numberC.add(numberD);
       encryptedResult1 = ciphertextB.multiply(additionResult);
@@ -182,10 +172,8 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -206,7 +194,7 @@ public class FuzzTest {
       c = randomFiniteDouble();
       d = randomFiniteDouble();
 
-      if (Double.isInfinite(1 / d) || Double.isNaN(1/d)) {
+      if (Double.isInfinite(1 / d)) {
         continue;
       }
 
@@ -221,8 +209,6 @@ public class FuzzTest {
       }
 
       plainResult = (a + (b * c)) / d;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encryptedResult1 = ciphertextB.multiply(numberC);
       encryptedResult2 = ciphertextA.add(encryptedResult1);
@@ -242,11 +228,9 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
+          if (!Double.isInfinite(plainResult)) {
+              assertEquals(plainResult, decodedResult, tolerance);
           }
-        }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }
@@ -276,8 +260,6 @@ public class FuzzTest {
       }
 
       plainResult = a + b + c;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
 
@@ -292,10 +274,8 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -325,8 +305,6 @@ public class FuzzTest {
       }
 
       plainResult = a * b * c;
-      if(Double.isInfinite(plainResult))
-        continue;
 
       encryptedResult = ciphertextA.multiply(b).multiply(c);
 
@@ -341,10 +319,8 @@ public class FuzzTest {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
+        if (!Double.isInfinite(plainResult)) {
+          assertEquals(plainResult, decodedResult, tolerance);
         }
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -376,7 +352,6 @@ public class FuzzTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -405,7 +380,6 @@ public class FuzzTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
@@ -435,7 +409,6 @@ public class FuzzTest {
 
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
       }
     }
   }
