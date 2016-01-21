@@ -118,15 +118,16 @@ public final class Number {
     return significand.signum();
   }
 
-  /**
-   * The number zero with respect to {@code exponent}.
-   *
-   * @param exponent the exponent of the fixed-point representation.
-   * @return {@code Number(0, exponent)}.
-   */
-  public static Number zero(int exponent) {
-    return new Number(BigInteger.ZERO, exponent);
-  }
+  // In the EncodedNumber representation of an integer, the exponent is always 0.
+//  /**
+//   * The number zero with respect to {@code exponent}.
+//   *
+//   * @param exponent the exponent of the fixed-point representation.
+//   * @return {@code Number(0, exponent)}.
+//   */
+//  public static Number zero(int exponent) {
+//    return new Number(BigInteger.ZERO, exponent);
+//  }
 
   /**
    * The number zero with respect to exponent 0.
@@ -137,44 +138,56 @@ public final class Number {
     return new Number(BigInteger.ZERO, 0);
   }
 
+//  /**
+//   * The smallest positive fixed-point number that can be encoded with respect
+//   * to the specified exponent.
+//   *
+//   * @param exponent the exponent of the fixed-point representation.
+//   * @return <code>Number(2<sup>exponent</sup>, exponent)</code>.
+//   */
+//  public static Number positiveEpsilon(int exponent) {
+//    return new Number(BigInteger.ONE, exponent);
+//  }
+//
+//  /**
+//   * The negative fixed-point number closest to zero that can be encoded with
+//   * respect to the specified exponent.
+//   *
+//   * @param exponent the exponent of the fixed-point representation.
+//   * @return <code>Number(-1 * 2<sup>exponent</sup>, exponent)</code>.
+//   */
+//  public static Number negativeEpsilon(int exponent) {
+//    return new Number(BigInteger.ONE.negate(), exponent);
+//  }
+
   /**
-   * The smallest positive fixed-point number that can be encoded with respect
+   * The precision of the number that can be encoded with respect
    * to the specified exponent.
    *
    * @param exponent the exponent of the fixed-point representation.
-   * @return <code>Number(2<sup>exponent</sup>, exponent)</code>.
+   * @return <code>1 * BASE<sup>exponent</sup></code>.
    */
-  public static Number positiveEpsilon(int exponent) {
+  public static Number epsilon(int exponent) {
     return new Number(BigInteger.ONE, exponent);
   }
 
-  /**
-   * The negative fixed-point number closest to zero that can be encoded with
-   * respect to the specified exponent.
-   *
-   * @param exponent the exponent of the fixed-point representation.
-   * @return <code>Number(-1 * 2<sup>exponent</sup>, exponent)</code>.
-   */
-  public static Number negativeEpsilon(int exponent) {
-    return new Number(BigInteger.ONE.negate(), exponent);
-  }
-
-  /**
-   * The number one with respect to {@code exponent}.
-   *
-   * Results in a {@code Number} object whose significand is
-   * <code>2<sup>-exponent</sup></code> and whose exponent is {@code exponent}.
-   *
-   * @param exponent The exponent of the fixed-point representation.
-   * @return <code>Number(2<sup>-exponent</sup>, exponent)</code>.
-   * @throws IllegalArgumentException if {@code exponent} is greater than zero.
-   */
-  public static Number one(int exponent) throws IllegalArgumentException {
-    if (exponent > 0) {
-      throw new IllegalArgumentException("Cannot represent one with a positive exponent");
-    }
-    return new Number(BigInteger.ONE.shiftRight(exponent), exponent);
-  }
+  // In the EncodedNumber representation of an integer, the exponent is always 0.
+//  /**
+//   * The number one with respect to {@code exponent}.
+//   *
+//   * Results in a {@code Number} object whose significand is
+//   * <code>2<sup>-exponent</sup></code> and whose exponent is {@code exponent}.
+//   *
+//   * @param exponent The exponent of the fixed-point representation.
+//   * @return <code>Number(2<sup>-exponent</sup>, exponent)</code>.
+//   * @throws IllegalArgumentException if {@code exponent} is greater than zero.
+//   */
+//  public static Number one(int exponent) throws IllegalArgumentException {
+//    if (exponent > 0) {
+//      throw new IllegalArgumentException("Cannot represent one with a positive exponent");
+//    }
+//    return new Number(BigInteger.ONE.shiftRight(exponent), exponent);
+//  }
 
   /**
    * The number one represented with the minimal significand.
