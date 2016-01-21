@@ -915,4 +915,99 @@ public class NumberTest {
 //      testEncodeToPrecisionDecodeLong(random.nextLong());
 //    }
 //  }
+
+
+  // NOTE: Due to rounding error/limited precision, reducing the exponent of an EncodedNumber affects its precision.
+  //       Once decoded, it's possible that the value of the EncodedNumber is slightly changed (e.g., from 3.14 to
+  //       3.1399999999999999023003738329862243016303180218865632677037090457780224)
+  @Test
+  public void testEncodedDecreaseExponentTo0() throws Exception {
+    Number number1 = Number.encode(3.14);
+    assert -30 < number1.getExponent();
+    Number number2 = number1.decreaseExponentTo(-30);
+
+    if(number1.getExponent() < -30){
+      fail("-30 < number1.getExponent()");
+    }
+    assertEquals(-30, number2.getExponent());
+    double decodedNumber = number2.decodeDouble();
+    assertEquals(3.14, decodedNumber, EPSILON);
+  }
+
+  @Test
+  public void testEncodedDecreaseExponentTo1() throws Exception {
+    Number number1 = Number.encode(-3.14);
+    assert -30 < number1.getExponent();
+    Number number2 = number1.decreaseExponentTo(-30);
+
+    if(number1.getExponent() < -30){
+      fail("-30 < number1.getExponent()");
+    }
+    assertEquals(-30, number2.getExponent());
+    double decodedNumber = number2.decodeDouble();
+    assertEquals(-3.14, decodedNumber, EPSILON);
+  }
+
+  @Test
+  public void testEncodedDecreaseInvalidExponent() throws Exception {
+    Number enc1 = Number.encode(3.14);
+    assert enc1.getExponent() < -10;
+
+    try {
+      enc1.decreaseExponentTo(-10);
+    } catch (IllegalArgumentException e) {
+    }
+  }
+
+  @Test
+  public void testManualPrecisionPositiveDouble() throws Exception {
+    double originalNumber = 3.171234e-7;
+    double precision = 1e-8;
+
+    Number number = Number.encode(originalNumber, precision);
+    double decodedNumber = number.decodeDouble();
+    if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
+      fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+    }
+
+    Number number2 = Number.encode(decodedNumber + 0.500001 * precision, precision);
+    double decodedNumber2 = number2.decodeDouble();
+    if(decodedNumber == decodedNumber2)
+      fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
+
+    if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
+      fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
+
+    double value = decodedNumber + precision / 16;
+    Number number3 = Number.encode(value, precision);
+    double decodedNumber3 = number3.decodeDouble();
+    assertEquals(decodedNumber, decodedNumber3, EPSILON);
+  }
+
+  @Test
+  public void testManualPrecisionNegativeDouble() throws Exception {
+    double originalNumber = -3.171234e-7;
+    double precision = 1e-8;
+
+    Number number = Number.encode(originalNumber, precision);
+    double decodedNumber = number.decodeDouble();
+    if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
+      fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+    }
+
+    Number number2 = Number.encode(decodedNumber + 0.500001 * precision, precision);
+    double decodedNumber2 = number2.decodeDouble();
+    if(decodedNumber == decodedNumber2)
+      fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
+
+    if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
+      fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
+
+    double value = decodedNumber + precision / 16;
+    Number number3 = Number.encode(value, precision);
+    double decodedNumber3 = number3.decodeDouble();
+    assertEquals(decodedNumber, decodedNumber3, EPSILON);
+  }
+
+
 }
