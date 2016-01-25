@@ -16,7 +16,6 @@ package com.n1analytics.paillier;
 import java.math.BigInteger;
 
 import com.n1analytics.paillier.util.BigIntegerUtil;
-import com.squareup.jnagmp.Gmp;
 
 import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
