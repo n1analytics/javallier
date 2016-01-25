@@ -15,6 +15,10 @@ package com.n1analytics.paillier.util;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.squareup.jnagmp.Gmp;
 
 /**
  * A class containing the common methods for {@code BigInteger} manipulation, including:
@@ -29,6 +33,8 @@ import java.security.SecureRandom;
  * </ul>
  */
 public class BigIntegerUtil {
+  
+  private static Logger logger = Logger.getLogger("com.n1analytics.paillier");
 
   /**
    * Minimum {@code long} value as a {@code BigInteger}.
@@ -40,6 +46,45 @@ public class BigIntegerUtil {
    */
   public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
+ 
+  public static final SecureRandom random = new SecureRandom();
+  
+  /**
+   * will be set to 'true' if the gmp library is available.
+   */
+  public static final boolean USE_GMP;
+ 
+ 
+  static{
+    //check if GMP is available
+    USE_GMP = canLoadGmp();
+  }
+  
+  private static boolean canLoadGmp(){
+    try{
+      Gmp.checkLoaded();
+      return true;
+    }catch(Exception e){
+      logger.log(Level.WARNING, "can't load Gmp library. Falling back to native Java for modPow. Unfortunately, that's a 'lot' slower.", e);
+      return  false;
+    }
+  }
+  
+  /**
+   * computes a modular exponentiation. It will call the GMP library, if available on this system.
+   * This leads to a significant speed-up.
+   * @param base of the modular exponentiation
+   * @param exponent of the exponentiation
+   * @param modulus
+   * @return (base ^ exponent) mod modulus
+   */
+  public static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus){
+    if(USE_GMP){
+      return Gmp.modPowSecure(base, exponent, modulus);
+    }else{
+      return base.modPow(exponent, modulus);
+    }
+  }
   /**
    * Checks whether {@code n} is positive.
    *
@@ -136,7 +181,6 @@ public class BigIntegerUtil {
     }
 
     int bits = n.bitLength();
-    SecureRandom random = new SecureRandom();
     for (; ; ) {
       BigInteger r = new BigInteger(bits, random);
       if (less(r, BigInteger.ONE) || greaterOrEqual(r, n)) {
