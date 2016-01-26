@@ -97,20 +97,20 @@ public class PaillierEncodedNumberTest {
     // less than zero and the encoding is unsigned then it must
     // throw an ArithmeticException.
     try {
-      Number valueFixed = Number.encode(value);
+//      Number valueFixed = Number.encode(value);
       EncodedNumber encoded = conf.context().encode(value);
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encoded negative integer with unsigned encoding");
       }
       assertEquals(conf.context(), encoded.getContext());
-      BigInteger expected = valueBig.shiftRight(valueFixed.getExponent());
+      BigInteger expected = valueBig.shiftRight(encoded.getExponent());
       if (value < 0) {
         expected = conf.modulus().add(expected);
       }
       assertEquals(expected, encoded.getValue());
 //      assertEquals(value, encoded.decodeApproximateLong());
       assertEquals(value, encoded.decodeLong());
-      assertEquals(valueFixed, encoded.decode());
+//      assertEquals(valueFixed, encoded.decode());
 //      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
       assertEquals(valueBig, encoded.decodeBigInteger());
       // NOTE: If value has 11 or less leading zeros then it is not exactly
@@ -173,24 +173,25 @@ public class PaillierEncodedNumberTest {
 
   public void testDouble(TestConfiguration conf, double value) {
     try {
-      Number valueFixed = Number.encode(value);
+//      Number valueFixed = Number.encode(value);
 //      BigInteger valueBig = valueFixed.getSignificand().shiftLeft(valueFixed.getExponent());
 //      long valueLong = valueBig.longValue();
 
-        EncodedNumber encoded = conf.context().encode(value);
+      EncodedNumber encoded = conf.context().encode(value);
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encoded negative double with unsigned encoding");
       }
 
-      BigInteger expected = Number.encode(value).getSignificand();
-      if (value < 0) {
-        expected = conf.modulus().add(expected);
-      }
+//      BigInteger expected = Number.encode(value).getSignificand();
+//      if (value < 0) {
+//        expected = conf.modulus().add(expected);
+//      }
+      BigInteger expected = conf.context().encode(value).getValue();
 
       assertEquals(conf.context(), encoded.getContext());
       assertEquals(expected, encoded.getValue());
       assertEquals(value, encoded.decodeDouble(), EPSILON);
-      assertEquals(valueFixed, encoded.decode());
+//      assertEquals(valueFixed, encoded.decode());
 //      assertEquals(valueBig, encoded.decodeBigInteger());
 //      assertEquals(valueLong, encoded.decodeLong());
     } catch (ArithmeticException e) {
@@ -205,12 +206,12 @@ public class PaillierEncodedNumberTest {
     TestConfiguration conf = CONFIGURATION_DOUBLE;
     testDouble(conf, Double.MAX_VALUE);
     testDouble(conf, Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));
-    testDouble(conf, 1.0);
+    testDouble(conf, 1.0); // FINE
     testDouble(conf, Math.nextAfter(Double.MIN_NORMAL, Double.POSITIVE_INFINITY));
-    testDouble(conf, Double.MIN_NORMAL);
+    testDouble(conf, Double.MIN_NORMAL); // FINE
     testDouble(conf, Math.nextAfter(Double.MIN_NORMAL, Double.NEGATIVE_INFINITY));
-    testDouble(conf, Double.MIN_VALUE);
-    testDouble(conf, 0.0);
+    testDouble(conf, Double.MIN_VALUE); // FINE
+    testDouble(conf, 0.0); // FINE
     testDouble(conf, -0.0);
     testDouble(conf, -Double.MIN_VALUE);
     testDouble(conf, -Math.nextAfter(Double.MIN_NORMAL, Double.NEGATIVE_INFINITY));
@@ -262,8 +263,8 @@ public class PaillierEncodedNumberTest {
     if (configuration.unsignedFullPrecision()) {
       BigInteger max = modulus.subtract(ONE);
 
-      assertEquals(new Number(max, exponent), context.getMax(0));
-      assertEquals(new Number(ZERO, exponent), context.getMin(0));
+//      assertEquals(new Number(max, exponent), context.getMax(0));
+//      assertEquals(new Number(ZERO, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(ZERO, context.getMinSignificand());
@@ -286,8 +287,8 @@ public class PaillierEncodedNumberTest {
     } else if (configuration.unsignedPartialPrecision()) {
       BigInteger max = ONE.shiftLeft(precision).subtract(ONE);
 
-      assertEquals(new Number(max, exponent), context.getMax(0));
-      assertEquals(new Number(ZERO, exponent), context.getMin(0));
+//      assertEquals(new Number(max, exponent), context.getMax(0));
+//      assertEquals(new Number(ZERO, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(ZERO, context.getMinSignificand());
@@ -308,8 +309,8 @@ public class PaillierEncodedNumberTest {
       BigInteger max = context.getPublicKey().getModulus().shiftRight(1);
       BigInteger min = max.negate();
 
-      assertEquals(new Number(max, exponent), context.getMax(0));
-      assertEquals(new Number(min, exponent), context.getMin(0));
+//      assertEquals(new Number(max, exponent), context.getMax(0));
+//      assertEquals(new Number(min, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
@@ -338,8 +339,8 @@ public class PaillierEncodedNumberTest {
       BigInteger max = ONE.shiftLeft(precision - 1).subtract(ONE);
       BigInteger min = max.negate();
 
-      assertEquals(new Number(max, exponent), context.getMax(0));
-      assertEquals(new Number(min, exponent), context.getMin(0));
+//      assertEquals(new Number(max, exponent), context.getMax(0));
+//      assertEquals(new Number(min, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
@@ -381,7 +382,8 @@ public class PaillierEncodedNumberTest {
   public void testMaxEncodableNumber() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
-        Number maxNumber = Number.encode(conf.maxSignificand());
+//        Number maxNumber = Number.encode(conf.maxSignificand());
+        EncodedNumber maxNumber = conf.context().encode(conf.maxSignificand());
         testEncodable(conf.context(), maxNumber);
       }
     }
@@ -391,7 +393,8 @@ public class PaillierEncodedNumberTest {
   public void testMinEncodableNumber() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
-        Number minNumber = Number.encode(conf.minSignificand());
+//        Number minNumber = Number.encode(conf.minSignificand());
+        EncodedNumber minNumber = conf.context().encode(conf.minSignificand());
         testEncodable(conf.context(), minNumber);
       }
     }
@@ -402,8 +405,8 @@ public class PaillierEncodedNumberTest {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         BigInteger humongous = conf.context().getMaxSignificand().add(BigInteger.ONE);
-        Number humongousNumber = new Number(humongous, 0);
-        testUnencodable(conf.context(), humongousNumber);
+//        Number humongousNumber = new Number(humongous, 0);
+        testUnencodable(conf.context(), humongous);
       }
     }
   }
@@ -414,15 +417,16 @@ public class PaillierEncodedNumberTest {
       for (TestConfiguration conf : confs) {
         BigInteger negHumongous = conf.context().getMinSignificand().subtract(
                 BigInteger.ONE);
-        Number negHumongousNumber = new Number(negHumongous, 0);
-        testUnencodable(conf.context(), negHumongousNumber);
+//        Number negHumongousNumber = new Number(negHumongous, 0);
+        testUnencodable(conf.context(), negHumongous);
       }
     }
   }
 
   public void testUndecodable(EncodedNumber encodedNumber) throws Exception {
     try {
-      Number decodedNumber = encodedNumber.decode();
+//      Number decodedNumber = encodedNumber.decode();
+      double decodedNumber = encodedNumber.decodeDouble();
       fail("Error: successfully decode invalid number.");
     } catch (DecodeException e) {
     } catch (ArithmeticException e) {

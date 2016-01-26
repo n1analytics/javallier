@@ -128,15 +128,15 @@ public final class EncodedNumber {
     return context.checkSameContext(other);
   }
 
-  /**
-   * Decode to a fixed point {@code Number} representation.
-   *
-   * @return the decoded {@code Number}.
-   * @throws ArithmeticException
-   */
-  public Number decode() throws ArithmeticException {
-    return context.decode(this);
-  }
+//  /**
+//   * Decode to a fixed point {@code Number} representation.
+//   *
+//   * @return the decoded {@code Number}.
+//   * @throws ArithmeticException
+//   */
+//  public Number decode() throws ArithmeticException {
+//    return context.decode(this);
+//  }
 
 //  /**
 //   * Decodes to an approximated {@code BigInteger} representation.
@@ -154,7 +154,8 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
    */
   public BigInteger decodeBigInteger() throws ArithmeticException {
-    return decode().decodeBigInteger();
+//    return decode().decodeBigInteger();
+    return context.decodeBigInteger(this);
   }
 
 //  /**
@@ -173,7 +174,8 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
    */
   public double decodeDouble() throws ArithmeticException {
-    return decode().decodeDouble();
+//    return decode().decodeDouble();
+    return context.decodeDouble(this);
   }
 
 //  /**
@@ -195,7 +197,8 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this cannot be represented as a valid {@code long}.
    */
   public long decodeLong() throws ArithmeticException {
-    return decode().decodeLong();
+//    return decode().decodeLong();
+    return context.decodeLong(this);
   }
 
   /**
@@ -205,7 +208,10 @@ public final class EncodedNumber {
    * @return the re-encoded number.
    */
   public EncodedNumber changeContext(PaillierContext context) {
-    return context.encode(decode());
+    if(exponent < 0)
+      return context.encode(this.context.decodeDouble(this));
+    else
+      return context.encode(this.context.decodeBigInteger(this));
   }
 
   /**
@@ -236,15 +242,15 @@ public final class EncodedNumber {
     return context.add(this, other);
   }
 
-  /**
-   * Adds a {@code Number} to this {@code EncodedNumber}.
-   *
-   * @param other {@code EncodedNumber} to be added.
-   * @return the addition result.
-   */
-  public EncodedNumber add(Number other) {
-    return add(context.encode(other));
-  }
+//  /**
+//   * Adds a {@code Number} to this {@code EncodedNumber}.
+//   *
+//   * @param other {@code EncodedNumber} to be added.
+//   * @return the addition result.
+//   */
+//  public EncodedNumber add(Number other) {
+//    return add(context.encode(other));
+//  }
 
   /**
    * Adds a {@code BigInteger} to this {@code EncodedNumber}.
@@ -305,15 +311,15 @@ public final class EncodedNumber {
     return context.subtract(this, other);
   }
 
-  /**
-   * Subtracts a {@code Number} from this {@code EncodedNumber}.
-   *
-   * @param other {@code Number} to be subtracted from this.
-   * @return the subtraction result.
-   */
-  public EncodedNumber subtract(Number other) {
-    return subtract(context.encode(other));
-  }
+//  /**
+//   * Subtracts a {@code Number} from this {@code EncodedNumber}.
+//   *
+//   * @param other {@code Number} to be subtracted from this.
+//   * @return the subtraction result.
+//   */
+//  public EncodedNumber subtract(Number other) {
+//    return subtract(context.encode(other));
+//  }
 
   /**
    * Subtracts a {@code BigInteger} from this {@code EncodedNumber}.
@@ -368,15 +374,15 @@ public final class EncodedNumber {
     return context.multiply(this, other);
   }
 
-  /**
-   * Multiplies a {@code Number} with this {@code EncodedNumber}.
-   *
-   * @param other {@code Number} to be multiplied with.
-   * @return the multiplication result.
-   */
-  public EncodedNumber multiply(Number other) {
-    return multiply(context.encode(other));
-  }
+//  /**
+//   * Multiplies a {@code Number} with this {@code EncodedNumber}.
+//   *
+//   * @param other {@code Number} to be multiplied with.
+//   * @return the multiplication result.
+//   */
+//  public EncodedNumber multiply(Number other) {
+//    return multiply(context.encode(other));
+//  }
 
   /**
    * Multiplies a {@code BigInteger} with this {@code EncodedNumber}.

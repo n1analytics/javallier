@@ -53,13 +53,13 @@ public class SubtractionTest {
 
   ;
 
-  interface BinarySubtractor3
-          extends TwoInputsFunction<EncryptedNumber, Number, EncryptedNumber> {
-
-    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2);
-  }
-
-  ;
+//  interface BinarySubtractor3
+//          extends TwoInputsFunction<EncryptedNumber, Number, EncryptedNumber> {
+//
+//    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2);
+//  }
+//
+//  ;
 
   interface BinarySubtractor4
           extends TwoInputsFunction<EncodedNumber, EncodedNumber, EncodedNumber> {
@@ -69,20 +69,20 @@ public class SubtractionTest {
 
   ;
 
-  interface BinarySubtractor5
-          extends TwoInputsFunction<EncodedNumber, Number, EncodedNumber> {
+//  interface BinarySubtractor5
+//          extends TwoInputsFunction<EncodedNumber, Number, EncodedNumber> {
+//
+//    public EncodedNumber eval(EncodedNumber arg1, Number arg2);
+//  }
+//
+//  ;
 
-    public EncodedNumber eval(EncodedNumber arg1, Number arg2);
-  }
-
-  ;
-
-  interface BinarySubtractor6 extends TwoInputsFunction<Number, Number, Number> {
-
-    public Number eval(Number arg1, Number arg2);
-  }
-
-  ;
+//  interface BinarySubtractor6 extends TwoInputsFunction<Number, Number, Number> {
+//
+//    public Number eval(Number arg1, Number arg2);
+//  }
+//
+//  ;
 
   BinarySubtractor1 binarySubtractors1[] = new BinarySubtractor1[]{new BinarySubtractor1() {
     @Override
@@ -132,19 +132,19 @@ public class SubtractionTest {
     }
   }};
 
-  BinarySubtractor3 binarySubtractors3[] = new BinarySubtractor3[]{new BinarySubtractor3() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2) {
-      return arg1.subtract(arg2);
-    }
-  }};
+//  BinarySubtractor3 binarySubtractors3[] = new BinarySubtractor3[]{new BinarySubtractor3() {
+//    @Override
+//    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2) {
+//      return arg1.subtract(arg2);
+//    }
+//  }};
 
-  BinarySubtractor3 binarySubtractorsRight3[] = new BinarySubtractor3[]{new BinarySubtractor3() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2) {
-      return arg2.subtract(arg1);
-    }
-  }};
+//  BinarySubtractor3 binarySubtractorsRight3[] = new BinarySubtractor3[]{new BinarySubtractor3() {
+//    @Override
+//    public EncryptedNumber eval(EncryptedNumber arg1, Number arg2) {
+//      return arg2.subtract(arg1);
+//    }
+//  }};
 
   BinarySubtractor4 binarySubtractors4[] = new BinarySubtractor4[]{new BinarySubtractor4() {
     @Override
@@ -170,33 +170,33 @@ public class SubtractionTest {
     }
   }};
 
-  BinarySubtractor5 binarySubtractors5[] = new BinarySubtractor5[]{new BinarySubtractor5() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, Number arg2) {
-      return arg1.subtract(arg2);
-    }
-  }};
+//  BinarySubtractor5 binarySubtractors5[] = new BinarySubtractor5[]{new BinarySubtractor5() {
+//    @Override
+//    public EncodedNumber eval(EncodedNumber arg1, Number arg2) {
+//      return arg1.subtract(arg2);
+//    }
+//  }};
 
-  BinarySubtractor5 binarySubtractorsRight5[] = new BinarySubtractor5[]{new BinarySubtractor5() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, Number arg2) {
-      return arg2.subtract(arg1);
-    }
-  }};
+//  BinarySubtractor5 binarySubtractorsRight5[] = new BinarySubtractor5[]{new BinarySubtractor5() {
+//    @Override
+//    public EncodedNumber eval(EncodedNumber arg1, Number arg2) {
+//      return arg2.subtract(arg1);
+//    }
+//  }};
 
-  BinarySubtractor6 binarySubtractors6[] = new BinarySubtractor6[]{new BinarySubtractor6() {
-    @Override
-    public Number eval(Number arg1, Number arg2) {
-      return arg1.subtract(arg2);
-    }
-  }};
+//  BinarySubtractor6 binarySubtractors6[] = new BinarySubtractor6[]{new BinarySubtractor6() {
+//    @Override
+//    public Number eval(Number arg1, Number arg2) {
+//      return arg1.subtract(arg2);
+//    }
+//  }};
 
-  BinarySubtractor6 binarySubtractorsRight6[] = new BinarySubtractor6[]{new BinarySubtractor6() {
-    @Override
-    public Number eval(Number arg1, Number arg2) {
-      return arg2.subtract(arg1);
-    }
-  }};
+//  BinarySubtractor6 binarySubtractorsRight6[] = new BinarySubtractor6[]{new BinarySubtractor6() {
+//    @Override
+//    public Number eval(Number arg1, Number arg2) {
+//      return arg2.subtract(arg1);
+//    }
+//  }};
 
   void testDoubleSubtraction(BinarySubtractor1 subtractor) {
     double a, b, plainResult, decodedResult, tolerance;
@@ -217,7 +217,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -259,7 +259,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-      if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+      if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
           continue;
       }
 
@@ -364,7 +364,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -405,7 +405,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+        if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
             continue;
         }
 
@@ -437,7 +437,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -479,7 +479,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+        if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
             continue;
         }
 
@@ -584,7 +584,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -625,7 +625,7 @@ public class SubtractionTest {
       encryptedResult = subtractor.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+        if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
             continue;
         }
 
@@ -638,227 +638,227 @@ public class SubtractionTest {
     }
   }
 
-  void testDoubleSubtraction(BinarySubtractor3 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
+//  void testDoubleSubtraction(BinarySubtractor3 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = a - b;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//        if (!context.isValid(Number.encode(a).subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        decodedResult = decryptedResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
+//  void testDoubleSubtractionRight(BinarySubtractor3 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = b - a;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
+//            continue;
+//        }
+//
+//      try {
+//        decodedResult = decryptedResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
 
-      plainResult = a - b;
-      if(Double.isInfinite(plainResult))
-        continue;
+//  void testLongSubtraction(BinarySubtractor3 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = a - b;
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//      try {
+//        decodedResult = decryptedResult.decodeLong();
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
 
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
+//  void testLongSubtractionRight(BinarySubtractor3 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = b - a;
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//      try {
+//        decodedResult = decryptedResult.decodeLong();
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
 
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
+//  void testBigIntegerSubtraction(BinarySubtractor3 subtractor) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = a.subtract(b);
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//        if (!context.isValid(Number.encode(a).subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        decodedResult = decryptedResult.decodeBigInteger();
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
 
-        if (!context.isValid(Number.encode(a).subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        decodedResult = decryptedResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testDoubleSubtractionRight(BinarySubtractor3 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
-
-      plainResult = b - a;
-      if(Double.isInfinite(plainResult))
-        continue;
-
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
-
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
-
-        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
-            continue;
-        }
-
-      try {
-        decodedResult = decryptedResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testLongSubtraction(BinarySubtractor3 subtractor) {
-    long a, b, plainResult, decodedResult;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = a - b;
-
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
-
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
-
-      try {
-        decodedResult = decryptedResult.decodeLong();
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testLongSubtractionRight(BinarySubtractor3 subtractor) {
-    long a, b, plainResult, decodedResult;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = b - a;
-
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
-
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
-
-      try {
-        decodedResult = decryptedResult.decodeLong();
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtraction(BinarySubtractor3 subtractor) {
-    BigInteger a, b, plainResult, decodedResult;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = a.subtract(b);
-
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
-
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
-
-        if (!context.isValid(Number.encode(a).subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        decodedResult = decryptedResult.decodeBigInteger();
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtractionRight(BinarySubtractor3 subtractor) {
-    BigInteger a, b, plainResult, decodedResult;
-    EncryptedNumber ciphertTextA, encryptedResult;
-    EncodedNumber decryptedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = b.subtract(a);
-
-      ciphertTextA = context.encrypt(a);
-      numberB = Number.encode(b);
-
-      encryptedResult = subtractor.eval(ciphertTextA, numberB);
-      decryptedResult = encryptedResult.decrypt(privateKey);
-
-        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
-            continue;
-        }
-
-      try {
-        decodedResult = decryptedResult.decodeBigInteger();
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
+//  void testBigIntegerSubtractionRight(BinarySubtractor3 subtractor) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    EncryptedNumber ciphertTextA, encryptedResult;
+//    EncodedNumber decryptedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = b.subtract(a);
+//
+//      ciphertTextA = context.encrypt(a);
+//      numberB = Number.encode(b);
+//
+//      encryptedResult = subtractor.eval(ciphertTextA, numberB);
+//      decryptedResult = encryptedResult.decrypt(privateKey);
+//
+//        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
+//            continue;
+//        }
+//
+//      try {
+//        decodedResult = decryptedResult.decodeBigInteger();
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
 
   void testDoubleSubtraction(BinarySubtractor4 subtractor) {
     double a, b, plainResult, decodedResult, tolerance;
@@ -875,7 +875,7 @@ public class SubtractionTest {
       encodedA = context.encode(a);
       encodedB = context.encode(b);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -915,7 +915,7 @@ public class SubtractionTest {
       encodedA = context.encode(a);
       encodedB = context.encode(b);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+        if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
             continue;
         }
 
@@ -1012,7 +1012,7 @@ public class SubtractionTest {
       encodedA = context.encode(a);
       encodedB = context.encode(b);
 
-        if (!context.isValid(Number.encode(a).subtract(Number.encode(b)))) {
+        if (!context.isValid(context.encode(a).subtract(context.encode(b)))) {
             continue;
         }
 
@@ -1050,7 +1050,7 @@ public class SubtractionTest {
       encodedA = context.encode(a);
       encodedB = context.encode(b);
 
-        if (!context.isValid(Number.encode(b).subtract(Number.encode(a)))) {
+        if (!context.isValid(context.encode(b).subtract(context.encode(a)))) {
             continue;
         }
 
@@ -1064,419 +1064,419 @@ public class SubtractionTest {
     }
   }
 
-  void testDoubleSubtraction(BinarySubtractor5 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
-
-      plainResult = a - b;
-      if(Double.isInfinite(plainResult))
-        continue;
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(Number.encode(a).subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testDoubleSubtractionRight(BinarySubtractor5 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
-
-      plainResult = b - a;
-      if(Double.isInfinite(plainResult))
-        continue;
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
-            continue;
-        }
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testLongSubtraction(BinarySubtractor5 subtractor) {
-    long a, b, plainResult, decodedResult;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = a - b;
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeLong();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testLongSubtractionRight(BinarySubtractor5 subtractor) {
-    long a, b, plainResult, decodedResult;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = b - a;
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeLong();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtraction(BinarySubtractor5 subtractor) {
-    BigInteger a, b, plainResult, decodedResult;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = a.subtract(b);
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(Number.encode(a).subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeBigInteger();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtractionRight(BinarySubtractor5 subtractor) {
-    BigInteger a, b, plainResult, decodedResult;
-    EncodedNumber encodedA, encodedResult;
-    Number numberB;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = b.subtract(a);
-
-      encodedA = context.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
-            continue;
-        }
-
-      try {
-        encodedResult = subtractor.eval(encodedA, numberB);
-        decodedResult = encodedResult.decodeBigInteger();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testDoubleSubtraction(BinarySubtractor6 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
-
-      plainResult = a - b;
-      if(Double.isInfinite(plainResult))
-        continue;
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberA.subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        numberResult = subtractor.eval(numberA, numberB);
-        decodedResult = numberResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testDoubleSubtractionRight(BinarySubtractor6 subtractor) {
-    double a, b, plainResult, decodedResult, tolerance;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = randomFiniteDouble();
-      b = randomFiniteDouble();
-
-      plainResult = b - a;
-      if(Double.isInfinite(plainResult))
-        continue;
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberB.subtract(numberA))) {
-            continue;
-        }
-
-      try {
-        numberResult = subtractor.eval(numberA, numberB);
-        decodedResult = numberResult.decodeDouble();
-
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
-        } else {
-          tolerance = EPSILON;
-        }
-
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
-      } catch (DecodeException e) {
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testLongSubtraction(BinarySubtractor6 subtractor) {
-    long a, b, plainResult, decodedResult;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = a - b;
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-      try {
-        numberResult = subtractor.eval(numberA, numberB);
-        decodedResult = numberResult.decodeLong();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testLongSubtractionRight(BinarySubtractor6 subtractor) {
-    long a, b, plainResult, decodedResult;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = random.nextLong();
-      b = random.nextLong();
-
-      plainResult = b - a;
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-      try {
-        numberResult = subtractor.eval(numberA, numberB);
-        decodedResult = numberResult.decodeLong();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      } catch (DecodeException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtraction(BinarySubtractor6 subtrator) {
-    BigInteger a, b, plainResult, decodedResult;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = a.subtract(b);
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberA.subtract(numberB))) {
-            continue;
-        }
-
-      try {
-        numberResult = subtrator.eval(numberA, numberB);
-        decodedResult = numberResult.decodeBigInteger();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
-
-  void testBigIntegerSubtractionRight(BinarySubtractor6 subtractor) {
-    BigInteger a, b, plainResult, decodedResult;
-    Number numberA, numberB, numberResult;
-
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
-
-      // The random generator above only generates positive BigIntegers, the following code
-      // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
-      }
-
-      plainResult = b.subtract(a);
-
-      numberA = Number.encode(a);
-      numberB = Number.encode(b);
-
-        if (!context.isValid(numberB.subtract(numberA))) {
-            continue;
-        }
-
-      try {
-        numberResult = subtractor.eval(numberA, numberB);
-        decodedResult = numberResult.decodeBigInteger();
-
-        assertEquals(plainResult, decodedResult);
-      } catch (ArithmeticException e) {
-      }
-    }
-  }
+//  void testDoubleSubtraction(BinarySubtractor5 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = a - b;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(Number.encode(a).subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testDoubleSubtractionRight(BinarySubtractor5 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = b - a;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
+//            continue;
+//        }
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testLongSubtraction(BinarySubtractor5 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = a - b;
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeLong();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
+
+//  void testLongSubtractionRight(BinarySubtractor5 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = b - a;
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeLong();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
+
+//  void testBigIntegerSubtraction(BinarySubtractor5 subtractor) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = a.subtract(b);
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(Number.encode(a).subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeBigInteger();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testBigIntegerSubtractionRight(BinarySubtractor5 subtractor) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    EncodedNumber encodedA, encodedResult;
+//    Number numberB;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = b.subtract(a);
+//
+//      encodedA = context.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberB.subtract(Number.encode(a)))) {
+//            continue;
+//        }
+//
+//      try {
+//        encodedResult = subtractor.eval(encodedA, numberB);
+//        decodedResult = encodedResult.decodeBigInteger();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testDoubleSubtraction(BinarySubtractor6 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = a - b;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberA.subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        numberResult = subtractor.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testDoubleSubtractionRight(BinarySubtractor6 subtractor) {
+//    double a, b, plainResult, decodedResult, tolerance;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = randomFiniteDouble();
+//      b = randomFiniteDouble();
+//
+//      plainResult = b - a;
+//      if(Double.isInfinite(plainResult))
+//        continue;
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberB.subtract(numberA))) {
+//            continue;
+//        }
+//
+//      try {
+//        numberResult = subtractor.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeDouble();
+//
+//        if (Math.getExponent(decodedResult) > 0) {
+//          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+//        } else {
+//          tolerance = EPSILON;
+//        }
+//
+//        if (!Double.isNaN(decodedResult)) {
+//          if (!Double.isInfinite(decodedResult)) {
+//            assertEquals(plainResult, decodedResult, tolerance);
+//          }
+//        }
+//      } catch (DecodeException e) {
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testLongSubtraction(BinarySubtractor6 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = a - b;
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//      try {
+//        numberResult = subtractor.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeLong();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
+
+//  void testLongSubtractionRight(BinarySubtractor6 subtractor) {
+//    long a, b, plainResult, decodedResult;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = random.nextLong();
+//      b = random.nextLong();
+//
+//      plainResult = b - a;
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//      try {
+//        numberResult = subtractor.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeLong();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      } catch (DecodeException e) {
+//      }
+//    }
+//  }
+
+//  void testBigIntegerSubtraction(BinarySubtractor6 subtrator) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = a.subtract(b);
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberA.subtract(numberB))) {
+//            continue;
+//        }
+//
+//      try {
+//        numberResult = subtrator.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeBigInteger();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
+
+//  void testBigIntegerSubtractionRight(BinarySubtractor6 subtractor) {
+//    BigInteger a, b, plainResult, decodedResult;
+//    Number numberA, numberB, numberResult;
+//
+//    for (int i = 0; i < maxIteration; i++) {
+//      a = new BigInteger(bigIntegerBitLength, random);
+//      b = new BigInteger(bigIntegerBitLength, random);
+//
+//      // The random generator above only generates positive BigIntegers, the following code
+//      // negates some inputs.
+//      if (i % 4 == 1) {
+//        b = b.negate();
+//      } else if (i % 4 == 2) {
+//        a = a.negate();
+//      } else if (i % 4 == 3) {
+//        a = a.negate();
+//        b = b.negate();
+//      }
+//
+//      plainResult = b.subtract(a);
+//
+//      numberA = Number.encode(a);
+//      numberB = Number.encode(b);
+//
+//        if (!context.isValid(numberB.subtract(numberA))) {
+//            continue;
+//        }
+//
+//      try {
+//        numberResult = subtractor.eval(numberA, numberB);
+//        decodedResult = numberResult.decodeBigInteger();
+//
+//        assertEquals(plainResult, decodedResult);
+//      } catch (ArithmeticException e) {
+//      }
+//    }
+//  }
 
   @Test
   public void testSubtractionEncryptedNumbers1() throws Exception {
@@ -1508,20 +1508,20 @@ public class SubtractionTest {
     }
   }
 
-  @Test
-  public void testSubtractionEncryptedNumbers3() throws Exception {
-    for (BinarySubtractor3 subtractor : binarySubtractors3) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
-
-    for (BinarySubtractor3 subtractor : binarySubtractorsRight3) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
-  }
+//  @Test
+//  public void testSubtractionEncryptedNumbers3() throws Exception {
+//    for (BinarySubtractor3 subtractor : binarySubtractors3) {
+//      testDoubleSubtraction(subtractor);
+//      testLongSubtraction(subtractor);
+//      testBigIntegerSubtraction(subtractor);
+//    }
+//
+//    for (BinarySubtractor3 subtractor : binarySubtractorsRight3) {
+//      testDoubleSubtractionRight(subtractor);
+//      testLongSubtractionRight(subtractor);
+//      testBigIntegerSubtractionRight(subtractor);
+//    }
+//  }
 
   @Test
   public void testSubtractionEncodedNumbers1() throws Exception {
@@ -1538,34 +1538,34 @@ public class SubtractionTest {
     }
   }
 
-  @Test
-  public void testSubtractionEncodedNumbers2() throws Exception {
-    for (BinarySubtractor5 subtractor : binarySubtractors5) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
+//  @Test
+//  public void testSubtractionEncodedNumbers2() throws Exception {
+//    for (BinarySubtractor5 subtractor : binarySubtractors5) {
+//      testDoubleSubtraction(subtractor);
+//      testLongSubtraction(subtractor);
+//      testBigIntegerSubtraction(subtractor);
+//    }
+//
+//    for (BinarySubtractor5 subtractor : binarySubtractorsRight5) {
+//      testDoubleSubtractionRight(subtractor);
+//      testLongSubtractionRight(subtractor);
+//      testBigIntegerSubtractionRight(subtractor);
+//    }
+//  }
 
-    for (BinarySubtractor5 subtractor : binarySubtractorsRight5) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
-  }
-
-  @Test
-  public void testSubtractionNumbers1() throws Exception {
-    for (BinarySubtractor6 subtractor : binarySubtractors6) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
-
-    for (BinarySubtractor6 subtractor : binarySubtractorsRight6) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
-  }
+//  @Test
+//  public void testSubtractionNumbers1() throws Exception {
+//    for (BinarySubtractor6 subtractor : binarySubtractors6) {
+//      testDoubleSubtraction(subtractor);
+//      testLongSubtraction(subtractor);
+//      testBigIntegerSubtraction(subtractor);
+//    }
+//
+//    for (BinarySubtractor6 subtractor : binarySubtractorsRight6) {
+//      testDoubleSubtractionRight(subtractor);
+//      testLongSubtractionRight(subtractor);
+//      testBigIntegerSubtractionRight(subtractor);
+//    }
+//  }
 
 }

@@ -30,6 +30,8 @@ public class TestConfiguration {
   // true,
   // 1+Number.FLOAT_MAX_PRECISION);
 
+  private static final int DOUBLE_MAX_PRECISION = 2098;
+
   // A test configurations which are just big enough to encode all
   // floating point values exactly. The modulus key length is chosen to be
   // 2104 since a Number representation of Double.MAX_VALUE with respect
@@ -39,7 +41,7 @@ public class TestConfiguration {
   public static final PaillierPrivateKey PRIVATE_KEY_DOUBLE = PaillierPrivateKey
       .create(2104);
   public static final TestConfiguration CONFIGURATION_DOUBLE = create(
-      PRIVATE_KEY_DOUBLE, true, 1 + Number.DOUBLE_MAX_PRECISION);
+      PRIVATE_KEY_DOUBLE, true, 1 + DOUBLE_MAX_PRECISION);
 
   public static final PaillierPrivateKey PRIVATE_KEY_512 = PaillierPrivateKey
       .create(512);

@@ -206,15 +206,15 @@ public final class EncryptedNumber {
     return context.add(this, other);
   }
 
-  /**
-   * Adds a {@code Number} to this {@code EncryptedNumber}.
-   *
-   * @param other {@code Number} to be added.
-   * @return the addition result.
-   */
-  public EncryptedNumber add(Number other) {
-    return add(context.encode(other));
-  }
+//  /**
+//   * Adds a {@code Number} to this {@code EncryptedNumber}.
+//   *
+//   * @param other {@code Number} to be added.
+//   * @return the addition result.
+//   */
+//  public EncryptedNumber add(Number other) {
+//    return add(context.encode(other));
+//  }
 
   /**
    * Adds a {@code BigInteger} to this {@code EncryptedNumber}.
@@ -275,15 +275,15 @@ public final class EncryptedNumber {
     return context.subtract(this, other);
   }
 
-  /**
-   * Subtracts a {@code Number} from this {@code EncryptedNumber}.
-   *
-   * @param other {@code Number} to be subtracted from this.
-   * @return the subtraction result.
-   */
-  public EncryptedNumber subtract(Number other) {
-    return subtract(context.encode(other));
-  }
+//  /**
+//   * Subtracts a {@code Number} from this {@code EncryptedNumber}.
+//   *
+//   * @param other {@code Number} to be subtracted from this.
+//   * @return the subtraction result.
+//   */
+//  public EncryptedNumber subtract(Number other) {
+//    return subtract(context.encode(other));
+//  }
 
   /**
    * Subtracts a {@code BigInteger} from this {@code EncryptedNumber}.
@@ -325,15 +325,15 @@ public final class EncryptedNumber {
     return context.multiply(this, other);
   }
 
-  /**
-   * Multiplies a {@code Number} with this {@code EncryptedNumber}.
-   *
-   * @param other {@code Number} to be multiplied with.
-   * @return the multiplication result.
-   */
-  public EncryptedNumber multiply(Number other) {
-    return multiply(context.encode(other));
-  }
+//  /**
+//   * Multiplies a {@code Number} with this {@code EncryptedNumber}.
+//   *
+//   * @param other {@code Number} to be multiplied with.
+//   * @return the multiplication result.
+//   */
+//  public EncryptedNumber multiply(Number other) {
+//    return multiply(context.encode(other));
+//  }
 
   /**
    * Multiplies a {@code BigInteger} with this {@code EncryptedNumber}.
