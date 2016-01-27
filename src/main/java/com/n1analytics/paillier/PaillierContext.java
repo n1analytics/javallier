@@ -62,9 +62,9 @@ import java.math.MathContext;
 public class PaillierContext {
 
   /** The base for the encoded number */
-  private static final int BASE = 16;
+  private static final int DEFAULT_BASE = 16;
 
-  private static final double LOG_2_BASE = Math.log((double) BASE)/ Math.log(2.0);
+//  private static final double LOG_2_BASE = Math.log((double) BASE)/ Math.log(2.0);
 
   // Source: http://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.3
   private static final int DOUBLE_MANTISSA_BITS = 53;
@@ -110,6 +110,10 @@ public class PaillierContext {
    */
   private final BigInteger minSignificand;
 
+  private final int base;
+
+  private final double log2Base;
+
   /**
    * Constructs a Paillier context based on a {@code PaillierPublicKey}, a boolean {@code signed}
    * to denote whether the context supports signed or unsigned numbers, and a {@code precision}
@@ -122,7 +126,7 @@ public class PaillierContext {
    * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
    * @param precision to denote the number of bits used to represent valid numbers.
    */
-  public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision) {
+  public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision, int base) {
     if (publicKey == null) {
       throw new NullPointerException("publicKey must not be null");
     }
@@ -143,6 +147,8 @@ public class PaillierContext {
     this.publicKey = publicKey;
     this.signed = signed;
     this.precision = precision;
+    this.base = base;
+    this.log2Base = Math.log((double) base)/ Math.log(2.0);
 
     // Determines the appropriate values for maxEncoded, minEncoded,
     // maxSignificand, and minSignificand based on the signedness and
@@ -167,6 +173,10 @@ public class PaillierContext {
       maxSignificand = maxEncoded;
       minSignificand = BigInteger.ZERO;
     }
+  }
+
+  public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision) {
+    this(publicKey, signed, precision, DEFAULT_BASE);
   }
 
   /**
@@ -654,7 +664,7 @@ public class PaillierContext {
 //  }
 
   private int getPrecExponent(double precision) {
-    return (int) Math.floor(Math.log(precision) / Math.log((double) BASE));
+    return (int) Math.floor(Math.log(precision) / Math.log((double) base));
   }
 
   private int getDoublePrecExponent(double scalar) {
@@ -662,7 +672,7 @@ public class PaillierContext {
 //        System.out.println("\t ENC - binFltExponent: " + binFltExponent);
     int binLsbExponent = binFltExponent - DOUBLE_MANTISSA_BITS;
 //        System.out.println("\t ENC - binLsbExponent: " + binLsbExponent);
-    return (int) Math.floor((double) binLsbExponent / LOG_2_BASE);
+    return (int) Math.floor((double) binLsbExponent / log2Base);
   }
 
   private int getExponent(int precExponent, int maxExponent){
@@ -671,7 +681,7 @@ public class PaillierContext {
 
   private BigInteger innerEncode(BigDecimal scalar, int exponent) {
     // Compute BASE^(-exponent)
-    BigDecimal bigDecBaseExponent = (new BigDecimal(BASE)).pow(-exponent, MathContext.DECIMAL128);
+    BigDecimal bigDecBaseExponent = (new BigDecimal(base)).pow(-exponent, MathContext.DECIMAL128);
 //    System.out.println("bigDecBaseExponent: " + bigDecBaseExponent.toString());
 
     // Compute the integer representation, ie, scalar * (BASE^-exponent)
@@ -694,7 +704,7 @@ public class PaillierContext {
 
   // TODO test this
   public BigInteger getRescalingFactor(int expDiff) {
-    return (new BigInteger(String.valueOf(BASE))).pow(expDiff);
+    return (new BigInteger(String.valueOf(base))).pow(expDiff);
   }
 
   // TODO test this
@@ -773,7 +783,7 @@ public class PaillierContext {
   public BigInteger decodeBigInteger(EncodedNumber encoded) throws DecodeException {
 //    return decode(encoded).decodeBigInteger();
     BigInteger significand = getSignificand(encoded);
-    return significand.multiply((new BigInteger(String.valueOf(BASE))).pow(encoded.getExponent()));
+    return significand.multiply((new BigInteger(String.valueOf(base))).pow(encoded.getExponent()));
   }
 
 //  /**
@@ -800,7 +810,7 @@ public class PaillierContext {
   public double decodeDouble(EncodedNumber encoded) throws DecodeException {
 //    return decode(encoded).decodeDouble();
     BigInteger significand = getSignificand(encoded);
-    double decoded = significand.doubleValue() * Math.pow((double) BASE, (double) encoded.getExponent());
+    double decoded = significand.doubleValue() * Math.pow((double) base, (double) encoded.getExponent());
 
     if(Double.isInfinite(decoded) || Double.isNaN(decoded)) {
       throw new DecodeException("Decoded value cannot be represented as double.");
