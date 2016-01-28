@@ -468,53 +468,76 @@ public class PaillierContext {
 //    return true;
 //  }
 
-  /**
-   * Checks whether a {@code BigInteger} is valid.
-   *
-   * @param value the {@code BigInteger} to be checked.
-   * @return true if it is valid, false otherwise.
-   */
-  public boolean isValid(BigInteger value) {
-    // TODO Issue #12: optimise
-//    return isValid(Number.encode(value));
-    if (value.compareTo(maxSignificand) <= 0 && value.compareTo(minSignificand) >= 0) {
-      return true;
-    }
-    return false;
-  }
+//  /**
+//   * Checks whether a {@code BigInteger} is valid.
+//   *
+//   * @param value the {@code BigInteger} to be checked.
+//   * @return true if it is valid, false otherwise.
+//   */
+//  public boolean isValid(BigInteger value) {
+//    // TODO Issue #12: optimise
+////    return isValid(Number.encode(value));
+//    if (value.compareTo(maxSignificand) <= 0 && value.compareTo(minSignificand) >= 0) {
+//      return true;
+//    }
+//    return false;
+//  }
 
-  /**
-   * Checks whether a {@code double} is valid.
-   *
-   * @param value the {@code double} to be checked.
-   * @return true if it is valid, false otherwise.
-   */
-  public boolean isValid(double value) {
-    // TODO Issue #12: optimise
-    if(Double.isInfinite(value) || Double.isNaN(value))
-      return false;
+//  /**
+//   * Checks whether a {@code double} is valid.
+//   *
+//   * @param value the {@code double} to be checked.
+//   * @return true if it is valid, false otherwise.
+//   */
+//  public boolean isValid(double value) {
+//    // TODO Issue #12: optimise
+//    if(Double.isInfinite(value) || Double.isNaN(value))
+//      return false;
+//
+//    if(value < 0 && isUnsigned())
+//      return false;
+//
+////    if(value > maxSignificand.doubleValue())
+////      System.out.println(value + " should be unencodable");
+////    else if (value == maxSignificand.doubleValue())
+////      System.out.println(value + " equals to maxSignificand");
+//
+//    if(value < minSignificand.doubleValue() || value > maxSignificand.doubleValue())
+//      return false;
+//
+//    return true;
+//
+//
+////    if(value > maxSignificand.doubleValue())
+////      System.out.println(value + " should be unencodable");
+////
+////    BigInteger significand = innerEncode(new BigDecimal(value), getDoublePrecExponent(value));
+////    if(value >= maxSignificand.doubleValue())
+////      System.out.println("significand is " + significand + ", is it equal to maxEncoded? " +
+////              (significand.compareTo(maxEncoded) == 0) + ", is it less than maxEncoded? " +
+////              (significand.compareTo(maxEncoded) < 0) + ", is it greater than maxEncoded? " +
+////              (significand.compareTo(maxEncoded) > 0));
+////
+////    if(BigIntegerUtil.greater(significand, maxEncoded) ||
+////            (value < 0 && BigIntegerUtil.less(significand, minEncoded))) {
+////      System.out.println(value + " is unencodable");
+////      return false;
+////    }
+////
+////    return true;
+//  }
 
-    BigInteger significand = innerEncode(new BigDecimal(value), getDoublePrecExponent(value));
-    if((value > 0 && BigIntegerUtil.greater(significand, maxEncoded)) ||
-            (value < 0 && BigIntegerUtil.less(significand, minEncoded))) {
-//      System.out.println(value + " should be unencodable");
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Checks whether a {@code long} is valid.
-   *
-   * @param value the {@code long} to be checked.
-   * @return true if it is valid, false otherwise.
-   */
-  public boolean isValid(long value) {
-    // TODO Issue #12: optimise
-//    return isValid(Number.encode(value));
-    return isValid(encode(value));
-  }
+//  /**
+//   * Checks whether a {@code long} is valid.
+//   *
+//   * @param value the {@code long} to be checked.
+//   * @return true if it is valid, false otherwise.
+//   */
+//  public boolean isValid(long value) {
+//    // TODO Issue #12: optimise
+////    return isValid(Number.encode(value));
+//    return isValid(BigInteger.valueOf(value));
+//  }
 
 //  /**
 //   * Encodes a {@code Number} using this {@code PaillierContext}.
@@ -550,21 +573,31 @@ public class PaillierContext {
    */
   public EncodedNumber encode(BigInteger value) throws EncodeException {
 //    return encode(Number.encode(value));
-    if (!isValid(value))
-      throw new EncodeException();
-    if (value.signum() < 0 && !isSigned()) {
-      throw new EncodeException();
+//    if (!isValid(value))
+//      throw new EncodeException("Input value cannot be encoded.");
+    if (BigIntegerUtil.greater(value, maxSignificand) || BigIntegerUtil.less(value, minSignificand)) {
+      throw new EncodeException("Input value cannot be encoded.");
     }
+
+    if (value.signum() < 0 && isUnsigned()) {
+      throw new EncodeException("Input value cannot be encoded using this Paillier context.");
+    }
+
+//    BigInteger significand = innerEncode(new BigDecimal(value), exponent);
+////    if((value.signum() > 0 && BigIntegerUtil.greater(significand, maxEncoded)) ||
+////            (value.signum() < 0 && BigIntegerUtil.less(significand, minEncoded))) {
+////      System.out.println(value + " should be unencodable");
+////    }
+////    if(significand.signum() < 0)
+////      System.out.println("Odd, why does the significand < 0?");
+//    return new EncodedNumber(this, significand, exponent);
+
     int exponent = 0;
 
-    BigInteger significand = innerEncode(new BigDecimal(value), exponent);
-//    if((value.signum() > 0 && BigIntegerUtil.greater(significand, maxEncoded)) ||
-//            (value.signum() < 0 && BigIntegerUtil.less(significand, minEncoded))) {
-//      System.out.println(value + " should be unencodable");
-//    }
-//    if(significand.signum() < 0)
-//      System.out.println("Odd, why does the significand < 0?");
-    return new EncodedNumber(this, significand, exponent);
+    if(value.signum() < 0)
+      value = value.add(publicKey.getModulus());
+
+    return new EncodedNumber(this, value, exponent);
   }
 
 //  public EncodedNumber encode(BigInteger value, int maxExponent) {
@@ -592,28 +625,30 @@ public class PaillierContext {
    */
   public EncodedNumber encode(double value) throws EncodeException {
 //    return encode(Number.encode(value));
-    if (!isValid(value))
-      throw new EncodeException();
-
-    if (value < 0 && !isSigned()) {
-      throw new EncodeException();
-    }
-    if (Double.isInfinite(value) || Double.isNaN(value))
+//    if (!isValid(value))
+//      throw new EncodeException("Input value cannot be encoded.");
+    if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
+
+    if(value < 0 && isUnsigned())
+      throw new EncodeException("Input value cannot be encoded using this Paillier context.");
 
     int exponent = getDoublePrecExponent(value);
     return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
   }
 
   public EncodedNumber encode(double value, int maxExponent) {
-    if (!isValid(value))
-      throw new EncodeException();
+//    if (!isValid(value))
+//      throw new EncodeException("Input value cannot be encoded.");
 
-    if (Double.isInfinite(value) || Double.isNaN(value))
+    if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
+    if(value < 0 && isUnsigned())
+      throw new EncodeException("Input value is not valid for this Paillier context.");
+
     if (maxExponent < 0)
-      throw new EncodeException("Max exponent must be >= 0.");
+      throw new EncodeException("Max exponent must be greater than 0.");
 
     int exponent = getExponent(getDoublePrecExponent(value), maxExponent);
     return new EncodedNumber(this, innerEncode(new BigDecimal(value),
@@ -621,14 +656,17 @@ public class PaillierContext {
   }
 
   public EncodedNumber encode(double value, double precision) {
-    if (!isValid(value))
-      throw new EncodeException();
+//    if (!isValid(value))
+//      throw new EncodeException("Input value cannot be encoded.");
 
-    if (Double.isInfinite(value) || Double.isNaN(value))
+    if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
+    if(value < 0 && isUnsigned())
+      throw new EncodeException("Input value is not valid for this Paillier context.");
+
     if (precision > 1 || precision <= 0)
-      throw new EncodeException("Precision  " + precision + ", it must be 10^-i where i > 0.");
+      throw new EncodeException("Precision must be 10^-i where i > 0.");
 
     int exponent = getPrecExponent(precision);
     return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
@@ -644,9 +682,9 @@ public class PaillierContext {
    */
   public EncodedNumber encode(long value) throws EncodeException {
 //    return encode(Number.encode(value));
-    if (value < 0 && !isSigned()) {
-      throw new EncodeException();
-    }
+//    if (value < 0 && !isSigned()) {
+//      throw new EncodeException();
+//    }
 
     return encode(BigInteger.valueOf(value));
   }
@@ -667,8 +705,8 @@ public class PaillierContext {
     return (int) Math.floor(Math.log(precision) / Math.log((double) base));
   }
 
-  private int getDoublePrecExponent(double scalar) {
-    int binFltExponent = Math.getExponent(scalar) + 1;
+  private int getDoublePrecExponent(double value) {
+    int binFltExponent = Math.getExponent(value) + 1;
 //        System.out.println("\t ENC - binFltExponent: " + binFltExponent);
     int binLsbExponent = binFltExponent - DOUBLE_MANTISSA_BITS;
 //        System.out.println("\t ENC - binLsbExponent: " + binLsbExponent);
@@ -679,25 +717,24 @@ public class PaillierContext {
     return Math.min(precExponent, maxExponent);
   }
 
-  private BigInteger innerEncode(BigDecimal scalar, int exponent) {
+  private BigInteger innerEncode(BigDecimal value, int exponent) {
     // Compute BASE^(-exponent)
     BigDecimal bigDecBaseExponent = (new BigDecimal(base)).pow(-exponent, MathContext.DECIMAL128);
 //    System.out.println("bigDecBaseExponent: " + bigDecBaseExponent.toString());
 
-    // Compute the integer representation, ie, scalar * (BASE^-exponent)
+    // Compute the integer representation, ie, value * (BASE^-exponent)
     BigInteger bigIntRep =
-            ((scalar.multiply(bigDecBaseExponent)).setScale(0, BigDecimal.ROUND_HALF_UP)).toBigInteger();
-//    System.out.println("bigIntRep: " + (scalar.multiply(bigDecBaseExponent)).toString());
+            ((value.multiply(bigDecBaseExponent)).setScale(0, BigDecimal.ROUND_HALF_UP)).toBigInteger();
+//    System.out.println("bigIntRep: " + (value.multiply(bigDecBaseExponent)).toString());
 
-//    if(scalar.equals(BigDecimal.ONE.negate()))
-//      System.out.println("original bigIntRep: " + bigIntRep);
+    if(BigIntegerUtil.greater(bigIntRep, maxSignificand) ||
+            (value.signum() < 0 && BigIntegerUtil.less(bigIntRep, minSignificand))) {
+      throw new EncodeException("Input value cannot be encoded.");
+    }
 
     if (bigIntRep.signum() < 0) {
       bigIntRep = bigIntRep.add(publicKey.getModulus());
     }
-
-//    if(scalar.equals(BigDecimal.ONE.negate()))
-//      System.out.println("modified bigIntRep: " + bigIntRep);
 
     return bigIntRep;
   }
