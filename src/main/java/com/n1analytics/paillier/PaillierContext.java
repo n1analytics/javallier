@@ -125,6 +125,7 @@ public class PaillierContext {
    * @param publicKey associated with this PaillierContext.
    * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
    * @param precision to denote the number of bits used to represent valid numbers.
+   * @param base to denote the selected base used for encoding.
    */
   public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision, int base) {
     if (publicKey == null) {
@@ -579,24 +580,9 @@ public class PaillierContext {
       throw new EncodeException("Input value cannot be encoded.");
     }
 
-    if (value.signum() < 0 && isUnsigned()) {
-      throw new EncodeException("Input value cannot be encoded using this Paillier context.");
-    }
-
-//    BigInteger significand = innerEncode(new BigDecimal(value), exponent);
-////    if((value.signum() > 0 && BigIntegerUtil.greater(significand, maxEncoded)) ||
-////            (value.signum() < 0 && BigIntegerUtil.less(significand, minEncoded))) {
-////      System.out.println(value + " should be unencodable");
-////    }
-////    if(significand.signum() < 0)
-////      System.out.println("Odd, why does the significand < 0?");
-//    return new EncodedNumber(this, significand, exponent);
-
     int exponent = 0;
-
     if(value.signum() < 0)
       value = value.add(publicKey.getModulus());
-
     return new EncodedNumber(this, value, exponent);
   }
 

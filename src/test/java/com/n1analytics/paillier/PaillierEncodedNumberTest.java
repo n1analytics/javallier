@@ -508,12 +508,20 @@ public class PaillierEncodedNumberTest {
   public void testChangeContext() throws Exception {
     PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
 
-    EncodedNumber encodedNumberContext1 = defContext.encode(1.7);
-    EncodedNumber encodedNumberContext2 = encodedNumberContext1.changeContext(
+    EncodedNumber encodedDoubleContext1 = defContext.encode(1.7);
+    EncodedNumber encodedDoubleContext2 = encodedDoubleContext1.changeContext(
             otherContext);
 
-    assertEquals(encodedNumberContext1.decodeDouble(),
-                 encodedNumberContext2.decodeDouble(), 0.0);
+    assertEquals(encodedDoubleContext1.decodeDouble(),
+                 encodedDoubleContext2.decodeDouble(), 0.0);
+
+    EncodedNumber encodedBigIntegerContext1 = defContext.encode(17);
+    EncodedNumber encodedBigIntegerContext2 = encodedBigIntegerContext1.changeContext(
+            otherContext);
+
+    assertEquals(encodedBigIntegerContext1.decodeDouble(),
+            encodedBigIntegerContext2.decodeDouble(), 0.0);
+
   }
 
   @Test
@@ -718,6 +726,104 @@ public class PaillierEncodedNumberTest {
     EncodedNumber number3 = defContext.encode(value, precision);
     double decodedNumber3 = number3.decodeDouble();
     assertEquals(decodedNumber, decodedNumber3, EPSILON);
+  }
+
+  @Test
+  public void testInvalidNumber() throws Exception {
+    PaillierContext signedContext = defPublicKey.createSignedContext();
+    PaillierContext unsignedContext = defPublicKey.createUnsignedContext();
+
+    EncodedNumber encoded1;
+
+    try {
+      signedContext.encode(Double.NaN);
+      fail("Succefully encode a NaN");
+    } catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.POSITIVE_INFINITY);
+      fail("Successfully encode positive infinity");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.NEGATIVE_INFINITY);
+      fail("Succesfully encode negative infinity");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      unsignedContext.encode(-1.0);
+      fail("Succesfully encode a negative number using an unsigned Paillier context");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.NaN, 1);
+      fail("Succesfully encode a NaN with a specific exponent");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.POSITIVE_INFINITY, 1);
+      fail("Succesfully encode positive infinity with a specific exponent");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.NEGATIVE_INFINITY, 1);
+      fail("Succesfully encode negative infinity with a specific exponent");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(-1.0, -1);
+      fail("Succesfully encode a number with invalid exponent");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      unsignedContext.encode(-1.0, 1);
+      fail("Succesfully encode a negative number with a specific exponent using an unsigned Paillier context");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.NaN, 1e-3);
+      fail("Succesfully encode a NaN with a specific precision");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.POSITIVE_INFINITY, 1e-3);
+      fail("Succesfully encode positive infinity with a specific precision");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(Double.NEGATIVE_INFINITY, 1e-3);
+      fail("Succesfully encode negative infinity with a specific precision");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(-1.0, -1e-3);
+      fail("Succesfully encode a number with invalid precision");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      signedContext.encode(-1.0, 1e3);
+      fail("Succesfully encode a number with invalid precision");
+    }catch (EncodeException e) {
+    }
+
+    try {
+      unsignedContext.encode(-1.0, 1e-3);
+      fail("Succesfully encode a negative number using an unsigned Paillier context");
+    }catch (EncodeException e) {
+    }
   }
 }
 

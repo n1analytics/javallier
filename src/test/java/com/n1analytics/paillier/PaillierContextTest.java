@@ -285,7 +285,7 @@ public class PaillierContextTest {
     }
   }
 
-  // Quick test case to check whether encode/decode work for different bases.
+  // Quick test to check whether encode/decode work for different bases.
   // Ideally this should have more thorough tests.
   @Test
   public void testChangeBase() throws Exception {

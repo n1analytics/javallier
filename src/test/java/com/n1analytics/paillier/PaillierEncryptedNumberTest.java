@@ -666,4 +666,25 @@ public class PaillierEncryptedNumberTest {
     EncryptedNumber ciphertext2 = ciphertext1.divide(4.0);
     assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
   }
+
+  @Test
+  public void testAdditiveInverse() throws Exception {
+    double number = 1.98;
+    EncryptedNumber ciphertext = context.encrypt(number);
+
+    EncryptedNumber negativeCiphertext = ciphertext.additiveInverse();
+    assertEquals(ciphertext.multiply(-1), negativeCiphertext);
+
+    double decryptedNegativeNumber = negativeCiphertext.decrypt(privateKey).decodeDouble();
+    assertEquals(-number, decryptedNegativeNumber, EPSILON);
+
+    double number2 = -number;
+    EncryptedNumber ciphertext2 = context.encrypt(number2);
+
+    EncryptedNumber negativeCiphertext2 = ciphertext2.additiveInverse();
+    assertEquals(ciphertext2.multiply(-1), negativeCiphertext2);
+
+    double decryptedNegativeNumber2 = negativeCiphertext2.decrypt(privateKey).decodeDouble();
+    assertEquals(number, decryptedNegativeNumber2, EPSILON);
+  }
 }

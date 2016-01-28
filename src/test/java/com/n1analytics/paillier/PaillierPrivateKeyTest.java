@@ -132,6 +132,23 @@ public class PaillierPrivateKeyTest {
     // Check q
     assertNotNull(privateKey.q);
     assertEquals(BigInteger.valueOf(17), privateKey.q);
+
+    privateKey = null;
+    BigInteger p = BigInteger.valueOf(19);
+    try {
+      privateKey = new PaillierPrivateKey(null, p, p);
+      fail("Succefully created a private key with a null public key");
+    } catch (IllegalArgumentException e) {
+    }
+    assertNull(privateKey);
+
+    try {
+      privateKey = new PaillierPrivateKey(publicKey, p, p);
+      fail("Succefully created a private key which modulus does not match the prime numbers");
+    } catch (IllegalArgumentException e) {
+    }
+    assertNull(privateKey);
+
   }
 
   @Test
