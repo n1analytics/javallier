@@ -214,6 +214,10 @@ public final class EncodedNumber {
       return context.encode(this.context.decodeBigInteger(this));
   }
 
+  public EncodedNumber decreaseExponentTo(int newExp) {
+    return context.decreaseExponentTo(this, newExp);
+  }
+
   /**
    * Encrypts this {@code EncodedNumber}.
    * @return the encrypted number.

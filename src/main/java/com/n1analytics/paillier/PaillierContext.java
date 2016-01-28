@@ -739,7 +739,6 @@ public class PaillierContext {
     return bigIntRep;
   }
 
-  // TODO test this
   public BigInteger getRescalingFactor(int expDiff) {
     return (new BigInteger(String.valueOf(base))).pow(expDiff);
   }
@@ -755,7 +754,7 @@ public class PaillierContext {
 
     int expDiff = exponent - newExp;
     BigInteger bigFactor = getRescalingFactor(expDiff);
-    BigInteger newEnc = significand.multiply(bigFactor);
+    BigInteger newEnc = significand.multiply(bigFactor).mod(publicKey.getModulus());
     return new EncodedNumber(this, newEnc, newExp);
   }
 
