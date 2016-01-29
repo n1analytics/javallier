@@ -214,12 +214,21 @@ public final class EncodedNumber {
       return context.encode(this.context.decodeBigInteger(this));
   }
 
+  /**
+   * Decreases the exponent of this {@code EncodedNumber} to {@code newExp}, if {@code newExp} is less than
+   * the current {@code exponent}.
+   * See {@link com.n1analytics.paillier.PaillierContext#decreaseExponentTo(EncodedNumber, int)} for more information.
+   *
+   * @param newExp the new exponent for the {@code EncodedNumber}, must be less than the current exponent.
+   * @return an {@code EncodedNumber} which exponent is equal to {@code newExp}.
+   */
   public EncodedNumber decreaseExponentTo(int newExp) {
     return context.decreaseExponentTo(this, newExp);
   }
 
   /**
    * Encrypts this {@code EncodedNumber}.
+   *
    * @return the encrypted number.
    */
   public EncryptedNumber encrypt() {
