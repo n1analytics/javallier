@@ -82,6 +82,13 @@ public class PaillierContextTest {
     // Check precision
     assertNotNull(contextWithDiffBase.getPrecision());
     assertEquals(1024, contextWithDiffBase.getPrecision());
+
+    contextWithDiffBase = null;
+    try {
+      contextWithDiffBase = new PaillierContext(publicKey, true, 1024, 1);
+      fail("Successfully creating a new PaillierContext with invalid base");
+    } catch (IllegalArgumentException e) {
+    }
   }
 
   @Test

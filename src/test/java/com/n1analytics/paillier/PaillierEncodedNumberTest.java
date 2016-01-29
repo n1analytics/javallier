@@ -737,91 +737,85 @@ public class PaillierEncodedNumberTest {
 
     try {
       signedContext.encode(Double.NaN);
-      fail("Succefully encode a NaN");
+      fail("Successfully encode a NaN");
     } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.POSITIVE_INFINITY);
       fail("Successfully encode positive infinity");
-    }catch (EncodeException e) {
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.NEGATIVE_INFINITY);
-      fail("Succesfully encode negative infinity");
-    }catch (EncodeException e) {
+      fail("Successfully encode negative infinity");
+    } catch (EncodeException e) {
     }
 
     try {
       unsignedContext.encode(-1.0);
-      fail("Succesfully encode a negative number using an unsigned Paillier context");
-    }catch (EncodeException e) {
+      fail("Successfully encode a negative number using an unsigned Paillier context");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.NaN, 1);
-      fail("Succesfully encode a NaN with a specific exponent");
-    }catch (EncodeException e) {
+      fail("Successfully encode a NaN with a specific exponent");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.POSITIVE_INFINITY, 1);
-      fail("Succesfully encode positive infinity with a specific exponent");
-    }catch (EncodeException e) {
+      fail("Successfully encode positive infinity with a specific exponent");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.NEGATIVE_INFINITY, 1);
-      fail("Succesfully encode negative infinity with a specific exponent");
-    }catch (EncodeException e) {
+      fail("Successfully encode negative infinity with a specific exponent");
+    } catch (EncodeException e) {
     }
-
-//    try {
-//      signedContext.encode(-1.0, -1);
-//      fail("Succesfully encode a number with invalid exponent");
-//    }catch (EncodeException e) {
-//    }
 
     try {
       unsignedContext.encode(-1.0, 1);
-      fail("Succesfully encode a negative number with a specific exponent using an unsigned Paillier context");
-    }catch (EncodeException e) {
+      fail("Successfully encode a negative number with a specific exponent using an unsigned Paillier context");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.NaN, 1e-3);
-      fail("Succesfully encode a NaN with a specific precision");
-    }catch (EncodeException e) {
+      fail("Successfully encode a NaN with a specific precision");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.POSITIVE_INFINITY, 1e-3);
-      fail("Succesfully encode positive infinity with a specific precision");
-    }catch (EncodeException e) {
+      fail("Successfully encode positive infinity with a specific precision");
+    } catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(Double.NEGATIVE_INFINITY, 1e-3);
-      fail("Succesfully encode negative infinity with a specific precision");
+      fail("Successfully encode negative infinity with a specific precision");
     }catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(-1.0, -1e-3);
-      fail("Succesfully encode a number with invalid precision");
+      fail("Successfully encode a number with invalid precision");
     }catch (EncodeException e) {
     }
 
     try {
       signedContext.encode(-1.0, 1e3);
-      fail("Succesfully encode a number with invalid precision");
+      fail("Successfully encode a number with invalid precision");
     }catch (EncodeException e) {
     }
 
     try {
       unsignedContext.encode(-1.0, 1e-3);
-      fail("Succesfully encode a negative number using an unsigned Paillier context");
+      fail("Successfully encode a negative number using an unsigned Paillier context");
     }catch (EncodeException e) {
     }
   }

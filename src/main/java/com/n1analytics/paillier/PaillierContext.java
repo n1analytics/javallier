@@ -150,6 +150,11 @@ public class PaillierContext {
               "Precision must be less than or equal to the number of bits in the modulus");
     }
 
+    if (base < 2) {
+      throw new IllegalArgumentException(
+              "Base must be at least equals to 2.");
+    }
+
     this.publicKey = publicKey;
     this.signed = signed;
     this.precision = precision;
@@ -850,11 +855,11 @@ public class PaillierContext {
 //  }
 
   /**
-   * Returns the value of an {@code EncodedNumber}. Throws an exception if the value is greater than
-   * the {@code publicKey}'s {@code modulus}. If the value is less than or equal to {@code maxEncoded},
-   * return the value. If the {@code PaillierContext} is signed and the value is less than or equal to
-   * {@code minEncoded}, return the value subtracted by {@code publicKey}'s {@code modulus}. Otherwise
-   * the significand is in the overflow region and hence throws an Exception.
+   * Returns the value of an {@code EncodedNumber} for decoding. Throws a DecodeException if the value is
+   * greater than the {@code publicKey}'s {@code modulus}. If the value is less than or equal to
+   * {@code maxEncoded}, return the value. If the {@code PaillierContext} is signed and the value is
+   * less than or equal to {@code minEncoded}, return the value subtracted by {@code publicKey}'s
+   * {@code modulus}. Otherwise the significand is in the overflow region and hence throws a DecodeException.
    *
    * @param encoded the input {@code EncodedNumber}.
    * @return the significand of the {@code EncodedNumber}.
@@ -864,7 +869,7 @@ public class PaillierContext {
     final BigInteger value = encoded.getValue();
 
     if(value.compareTo(publicKey.getModulus()) > 0)
-      throw new PaillierRuntimeException("The significand of the encoded number is corrupted");
+      throw new DecodeException("The significand of the encoded number is corrupted");
 
     // Non-negative
     if (value.compareTo(maxEncoded) <= 0) {
@@ -878,7 +883,7 @@ public class PaillierContext {
       return value.subtract(modulus);
     }
 
-    throw new PaillierRuntimeException("Detected overflow");
+    throw new DecodeException("Detected overflow");
   }
 
   /**
