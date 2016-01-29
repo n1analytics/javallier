@@ -18,7 +18,8 @@ publishMavenStyle := true
 
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.0.13",
-  "com.novocode" % "junit-interface" % "0.11" % Test
+  "com.novocode" % "junit-interface" % "0.11" % Test,
+  "com.squareup.jnagmp" % "jnagmp" % "1.0.1"
 )
 
 publishTo := {

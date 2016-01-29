@@ -271,12 +271,8 @@ public final class PaillierPrivateKey {
    * @return the decrypted plaintext.
    */
   public BigInteger raw_decrypt(BigInteger ciphertext){
-    BigInteger decryptedToP = lFunction(
-        ciphertext.modPow(p.subtract(BigInteger.ONE), pSquared), p)
-        .multiply(hp).mod(p);
-    BigInteger decryptedToQ = lFunction(
-        ciphertext.modPow(q.subtract(BigInteger.ONE), qSquared), q)
-        .multiply(hq).mod(q);
+    BigInteger decryptedToP = lFunction(BigIntegerUtil.modPow(ciphertext, p.subtract(BigInteger.ONE), pSquared),p).multiply(hp).mod(p);
+    BigInteger decryptedToQ = lFunction(BigIntegerUtil.modPow(ciphertext, q.subtract(BigInteger.ONE), qSquared),q).multiply(hq).mod(q);
     return crt(decryptedToP, decryptedToQ);
   }
 
@@ -293,9 +289,7 @@ public final class PaillierPrivateKey {
    * using Chinese-remaindering'.
    */
   private BigInteger hFunction(BigInteger x, BigInteger xSquared) {
-    return lFunction(
-        publicKey.generator.modPow(x.subtract(BigInteger.ONE), xSquared), x)
-        .modInverse(x);
+    return lFunction(BigIntegerUtil.modPow(publicKey.generator, x.subtract(BigInteger.ONE), xSquared),x).modInverse(x);
   }
 
   /**

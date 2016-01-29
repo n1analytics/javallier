@@ -15,6 +15,8 @@ package com.n1analytics.paillier;
 
 import java.math.BigInteger;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
+
 import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
 
 /**
@@ -228,7 +230,7 @@ public final class PaillierPublicKey {
    * @return obfuscated ciphertext.
    */
   public BigInteger raw_obfuscate(BigInteger ciphertext) {
-    return randomPositiveNumber(modulus).modPow(modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
+    return BigIntegerUtil.modPow(randomPositiveNumber(modulus), modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
   }
   
   /**
@@ -251,7 +253,7 @@ public final class PaillierPublicKey {
    * @return product a*b.
    */
   public BigInteger raw_multiply(BigInteger ciphertext, BigInteger plainfactor){
-    return ciphertext.modPow(plainfactor, modulusSquared);
+    return BigIntegerUtil.modPow(ciphertext, plainfactor, modulusSquared);
   }
 
   @Override
