@@ -231,8 +231,6 @@ public final class PaillierPublicKey {
    */
   public BigInteger raw_obfuscate(BigInteger ciphertext) {
     return BigIntegerUtil.modPow(randomPositiveNumber(modulus), modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
-    //return Gmp.modPowSecure(randomPositiveNumber(modulus), modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
-    //return randomPositiveNumber(modulus).modPow(modulus, modulusSquared).multiply(ciphertext).mod(modulusSquared);
   }
   
   /**
@@ -256,8 +254,6 @@ public final class PaillierPublicKey {
    */
   public BigInteger raw_multiply(BigInteger ciphertext, BigInteger plainfactor){
     return BigIntegerUtil.modPow(ciphertext, plainfactor, modulusSquared);
-    //return Gmp.modPowSecure(ciphertext, plainfactor, modulusSquared);
-    //return ciphertext.modPow(plainfactor, modulusSquared);
   }
 
   @Override
