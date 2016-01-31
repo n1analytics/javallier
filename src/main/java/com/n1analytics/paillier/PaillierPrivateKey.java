@@ -233,8 +233,6 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Returns the public key associated with this private key.
-   *
    * @return the associated public key.
    */
   public PaillierPublicKey getPublicKey() {
@@ -242,8 +240,7 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Decrypts an encrypted number. Throws PaillierKeyMismatchException if the encrypted number was not
-   * encoded with the appropriate public key.
+   * Decrypts an encrypted number.
    *
    * @param encrypted EncryptedNumber to be decrypted.
    * @return the decryption result.

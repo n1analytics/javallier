@@ -116,8 +116,6 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Returns the Paillier context with which this {@code EncryptedNumber} is encrypted.
-   *
    * @return the {@code context}.
    */
   public PaillierContext getContext() {
@@ -125,8 +123,6 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Returns the {@code ciphertext}.
-   *
    * @return the {@code ciphertext}.
    */
   public BigInteger calculateCiphertext() {
@@ -134,8 +130,6 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Returns the {@code exponent}.
-   *
    * @return the {@code exponent}.
    */
   public int getExponent() {
@@ -247,8 +241,6 @@ public final class EncryptedNumber {
   }
 
   /**
-   * Returns the additive inverse of this {@code EncryptedNumber}.
-   *
    * @return the additive inverse of this.
    */
   public EncryptedNumber additiveInverse() {

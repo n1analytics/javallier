@@ -62,7 +62,7 @@ import java.math.MathContext;
 public class PaillierContext {
 
   /**
-   * The default base value
+   * The default base value.
    */
   private static final int DEFAULT_BASE = 16;
 
@@ -75,8 +75,7 @@ public class PaillierContext {
   private final PaillierPublicKey publicKey;
 
   /**
-   * The signed of this PaillierContext, denotes whether
-   * the numbers represented are signed or unsigned.
+   * The signed of this PaillierContext, denotes whether the numbers represented are signed or unsigned.
    */
   private final boolean signed;
 
@@ -125,7 +124,7 @@ public class PaillierContext {
    * the base used for encoding.
    *
    * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
-   * the minimum/maximum {@code significand} of {@code Number} that can be encrypted using the {@code PaillierPublicKey}.
+   * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
    *
    * @param publicKey associated with this PaillierContext.
    * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
@@ -201,9 +200,7 @@ public class PaillierContext {
   }
 
   /**
-   * Returns the public key of this PaillierContext.
-   *
-   * @return public key.
+   * @return public key of this PaillierContext.
    */
   public PaillierPublicKey getPublicKey() {
     return publicKey;
@@ -228,9 +225,7 @@ public class PaillierContext {
   }
 
   /**
-   * Returns the precision of this PaillierContext.
-   *
-   * @return the precision.
+   * @return the precision of this PaillierContext.
    */
   public int getPrecision() {
     return precision;
@@ -246,44 +241,32 @@ public class PaillierContext {
   }
 
   /**
-   * Returns the maximum {@code value} of the {@code EncodedNumber} that can be encrypted using
-   * the {@code PaillierPublicKey}.
-   *
    * @return the maximum {@code value} of the {@code EncodedNumber} that can be encrypted using
-   * the {@code PaillierPublicKey}.
+   * the {@code PaillierPublicKey} associated with this context.
    */
   public BigInteger getMaxEncoded() {
     return maxEncoded;
   }
 
   /**
-   * Returns the minimum {@code value} of the {@code EncodedNumber} that can be encrypted using
-   * the {@code PaillierPublicKey}.
-   *
    * @return the minimum {@code value} of the {@code EncodedNumber} that can be encrypted using
-   * the {@code PaillierPublicKey}.
+   * the {@code PaillierPublicKey} associated with this context.
    */
   public BigInteger getMinEncoded() {
     return minEncoded;
   }
 
   /**
-   * Returns the maximum {@code significand} of the {@code Number} that can be encrypted using
-   * the {@code PaillierPublicKey}.
-   *
-   * @return the maximum {@code significand} of the {@code Number} that can be encrypted using
-   * the {@code PaillierPublicKey}.
+   * @return the maximum value that can be encoded and encrypted using the {@code PaillierPublicKey}
+   * associated with this context.
    */
   public BigInteger getMaxSignificand() {
     return maxSignificand;
   }
 
   /**
-   * Returns the minimum {@code significand} of the {@code Number} that can be encrypted using
-   * the {@code PaillierPublicKey}.
-   *
-   * @return the minimum {@code significand} of the {@code Number} that can be encrypted using
-   * the {@code PaillierPublicKey}.
+   * @return the minimum value that can be encoded and encrypted using the {@code PaillierPublicKey}
+   * associated with this context.
    */
   public BigInteger getMinSignificand() {
     return minSignificand;
@@ -417,7 +400,6 @@ public class PaillierContext {
 
   /**
    * Checks whether an {@code EncryptedNumber} has the same context as this {@code PaillierContext}.
-   * Throws an ArithmeticException if that is not the case.
    * Returns the unmodified {@code EncryptedNumber} so that it can be called inline.
    *
    * @param other the {@code EncryptedNumber} to compare to.
@@ -433,8 +415,7 @@ public class PaillierContext {
 
   /**
    * Checks whether an {@code EncodedNumber} has the same context as this {@code PaillierContext}.
-   * Throws an ArithmeticException if that is not the case. Returns
-   * the unmodified {@code EncodedNumber} so that it can be called inline.
+   * Returns the unmodified {@code EncodedNumber} so that it can be called inline.
    *
    * @param encoded the {@code EncodedNumber} to compare to.
    * @return {@code encoded}
@@ -585,8 +566,11 @@ public class PaillierContext {
 //  }
 
   /**
-   * Encodes a {@code BigInteger} using this {@code PaillierContext}. Throws EncodeException if
-   * the {@code Number} representation of the {@code BigInteger} to be encoded is not valid.
+   * Encodes a {@code BigInteger} using this {@code PaillierContext}. Throws EncodeException if the input
+   * value is greater than {@code maxSignificand} or is less than {@code minSignificand}. For positive input value,
+   * the number is encoded to an {@code EncodedNumber} with the input value as the significand and 0 as
+   * the exponent. Negative number is encoded to an {@code EncodedNumber} with the significand equals to
+   * <code>value + PublicKey.modulus</code> and 0 as the exponent.
    *
    * @param value the {@code BigInteger} to be encoded.
    * @return the encoding result.
@@ -622,7 +606,9 @@ public class PaillierContext {
 //  }
 
   /**
-   * Encodes a {@code double} using this {@code PaillierContext}.
+   * Encodes a {@code double} using this {@code PaillierContext}. If the input value is not valid (that is
+   * if {@code value} is infinite, is a NaN or is negative when this context is unsigned) then throw
+   * EncodeException.
    *
    * @param value the {@code double} to be encoded.
    * @return the encoding result.
@@ -696,8 +682,7 @@ public class PaillierContext {
   }
 
   /**
-   * Encodes a {@code long} using this {@code PaillierContext}. Throws an EncodeException if
-   * the {@code Number} representation of the {@code long} to be encoded is not valid.
+   * Encodes a {@code long} using this {@code PaillierContext}.
    *
    * @param value the {@code long} to be encoded.
    * @return the encoding result.
@@ -887,8 +872,7 @@ public class PaillierContext {
   }
 
   /**
-   * Decodes to the exact {@code BigInteger} representation. Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
+   * Decodes to the exact {@code BigInteger} representation.
    *
    * @param encoded the {@code EncodedNumber} to be decoded.
    * @return the decoding result.
@@ -914,8 +898,7 @@ public class PaillierContext {
 //  }
 
   /**
-   * Decodes to the exact {@code double} representation.Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
+   * Decodes to the exact {@code double} representation.
    *
    * @param encoded the {@code EncodedNumber} to be decoded.
    * @return the decoding result.
@@ -945,8 +928,7 @@ public class PaillierContext {
 //  }
 
   /**
-   * Decodes to the exact {@code long} representation. Throws a DecodeException
-   * if the {@code EncodedNumber} cannot be decoded.
+   * Decodes to the exact {@code long} representation.
    *
    * @param encoded the {@code EncodedNumber} to be decoded.
    * @return the decoding result.

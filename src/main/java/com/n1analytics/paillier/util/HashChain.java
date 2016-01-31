@@ -40,8 +40,6 @@ public class HashChain {
   }
 
   /**
-   * Returns the hashcode.
-   *
    * @return the hashcode.
    */
   public int hashCode() {

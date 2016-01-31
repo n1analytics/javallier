@@ -104,7 +104,6 @@ public final class EncodedNumber {
 
   /**
    * Checks whether an {@code EncryptedNumber} has the same context as this {@code EncodedNumber}.
-   * Throws a PaillierContextMismatchException if the context are different.
    *
    * @param other {@code EncryptedNumber} to compare to.
    * @return {@code other}, provided the contexts match.
@@ -117,7 +116,6 @@ public final class EncodedNumber {
 
   /**
    * Checks whether another {@code EncodedNumber} has the same context as this {@code EncodedNumber}.
-   * Throws a PaillierContextMismatchException if the context are different.
    *
    * @param other {@code EncodedNumber} to compare to.
    * @return {@code other}.
@@ -167,8 +165,7 @@ public final class EncodedNumber {
 //  }
 
   /**
-   * Decodes this {@code EncodedNumber} to a {@code double} representation. Throws an ArithmeticException
-   * if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
+   * Decodes this {@code EncodedNumber} to a {@code double} representation.
    *
    * @return the decoded number.
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
@@ -190,8 +187,7 @@ public final class EncodedNumber {
 //  }
 
   /**
-   * Decodes this {@code EncodedNumber} to a {@code long} representation. Throws an ArithmeticException
-   * if this cannot be represented as a valid {@code long}.
+   * Decodes this {@code EncodedNumber} to a {@code long} representation.
    *
    * @return the decoded number.
    * @throws ArithmeticException if this cannot be represented as a valid {@code long}.
@@ -296,8 +292,6 @@ public final class EncodedNumber {
   }
 
   /**
-   * Returns the additive inverse of this {@code EncodedNumber}.
-   *
    * @return additive inverse of this {@code EncodedNumber}.
    */
   public EncodedNumber additiveInverse() {
