@@ -1,23 +1,9 @@
 package com.n1analytics.paillier;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Arrays;
+import org.openjdk.jmh.annotations.*;
+
 import java.util.Random;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.Level;
-
-
-/* We use the jmh framework (http://openjdk.java.net/projects/code-tools/jmh/) for benchmarking.
- * Execute with the help of the sbt jmh plugin (https://github.com/ktoso/sbt-jmh):
- *  - change to 'project benchmark'
- *  - execute with 'jmh:run'
- *  - jmh:run -h will show you all available parameters.
- */
 
 @State(Scope.Thread)
 public class JavallierBenchmark {
@@ -25,9 +11,10 @@ public class JavallierBenchmark {
   public static final int BITS = 1024; 
   public final int KEYS = 1000;
   public final int NUMBERS = 10000;
+
   public static PaillierPrivateKey KEY = PaillierPrivateKey.create(BITS);
   public static PaillierContext context = KEY.getPublicKey().createSignedContext();
-  //public static final PaillierPrivateKey keys;
+
   public final EncodedNumber encodedNumbers[] = new EncodedNumber[NUMBERS];
   public final EncodedNumber encodedNumbersSE[] = new EncodedNumber[NUMBERS];
   public final EncryptedNumber encryptedNumbers[] = new EncryptedNumber[NUMBERS];
@@ -57,6 +44,7 @@ public class JavallierBenchmark {
   @State(Scope.Benchmark)
   public static class EncryptedNumberPairSameExponent{
     EncryptedNumber n1, n2;
+
     @Setup(Level.Iteration)
     public void setup(){
       int exp = rnd.nextInt(512);
@@ -72,6 +60,7 @@ public class JavallierBenchmark {
   @State(Scope.Benchmark)
   public static class EncryptedNumberPairDifferentExponent{
     public EncryptedNumber n1, n2;
+
     @Setup(Level.Iteration)
     public void setup(){
       n1 = context.encrypt(context.randomEncodedNumber(rnd.nextInt(512)));
@@ -87,6 +76,7 @@ public class JavallierBenchmark {
   public static class EncryptedEncodedNumberPairSameExponent{
     EncryptedNumber n1;
     EncodedNumber n2;
+
     @Setup(Level.Iteration)
     public void setup(){      
       int exp = rnd.nextInt(512);
@@ -107,6 +97,7 @@ public class JavallierBenchmark {
   public static class EncryptedEncodedNumberPairDifferentExponent{
     public static EncryptedNumber n1 = null;
     public static EncodedNumber n2 = null;
+
     @Setup(Level.Iteration)
     public void setup(){      
       n1 = context.encrypt(context.randomEncodedNumber(rnd.nextInt(512)));
