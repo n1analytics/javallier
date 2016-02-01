@@ -948,6 +948,17 @@ public class PaillierContext {
     final int exponent = operand1.getExponent() + operand2.getExponent();
     return new EncodedNumber(this, result, exponent);
   }
+  
+  /**
+   * returns a random {@code EncodedNumber}, consisting of a significant, chosen uniformly 
+   * at random out of the message space and an exponent specified in parameter (@code exponent}.
+   * @param exponent
+   * @return a random EncodedNumber
+   */
+  public EncodedNumber randomEncodedNumber(int exponent){
+    return new EncodedNumber(this, BigIntegerUtil.randomPositiveNumber(publicKey.getModulus()), exponent);
+  }
+
 
   // TODO Issue #10
   /*
