@@ -13,12 +13,12 @@
  */
 package com.n1analytics.paillier.util;
 
+import com.squareup.jnagmp.Gmp;
+
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.squareup.jnagmp.Gmp;
 
 /**
  * A class containing the common methods for {@code BigInteger} manipulation, including:
@@ -85,6 +85,23 @@ public class BigIntegerUtil {
       return base.modPow(exponent, modulus);
     }
   }
+
+  /**
+   * Computes the multiplicitive inverse of `a` in the integers, modular `b`.
+   *
+   * @param a the number to invert
+   * @param b the modulus
+   * @throws ArithmeticException if the inverse doesn't exist
+   * @return x, where a * x == 1 mod b
+   */
+  public static BigInteger invert(BigInteger a, BigInteger b) throws ArithmeticException {
+//    if(USE_GMP){
+//      // TODO use gmp if available
+//      //return Gmp.invert(a, b);
+//    } else {
+    return a.modInverse(b);
+  }
+
   /**
    * Checks whether {@code n} is positive.
    *

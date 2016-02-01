@@ -93,7 +93,7 @@ public final class PaillierPrivateKey {
   /**
    * A serializer interface for {@code PaillierPrivateKey}.
    */
-  static interface Serializer {
+  public static interface Serializer {
     void serialize(PaillierPublicKey publickey, BigInteger p, BigInteger q);
   }
 
