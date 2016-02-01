@@ -13,26 +13,52 @@
  */
 package com.n1analytics.paillier;
 
+/**
+ * Thrown when an encryption operation fails.
+ */
 public class EncryptException extends PaillierRuntimeException {
 
   private static final long serialVersionUID = -5497548195268474994L;
 
+  /**
+   * Constructs a new {@code EncryptException} without a specific message.
+   */
   public EncryptException() {
     super();
   }
 
+  /**
+   * Constructs a new {@code EncryptException} with a specific message.
+   * @param message the detail message.
+   */
   public EncryptException(String message) {
     super(message);
   }
 
+  /**
+   * Constructs a new {@code EncryptException} with the exception cause.
+   * @param cause the cause.
+   */
   public EncryptException(Throwable cause) {
     super(cause);
   }
 
+  /**
+   * Constructs a new {@code EncryptException} with a specific message and the exception cause.
+   * @param message the detail message,
+   * @param cause the cause.
+   */
   public EncryptException(String message, Throwable cause) {
     super(message, cause);
   }
 
+  /**
+   * Constructs a new {@code EncryptException} with a specific message and the exception cause.
+   * @param message the detail message.
+   * @param cause the cause.
+   * @param enableSuppression whether suppression is enabled or disabled.
+   * @param writableStackTrace whether the stack trace should be writable.
+   */
   public EncryptException(String message, Throwable cause, boolean enableSuppression,
                           boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
