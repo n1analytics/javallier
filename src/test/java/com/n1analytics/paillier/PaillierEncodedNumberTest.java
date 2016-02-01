@@ -206,12 +206,12 @@ public class PaillierEncodedNumberTest {
     TestConfiguration conf = CONFIGURATION_DOUBLE;
     testDouble(conf, Double.MAX_VALUE);
     testDouble(conf, Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));
-    testDouble(conf, 1.0); // FINE
+    testDouble(conf, 1.0);
     testDouble(conf, Math.nextAfter(Double.MIN_NORMAL, Double.POSITIVE_INFINITY));
-    testDouble(conf, Double.MIN_NORMAL); // FINE
+    testDouble(conf, Double.MIN_NORMAL);
     testDouble(conf, Math.nextAfter(Double.MIN_NORMAL, Double.NEGATIVE_INFINITY));
-    testDouble(conf, Double.MIN_VALUE); // FINE
-    testDouble(conf, 0.0); // FINE
+    testDouble(conf, Double.MIN_VALUE);
+    testDouble(conf, 0.0);
     testDouble(conf, -0.0);
     testDouble(conf, -Double.MIN_VALUE);
     testDouble(conf, -Math.nextAfter(Double.MIN_NORMAL, Double.NEGATIVE_INFINITY));
@@ -382,7 +382,6 @@ public class PaillierEncodedNumberTest {
   public void testMaxEncodableNumber() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
-//        Number maxNumber = Number.encode(conf.maxSignificand());
         EncodedNumber maxNumber = conf.context().encode(conf.maxSignificand());
         testEncodable(conf.context(), maxNumber);
       }
@@ -393,7 +392,6 @@ public class PaillierEncodedNumberTest {
   public void testMinEncodableNumber() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
-//        Number minNumber = Number.encode(conf.minSignificand());
         EncodedNumber minNumber = conf.context().encode(conf.minSignificand());
         testEncodable(conf.context(), minNumber);
       }
@@ -405,7 +403,6 @@ public class PaillierEncodedNumberTest {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         BigInteger humongous = conf.context().getMaxSignificand().add(BigInteger.ONE);
-//        Number humongousNumber = new Number(humongous, 0);
         testUnencodable(conf.context(), humongous);
       }
     }
@@ -417,7 +414,6 @@ public class PaillierEncodedNumberTest {
       for (TestConfiguration conf : confs) {
         BigInteger negHumongous = conf.context().getMinSignificand().subtract(
                 BigInteger.ONE);
-//        Number negHumongousNumber = new Number(negHumongous, 0);
         testUnencodable(conf.context(), negHumongous);
       }
     }
@@ -425,7 +421,6 @@ public class PaillierEncodedNumberTest {
 
   public void testUndecodable(EncodedNumber encodedNumber) throws Exception {
     try {
-//      Number decodedNumber = encodedNumber.decode();
       double decodedNumber = encodedNumber.decodeDouble();
       fail("Error: successfully decode invalid number.");
     } catch (DecodeException e) {

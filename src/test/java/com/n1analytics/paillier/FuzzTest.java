@@ -65,7 +65,6 @@ public class FuzzTest {
     double a, b, c, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, ciphertextB, encryptedResult;
     EncodedNumber decryptedResult;
-//    Number numberC, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
@@ -74,17 +73,8 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
-//      numberC = Number.encode(c);
-
-      // Check if the computation would result in overflow
-//      numberResult = (Number.encode(a).add(Number.encode(b))).multiply(numberC);
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = (a + b) * c;
-//      if(Double.isInfinite(plainResult))
-//        continue;
       if(!isResultValid(plainResult))
         continue;
 
@@ -116,7 +106,6 @@ public class FuzzTest {
     double a, b, c, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, ciphertextC, encryptedResult1, encryptedResult2;
     EncodedNumber decryptedResult;
-//    Number numberB, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
@@ -124,18 +113,9 @@ public class FuzzTest {
       c = randomFiniteDouble();
 
       ciphertextA = signedContext.encrypt(a);
-//      numberB = Number.encode(b);
       ciphertextC = signedContext.encrypt(c);
 
-      // Check if the computation would result in overflow
-//      numberResult = Number.encode(a).multiply(numberB).add(Number.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a * b + c;
-//      if(Double.isInfinite(plainResult))
-//        continue;
       if(!isResultValid(plainResult))
         continue;
 
@@ -168,7 +148,6 @@ public class FuzzTest {
     double a, b, c, d, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, ciphertextB, encryptedResult1, encryptedResult2;
     EncodedNumber encodedC, encodedD, additionResult, decryptedResult;
-//    Number numberC, numberD, additionResult, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
@@ -178,20 +157,10 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
-//      numberC = Number.encode(c);
-//      numberD = Number.encode(d);
       encodedC = signedContext.encode(c);
       encodedD = signedContext.encode(d);
 
-//      numberResult = Number.encode(a).add(
-//              Number.encode(b).multiply(numberC.add(numberD)));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a + b * (c + d);
-//      if(Double.isInfinite(plainResult))
-//        continue;
       if(isResultValid(plainResult))
         continue;
 
@@ -200,9 +169,6 @@ public class FuzzTest {
       encryptedResult2 = ciphertextA.add(encryptedResult1);
 
       decryptedResult = privateKey.decrypt(encryptedResult2);
-//        if (!signedContext.isValid(decryptedResult.decode())) {
-//            continue;
-//        }
 
       try {
         decodedResult = decryptedResult.decodeDouble();
@@ -229,7 +195,6 @@ public class FuzzTest {
     double a, b, c, d, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, ciphertextB, encryptedResult1, encryptedResult2, encryptedResult3;
     EncodedNumber encodedC, decryptedResult;
-//    Number numberC, numberInverseD, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
@@ -244,17 +209,8 @@ public class FuzzTest {
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
       encodedC = signedContext.encode(c);
-//      numberC = Number.encode(c);
-//      numberInverseD = Number.encode(1 / d);
-
-//      numberResult = Number.encode(a).add(Number.encode(b).multiply(numberC)).divide(d);
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = (a + (b * c)) / d;
-//      if(Double.isInfinite(plainResult))
-//        continue;
       if(!isResultValid(plainResult))
         continue;
 
@@ -263,9 +219,6 @@ public class FuzzTest {
       encryptedResult3 = encryptedResult2.divide(d);
 
       decryptedResult = privateKey.decrypt(encryptedResult3);
-//        if (!signedContext.isValid(decryptedResult.decode())) {
-//            continue;
-//        }
 
       try {
         decodedResult = decryptedResult.decodeDouble();
@@ -302,17 +255,9 @@ public class FuzzTest {
       ciphertextB = signedContext.encrypt(b);
       ciphertextC = signedContext.encrypt(c);
 
-      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).add(signedContext.encode(b)).add(signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a + b + c;
       if(!isResultValid(plainResult))
         continue;
-//      if(Double.isInfinite(plainResult))
-//        continue;
 
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
 
@@ -351,16 +296,7 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
 
-      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).multiply(signedContext.encode(b)).multiply(
-//              signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a * b * c;
-//      if(Double.isInfinite(plainResult))
-//        continue;
       if(!isResultValid(plainResult))
         continue;
 
@@ -491,12 +427,6 @@ public class FuzzTest {
       ciphertextB = signedContext.encrypt(b);
       ciphertextC = signedContext.encrypt(c);
 
-//      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).add(signedContext.encode(b)).add(signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a + b + c;
 
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
@@ -526,13 +456,6 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
 
-//      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).multiply(signedContext.encode(b)).multiply(
-//              signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
-
       plainResult = a * b * c;
 
       encryptedResult = ciphertextA.multiply(b).multiply(c);
@@ -554,7 +477,6 @@ public class FuzzTest {
     BigInteger a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextB, encryptedResult;
     EncodedNumber encodedC, decryptedResult;
-//    Number numberC, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = new BigInteger(bigIntegerBitLength, random);
@@ -567,21 +489,11 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
-//      numberC = Number.encode(c);
       encodedC = signedContext.encode(c);
-
-      // Check if the computation would result in overflow
-//      numberResult = (Number.encode(a).add(Number.encode(b))).multiply(numberC);
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(encodedC);
 
       decryptedResult = privateKey.decrypt(encryptedResult);
-//        if (!signedContext.isValid(decryptedResult.decode())) {
-//            continue;
-//        }
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
@@ -597,7 +509,6 @@ public class FuzzTest {
     BigInteger a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextC, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
-//    Number numberB, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = new BigInteger(bigIntegerBitLength, random);
@@ -605,15 +516,8 @@ public class FuzzTest {
       c = new BigInteger(bigIntegerBitLength, random);
 
       ciphertextA = signedContext.encrypt(a);
-//      numberB = Number.encode(b);
       encodedB = signedContext.encode(b);
       ciphertextC = signedContext.encrypt(c);
-
-      // Check if the computation would result in overflow
-//      numberResult = Number.encode(a).multiply(numberB).add(Number.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = a.multiply(b).add(c);
       if(!isResultValid(plainResult))
@@ -622,9 +526,6 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(encodedB).add(ciphertextC);
 
       decryptedResult = privateKey.decrypt(encryptedResult);
-//        if (!signedContext.isValid(decryptedResult.decode())) {
-//            continue;
-//        }
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
@@ -640,7 +541,6 @@ public class FuzzTest {
     BigInteger a, b, c, d, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextB, encryptedResult;
     EncodedNumber encodedC, encodedD, decryptedResult;
-//    Number numberC, numberD, numberResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = new BigInteger(bigIntegerBitLength, random);
@@ -650,16 +550,8 @@ public class FuzzTest {
 
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
-//      numberC = Number.encode(c);
-//      numberD = Number.encode(d);
       encodedC = signedContext.encode(c);
       encodedD = signedContext.encode(d);
-
-//      numberResult = Number.encode(a).add(
-//              Number.encode(b).multiply(numberC.add(numberD)));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = a.add(b.multiply(c.add(d)));
       if(!isResultValid(plainResult))
@@ -668,9 +560,6 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC.add(encodedD)));
 
       decryptedResult = privateKey.decrypt(encryptedResult);
-//        if (!signedContext.isValid(decryptedResult.decode())) {
-//            continue;
-//        }
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
@@ -683,7 +572,7 @@ public class FuzzTest {
 
   @Test
   public void fuzzBigIntegerMixOperations5() throws Exception {
-    BigInteger a, b, c, plainResult, decodedResult, tolerance;
+    BigInteger a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextB, ciphertextC, encryptedResult;
     EncodedNumber decryptedResult, numberResult;
 
@@ -695,12 +584,6 @@ public class FuzzTest {
       ciphertextA = signedContext.encrypt(a);
       ciphertextB = signedContext.encrypt(b);
       ciphertextC = signedContext.encrypt(c);
-
-      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).add(signedContext.encode(b)).add(signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = a.add(b).add(c);
       if(!isResultValid(plainResult))
@@ -722,10 +605,9 @@ public class FuzzTest {
 
   @Test
   public void fuzzBigIntegerMixOperations6() throws Exception {
-    BigInteger a, b, c, plainResult, decodedResult, tolerance;
+    BigInteger a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, encryptedResult;
-//    EncodedNumber decryptedResult, numberResult;
-      EncodedNumber decryptedResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = new BigInteger(bigIntegerBitLength, random);
@@ -733,13 +615,6 @@ public class FuzzTest {
       c = new BigInteger(bigIntegerBitLength, random);
 
       ciphertextA = signedContext.encrypt(a);
-
-      // Check if the computation would result in overflow
-//      numberResult = signedContext.encode(a).multiply(signedContext.encode(b)).multiply(
-//              signedContext.encode(c));
-//      if (!signedContext.isValid(numberResult)) {
-//        continue;
-//      }
 
       plainResult = a.multiply(b).multiply(c);
       if(!isResultValid(plainResult))

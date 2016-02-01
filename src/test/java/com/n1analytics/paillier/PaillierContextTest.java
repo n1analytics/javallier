@@ -127,14 +127,10 @@ public class PaillierContextTest {
     EncodedNumber encodedNumber = signedFull.encode(10);
 
     assertEquals(10, signedFull.decodeLong(encodedNumber));
-//    assertEquals(10, signedFull.decodeApproximateLong(encodedNumber));
 
     assertEquals(new BigInteger("10"), signedFull.decodeBigInteger(encodedNumber));
-//    assertEquals(new BigInteger("10"),
-//                 signedFull.decodeApproximateBigInteger(encodedNumber));
 
     assertEquals(10.0, signedFull.decodeDouble(encodedNumber), 0.0);
-//    assertEquals(10.0, signedFull.decodeApproximateDouble(encodedNumber), 0.0);
   }
 
   @Test
@@ -170,28 +166,6 @@ public class PaillierContextTest {
     context.checkSameContext(clonedContext);
   }
 
-//  @Test
-//  public void testIsLongValid() throws Exception {
-//    assertTrue(signedFull.isValid(17));
-//  }
-
-//  @Test
-//  public void testIsDoubleValid() throws Exception {
-//    assertTrue(signedFull.isValid(17.1));
-//
-//    assertFalse(signedFull.isValid(Double.POSITIVE_INFINITY));
-//    assertFalse(signedFull.isValid(Double.NEGATIVE_INFINITY));
-//    assertFalse(signedFull.isValid(Double.NaN));
-//
-//    assertFalse(signedFull.isValid(Double.MAX_VALUE + 1));
-//    assertFalse(signedFull.isValid(-Double.MAX_VALUE - 1));
-//  }
-
-//  @Test
-//  public void testIsBigIntegerValid() throws Exception {
-//    assertTrue(signedFull.isValid(new BigInteger("17")));
-//  }
-
   @Test
   public void testIsEncodedNumberValid() throws Exception {
     // Valid EncodedNumbers
@@ -216,10 +190,6 @@ public class PaillierContextTest {
     PaillierPrivateKey privateKey = PaillierPrivateKey.create(32);
     PaillierPublicKey publicKey = privateKey.getPublicKey();
     PaillierContext context = publicKey.createUnsignedContext();
-
-    // Note: the context is created such that the max long value is within the range of long
-//    assertEquals(context.getMaxLong(0),
-//                 publicKey.getModulus().subtract(BigInteger.ONE).longValue());
   }
 
   @Test
@@ -247,26 +217,14 @@ public class PaillierContextTest {
   }
 
   public static void testEncodable(PaillierContext context, double number) {
-//    assertTrue(context.isValid(number));
     assertEquals(number, context.decodeDouble(context.encode(number)), 0.0);
   }
 
   public static void testEncodable(PaillierContext context, long number) {
-//    assertTrue(context.isValid(number));
     assertEquals(number, context.decodeLong(context.encode(number)));
   }
 
-//  public static void testUnencodable(PaillierContext context, Number number) {
-//    assertFalse(context.isValid(number));
-//    try {
-//      context.encode(number);
-//      fail("Should not be able to encode number");
-//    } catch (EncodeException e) {
-//    }
-//  }
-
   public static void testUnencodable(PaillierContext context, BigInteger number) {
-//    assertFalse(context.isValid(number));
     try {
       context.encode(number);
       fail("Should not be able to encode number");
@@ -275,7 +233,6 @@ public class PaillierContextTest {
   }
 
   public static void testUnencodable(PaillierContext context, double number) {
-//    assertFalse(context.isValid(number));
     try {
       context.encode(number);
       fail("Should not be able to encode number");
@@ -284,7 +241,6 @@ public class PaillierContextTest {
   }
 
   public static void testUnencodable(PaillierContext context, long number) {
-//    assertFalse(context.isValid(number));
     try {
       context.encode(number);
       fail("Should not be able to encode number");
