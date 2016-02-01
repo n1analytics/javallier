@@ -272,109 +272,6 @@ public class PaillierContext {
     return minSignificand;
   }
 
-//  /**
-//   * Returns the maximum {@code Number} for a given {@code exponent}, where the {@code Number}'s {@code significand}
-//   * equals to the {@code maxSignificand}.
-//   *
-//   * @param exponent input.
-//   * @return the maximum {@code Number} for a given {@code exponent}.
-//   */
-//  public Number getMax(int exponent) {
-//    return new Number(maxSignificand, exponent);
-//  }
-
-//  /**
-//   * Returns the maximum approximated {@code BigInteger} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the maximum {@code BigInteger} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public BigInteger getMaxBigInteger(int exponent) {
-//    return getMax(exponent).decodeApproximateBigInteger();
-//  }
-//
-//  /**
-//   * Returns the maximum approximated {@code double} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the maximum approximated {@code double} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public double getMaxDouble(int exponent) {
-//    return getMax(exponent).decodeApproximateDouble();
-//  }
-//
-//  /**
-//   * Returns the maximum approximated {@code long} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the maximum approximated {@code long} representation of the maximum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public long getMaxLong(int exponent) {
-//    BigInteger max = getMaxBigInteger(exponent);
-//    if (max.compareTo(BigIntegerUtil.LONG_MAX_VALUE) >= 0) {
-//      return Long.MAX_VALUE;
-//    }
-//    return max.longValue();
-//  }
-
-//  /**
-//   * Returns the minimum {@code Number} for a given {@code exponent}, where the {@code Number}'s {@code significand}
-//   * equals to the {@code minSignificand}.
-//   *
-//   * @param exponent input.
-//   * @return the minimum {@code Number} for a given {@code exponent}, where the {@code Number}'s {@code significand}
-//   * equals to the {@code minSignificand}.
-//   */
-//  public Number getMin(int exponent) {
-//    return new Number(minSignificand, exponent);
-//  }
-
-//  /**
-//   * Returns the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the minimum approximated {@code BigInteger} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public BigInteger getMinBigInteger(int exponent) {
-//    return getMin(exponent).decodeApproximateBigInteger();
-//  }
-//
-//  /**
-//   * Returns the minimum approximated {@code double} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the minimum approximated {@code double} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public double getMinDouble(int exponent) {
-//    return getMin(exponent).decodeApproximateDouble();
-//  }
-//
-//  /**
-//   * Returns the minimum approximated {@code long} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   *
-//   * @param exponent input.
-//   * @return the minimum approximated {@code long} representation of the minimum {@code Number}
-//   * for a given {@code exponent}.
-//   */
-//  public long getMinLong(int exponent) {
-//    BigInteger min = getMinBigInteger(exponent);
-//    if (min.compareTo(BigIntegerUtil.LONG_MIN_VALUE) <= 0) {
-//      return Long.MIN_VALUE;
-//    }
-//    return min.longValue();
-//  }
-
   /**
    * Checks whether another {@code PaillierContext} is the same as this {@code PaillierContext}.
    *
@@ -452,119 +349,6 @@ public class PaillierContext {
     return false;
   }
 
-//  /**
-//   * Checks whether a {@code Number}'s {@code significand} is valid, that is the {@code significand}
-//   * can be encrypted using the associated {@code publicKey}. A valid {@code significand} is between
-//   * {@code minSignificand} and {@code maxSignificand}.
-//   *
-//   * @param value the {@code Number} to be checked.
-//   * @return true if it is valid, false otherwise.
-//   */
-//  public boolean isValid(Number value) {
-//    if (value.getSignificand().compareTo(maxSignificand) > 0) {
-//      return false;
-//    }
-//    if (value.getSignificand().compareTo(minSignificand) < 0) {
-//      return false;
-//    }
-//    return true;
-//  }
-
-//  /**
-//   * Checks whether a {@code BigInteger} is valid.
-//   *
-//   * @param value the {@code BigInteger} to be checked.
-//   * @return true if it is valid, false otherwise.
-//   */
-//  public boolean isValid(BigInteger value) {
-//    // TODO Issue #12: optimise
-////    return isValid(Number.encode(value));
-//    if (value.compareTo(maxSignificand) <= 0 && value.compareTo(minSignificand) >= 0) {
-//      return true;
-//    }
-//    return false;
-//  }
-
-//  /**
-//   * Checks whether a {@code double} is valid.
-//   *
-//   * @param value the {@code double} to be checked.
-//   * @return true if it is valid, false otherwise.
-//   */
-//  public boolean isValid(double value) {
-//    // TODO Issue #12: optimise
-//    if(Double.isInfinite(value) || Double.isNaN(value))
-//      return false;
-//
-//    if(value < 0 && isUnsigned())
-//      return false;
-//
-////    if(value > maxSignificand.doubleValue())
-////      System.out.println(value + " should be unencodable");
-////    else if (value == maxSignificand.doubleValue())
-////      System.out.println(value + " equals to maxSignificand");
-//
-//    if(value < minSignificand.doubleValue() || value > maxSignificand.doubleValue())
-//      return false;
-//
-//    return true;
-//
-//
-////    if(value > maxSignificand.doubleValue())
-////      System.out.println(value + " should be unencodable");
-////
-////    BigInteger significand = innerEncode(new BigDecimal(value), getDoublePrecExponent(value));
-////    if(value >= maxSignificand.doubleValue())
-////      System.out.println("significand is " + significand + ", is it equal to maxEncoded? " +
-////              (significand.compareTo(maxEncoded) == 0) + ", is it less than maxEncoded? " +
-////              (significand.compareTo(maxEncoded) < 0) + ", is it greater than maxEncoded? " +
-////              (significand.compareTo(maxEncoded) > 0));
-////
-////    if(BigIntegerUtil.greater(significand, maxEncoded) ||
-////            (value < 0 && BigIntegerUtil.less(significand, minEncoded))) {
-////      System.out.println(value + " is unencodable");
-////      return false;
-////    }
-////
-////    return true;
-//  }
-
-//  /**
-//   * Checks whether a {@code long} is valid.
-//   *
-//   * @param value the {@code long} to be checked.
-//   * @return true if it is valid, false otherwise.
-//   */
-//  public boolean isValid(long value) {
-//    // TODO Issue #12: optimise
-////    return isValid(Number.encode(value));
-//    return isValid(BigInteger.valueOf(value));
-//  }
-
-//  /**
-//   * Encodes a {@code Number} using this {@code PaillierContext}.
-//   *
-//   * Checks whether the {@code Number} to be encoded is valid, throws an EncodeException if the {@code Number}
-//   * is not valid. All {@code EncodedNumber}'s {@code value} must be between 0 and {@code publicKey.modulus - 1}.
-//   * Hence, if the {@code Number}'s {@code significand} is negative, add {@code publicKey.getModulus()}
-//   * to the {@code significand}.
-//   *
-//   * @param value the {@code Number} to be encoded.
-//   * @return the encoding result.
-//   * @throws EncodeException if the {@code value} is not valid.
-//   */
-//  public EncodedNumber encode(Number value) throws EncodeException {
-//    if (!isValid(value)) {
-//      throw new EncodeException();
-//    }
-//
-//    BigInteger significand = value.getSignificand();
-//    if (significand.signum() < 0) {
-//      significand = significand.add(publicKey.getModulus());
-//    }
-//    return new EncodedNumber(this, significand, value.getExponent());
-//  }
-
   /**
    * Encodes a {@code BigInteger} using this {@code PaillierContext}. Throws EncodeException if the input
    * value is greater than {@code maxSignificand} or is less than {@code minSignificand}. For positive input value,
@@ -577,9 +361,6 @@ public class PaillierContext {
    * @throws EncodeException if the {@code value} is not valid.
    */
   public EncodedNumber encode(BigInteger value) throws EncodeException {
-//    return encode(Number.encode(value));
-//    if (!isValid(value))
-//      throw new EncodeException("Input value cannot be encoded.");
     if (BigIntegerUtil.greater(value, maxSignificand) || BigIntegerUtil.less(value, minSignificand)) {
       throw new EncodeException("Input value cannot be encoded.");
     }
@@ -615,9 +396,6 @@ public class PaillierContext {
    * @throws EncodeException if the {@code value} is not valid.
    */
   public EncodedNumber encode(double value) throws EncodeException {
-//    return encode(Number.encode(value));
-//    if (!isValid(value))
-//      throw new EncodeException("Input value cannot be encoded.");
     if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
@@ -638,17 +416,11 @@ public class PaillierContext {
    * @throws EncodeException if the {@code value} and/or {@code maxExponent} is not valid.
    */
   public EncodedNumber encode(double value, int maxExponent) throws EncodeException {
-//    if (!isValid(value))
-//      throw new EncodeException("Input value cannot be encoded.");
-
     if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
     if(value < 0 && isUnsigned())
       throw new EncodeException("Input value is not valid for this Paillier context.");
-
-//    if (maxExponent < 0)
-//      throw new EncodeException("Max exponent must be greater than 0.");
 
     int exponent = getExponent(getDoublePrecExponent(value), maxExponent);
     return new EncodedNumber(this, innerEncode(new BigDecimal(value),
@@ -665,9 +437,6 @@ public class PaillierContext {
    * @throws EncodeException if the {@code value} and/or {@code maxExponent} is not valid.
    */
   public EncodedNumber encode(double value, double precision) {
-//    if (!isValid(value))
-//      throw new EncodeException("Input value cannot be encoded.");
-
     if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
@@ -689,11 +458,6 @@ public class PaillierContext {
    * @throws EncodeException if the {@code value} is not valid.
    */
   public EncodedNumber encode(long value) throws EncodeException {
-//    return encode(Number.encode(value));
-//    if (value < 0 && !isSigned()) {
-//      throw new EncodeException();
-//    }
-
     return encode(BigInteger.valueOf(value));
   }
 
@@ -756,12 +520,10 @@ public class PaillierContext {
   private BigInteger innerEncode(BigDecimal value, int exponent) {
     // Compute BASE^(-exponent)
     BigDecimal bigDecBaseExponent = (new BigDecimal(base)).pow(-exponent, MathContext.DECIMAL128);
-//    System.out.println("bigDecBaseExponent: " + bigDecBaseExponent.toString());
 
     // Compute the integer representation, ie, value * (BASE^-exponent)
     BigInteger bigIntRep =
             ((value.multiply(bigDecBaseExponent)).setScale(0, BigDecimal.ROUND_HALF_UP)).toBigInteger();
-//    System.out.println("bigIntRep: " + (value.multiply(bigDecBaseExponent)).toString());
 
     if(BigIntegerUtil.greater(bigIntRep, maxSignificand) ||
             (value.signum() < 0 && BigIntegerUtil.less(bigIntRep, minSignificand))) {
@@ -808,37 +570,6 @@ public class PaillierContext {
     return new EncodedNumber(this, newEnc, newExp);
   }
 
-//  /**
-//   * Decodes to a {@code Number}.
-//   *
-//   * Checks whether the {@code EncodedNumber}'s {@code context} is the same as this {@code PaillierContext}.
-//   * Decodes the {@code EncodedNumber} if the {@code value} is less than or equal to {@code maxEncoded}
-//   * (for positive numbers) or if the {@code value} is greater than or equal to {@code minEncoded}
-//   * (for negative numbers). Throws a DecodeException if the {@code EncodedNumber} cannot be decoded.
-//   *
-//   * @param encoded the {@code EncodedNumber} to be decoded.
-//   * @return the decoding result.
-//   * @throws DecodeException if the {@code encoded} cannot be decoded.
-//   */
-//  public Number decode(EncodedNumber encoded) throws DecodeException {
-//    checkSameContext(encoded);
-//    final BigInteger value = encoded.getValue();
-//
-//    // Non-negative
-//    if (value.compareTo(maxEncoded) <= 0) {
-//      return new Number(value, encoded.getExponent());
-//    }
-//
-//    // Negative - note that negative encoded numbers are greater than
-//    // non-negative encoded numbers and hence minEncoded > maxEncoded
-//    if (signed && value.compareTo(minEncoded) >= 0) {
-//      final BigInteger modulus = publicKey.getModulus();
-//      return new Number(value.subtract(modulus), encoded.getExponent());
-//    }
-//
-//    throw new DecodeException();
-//  }
-
   /**
    * Returns the value of an {@code EncodedNumber} for decoding. Throws a DecodeException if the value is
    * greater than the {@code publicKey}'s {@code modulus}. If the value is less than or equal to
@@ -879,33 +610,20 @@ public class PaillierContext {
    * @throws DecodeException if the {@code encoded} cannot be decoded.
    */
   public BigInteger decodeBigInteger(EncodedNumber encoded) throws DecodeException {
-//    return decode(encoded).decodeBigInteger();
     BigInteger significand = getSignificand(encoded);
     return significand.multiply((new BigInteger(String.valueOf(base))).pow(encoded.getExponent()));
   }
 
-//  /**
-//   * Decodes to the approximated {@code BigInteger} representation.Throws a DecodeException
-//   * if the {@code EncodedNumber} cannot be decoded.
-//   *
-//   * @param encoded the {@code EncodedNumber} to be decoded.
-//   * @return the decoding result.
-//   * @throws DecodeException if the {@code encoded} cannot be decoded.
-//   */
-//  public BigInteger decodeApproximateBigInteger(EncodedNumber encoded)
-//          throws DecodeException {
-//    return decode(encoded).decodeApproximateBigInteger();
-//  }
-
   /**
-   * Decodes to the exact {@code double} representation.
+   * Decodes to the exact {@code double} representation. Throws DecodeException if the decoded result
+   * is {@link java.lang.Double#POSITIVE_INFINITY}, {@link java.lang.Double#NEGATIVE_INFINITY} or
+   * {@link java.lang.Double#NaN}.
    *
    * @param encoded the {@code EncodedNumber} to be decoded.
    * @return the decoding result.
    * @throws DecodeException if the {@code encoded} cannot be decoded.
    */
   public double decodeDouble(EncodedNumber encoded) throws DecodeException {
-//    return decode(encoded).decodeDouble();
     BigInteger significand = getSignificand(encoded);
     double decoded = significand.doubleValue() * Math.pow((double) base, (double) encoded.getExponent());
 
@@ -915,27 +633,15 @@ public class PaillierContext {
     return decoded;
   }
 
-//  /**
-//   * Decodes to the approximated {@code double} representation. Throws a DecodeException
-//   * if the {@code EncodedNumber} cannot be decoded.
-//   *
-//   * @param encoded the {@code EncodedNumber} to be decoded.
-//   * @return the decoding result.
-//   * @throws DecodeException if the {@code encoded} cannot be decoded.
-//   */
-//  public double decodeApproximateDouble(EncodedNumber encoded) throws DecodeException {
-//    return decode(encoded).decodeApproximateDouble();
-//  }
-
   /**
-   * Decodes to the exact {@code long} representation.
+   * Decodes to the exact {@code long} representation. Throws DecodeException if the decoded result
+   * is greater than {@link java.lang.Long#MAX_VALUE} or less than {@link java.lang.Long#MIN_VALUE}.
    *
    * @param encoded the {@code EncodedNumber} to be decoded.
    * @return the decoding result.
    * @throws DecodeException if the {@code encoded} cannot be decoded.
    */
   public long decodeLong(EncodedNumber encoded) throws DecodeException {
-//    return decode(encoded).decodeLong();
     BigInteger decoded = decodeBigInteger(encoded);
     if(BigIntegerUtil.less(decoded, BigIntegerUtil.LONG_MIN_VALUE) ||
             BigIntegerUtil.greater(decoded, BigIntegerUtil.LONG_MAX_VALUE)) {
@@ -944,18 +650,6 @@ public class PaillierContext {
     return decoded.longValue();
 
   }
-
-//  /**
-//   * Decodes to the approximated {@code long} representation. Throws a DecodeException
-//   * if the {@code EncodedNumber} cannot be decoded.
-//   *
-//   * @param encoded the {@code EncodedNumber} to be decoded.
-//   * @return the decoding result.
-//   * @throws DecodeException if the {@code encoded} cannot be decoded.
-//   */
-//  public long decodeApproximateLong(EncodedNumber encoded) throws DecodeException {
-//    return decode(encoded).decodeApproximateLong();
-//  }
 
   /**
    * Obfuscates an {@code EncryptedNumber}.
@@ -986,16 +680,6 @@ public class PaillierContext {
     return new EncryptedNumber(this, ciphertext, encoded.getExponent(), false);
   }
 
-//  /**
-//   * Encrypts a {@code Number}.
-//   *
-//   * @param value to be encrypted.
-//   * @return the encryption result.
-//   */
-//  public EncryptedNumber encrypt(Number value) {
-//    return encrypt(encode(value));
-//  }
-
   /**
    * Encrypts a {@code BigInteger}.
    *
@@ -1025,36 +709,6 @@ public class PaillierContext {
   public EncryptedNumber encrypt(long value) {
     return encrypt(encode(value));
   }
-
-//  /**
-//   * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
-//   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-//   * are not the same, reduce the higher exponent to match with the lower exponent.
-//   *
-//   * @param operand1 first {@code EncryptedNumber}.
-//   * @param operand2 second {@code EncryptedNumber}.
-//   * @return the addition result.
-//   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-//   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-//   */
-//  public EncryptedNumber add(EncryptedNumber operand1, EncryptedNumber operand2)
-//          throws PaillierContextMismatchException {
-//    checkSameContext(operand1);
-//    checkSameContext(operand2);
-//    BigInteger value1 = operand1.ciphertext;
-//    BigInteger value2 = operand2.ciphertext;
-//    int exponent1 = operand1.getExponent();
-//    int exponent2 = operand2.getExponent();
-//    if (exponent1 > exponent2) {
-//      value1 = publicKey.raw_multiply(value1, BigInteger.ONE.shiftLeft(exponent1 - exponent2));
-//      exponent1 = exponent2;
-//    } else if (exponent1 < exponent2) {
-//      value2 = publicKey.raw_multiply(value2, BigInteger.ONE.shiftLeft(exponent2 - exponent1));
-//      exponent2 = exponent1;
-//    } // else do nothing
-//    final BigInteger result = publicKey.raw_add(value1, value2);
-//    return new EncryptedNumber(this, result, exponent1, operand1.isSafe && operand2.isSafe);
-//  }
 
   /**
    * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
@@ -1114,42 +768,6 @@ public class PaillierContext {
           throws PaillierContextMismatchException {
     return add(encrypt(operand1), operand2);
   }
-
-//  /**
-//   * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
-//   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-//   * are not the same, reduce the higher exponent to match with the lower exponent.
-//   *
-//   * @param operand1 first {@code EncodedNumber}.
-//   * @param operand2 second {@code EncodedNumber}.
-//   * @return the addition result.
-//   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-//   * {@code operand1} or {@code operand2} does not match this{@code PaillierContext}.
-//   */
-//  public EncodedNumber add(EncodedNumber operand1, EncodedNumber operand2)
-//          throws PaillierContextMismatchException {
-//    checkSameContext(operand1);
-//    checkSameContext(operand2);
-//    final BigInteger modulus = publicKey.getModulus();
-//    BigInteger value1 = operand1.getValue();
-//    BigInteger value2 = operand2.getValue();
-//    int exponent1 = operand1.getExponent();
-//    int exponent2 = operand2.getExponent();
-//    if (exponent1 > exponent2) {
-//      value1 = value1.shiftLeft(exponent1 - exponent2);
-////			if(value1.compareTo(publicKey.getModulus()) > 0)
-////				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
-//      exponent1 = exponent2;
-//    } else if (exponent1 < exponent2) {
-//      value2 = value2.shiftLeft(exponent2 - exponent1);
-////			if(value2.compareTo(publicKey.getModulus()) > 0)
-////				throw new ArithmeticException(); // TODO Issue #11: better ways to detect
-//      exponent2 = exponent1;
-//    } // else do nothing
-//    // TODO Issue #11: check that nothing overflows
-//    final BigInteger result = value1.add(value2).mod(modulus);
-//    return new EncodedNumber(this, result, exponent1);
-//  }
 
   /**
    * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
@@ -1315,7 +933,7 @@ public class PaillierContext {
    *
    * @param operand1 an {@code EncodedNumber}.
    * @param operand2 an {@code EncodedNumber}.
-   * @return the multiplication result
+   * @return the multiplication result.
    * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
    * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
    */
