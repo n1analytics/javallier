@@ -127,9 +127,13 @@ public class MockPaillierContextTest {
     MockPaillierContext context2 = null;
     MockPaillierContext context3, context4;
 
-    assertFalse(context1.equals(context2));
+    assertTrue(context1.equals(context1)); // Compare to itself
+    assertFalse(context1.equals(publicKey)); // Compare to other object
+    assertFalse(context1.equals(null)); // Compare to null
+
+    assertFalse(context1.equals(context2)); // Compare to uninitialised mock Paillier context
     context2 = publicKey.createMockUnsignedContext();
-    assertFalse(context1.equals(context2));
+    assertFalse(context1.equals(context2)); // Compare to a different context
 
     context3 = publicKey.createMockSignedContext(1000);
     context4 = publicKey.createMockUnsignedContext(1000);

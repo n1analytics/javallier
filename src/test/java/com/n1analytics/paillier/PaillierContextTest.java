@@ -224,21 +224,21 @@ public class PaillierContextTest {
 
   @Test
   public void testEquals() throws Exception {
-    assertTrue(signedFull.equals(signedFull));
-    assertFalse(signedFull.equals(signedFull.getPublicKey()));
+    assertTrue(signedFull.equals(signedFull)); // Compare to itself
+    assertFalse(signedFull.equals(signedFull.getPublicKey())); // Compare to other object
+    assertFalse(signedFull.equals(null)); // Compare to null
 
     PaillierContext otherContext = null;
+    assertFalse(signedFull.equals(otherContext)); // Compare to an uninitialised Paillier context
 
-    // Check when the other public key hasn't been initialised (ie, is null)
-    assertFalse(signedFull.equals(otherContext));
+    otherContext = new PaillierContext(TestConfiguration.createSignedFullPrecision(1024).publicKey(), true, 1024);
+    assertFalse(signedFull.equals(otherContext)); // Compare to a Paillier context with different public key
 
-    otherContext = new PaillierContext(unsignedFull.getPublicKey(), false, 1024);
+    otherContext = new PaillierContext(signedFull.getPublicKey(), false, 1024);
+    assertFalse(signedFull.equals(otherContext)); // Compare to a Paillier context with different signedness
 
-    // Check after the other private key has been initialised (ie, is not null)
-    assertFalse(signedFull.equals(otherContext));
-
-    assertFalse(signedFull.equals(null));
-
+    otherContext = new PaillierContext(signedFull.getPublicKey(), true, 1000);
+    assertFalse(signedFull.equals(otherContext)); // Compare to a Paillier context with different precision
   }
 
   public static void testEncodable(PaillierContext context, EncodedNumber number) {

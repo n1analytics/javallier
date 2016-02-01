@@ -126,20 +126,20 @@ public class PaillierPublicKeyTest {
 
   @Test
   public void testEquals() throws Exception {
-    assertTrue(defPublicKey.equals(defPublicKey));
-    assertFalse(defPublicKey.equals(defPrivateKey));
+    assertTrue(defPublicKey.equals(defPublicKey)); // Compare to itself
+    assertFalse(defPublicKey.equals(defPrivateKey)); // Compare to other object
+    assertFalse(defPublicKey.equals(null)); // Compare to null
 
     PaillierPublicKey otherPublicKey = null;
-
-    // Check when the other public key hasn't been initialised (ie, is null)
-    assertFalse(defPublicKey.equals(otherPublicKey));
+    assertFalse(defPublicKey.equals(otherPublicKey)); // Compare to an uninitialised public key
 
     BigInteger modulus = new BigInteger("17").multiply(new BigInteger("19"));
     otherPublicKey = new PaillierPublicKey(modulus);
+    assertFalse(defPublicKey.equals(otherPublicKey)); // Compare to another public key with the same modulus
 
-    // Check after the other private key has been initialised (ie, is not null)
-    assertFalse(defPublicKey.equals(otherPublicKey));
+    BigInteger differentModulus = new BigInteger("19").multiply(new BigInteger("23"));
+    otherPublicKey = new PaillierPublicKey(differentModulus);
+    assertFalse(defPublicKey.equals(otherPublicKey)); // Compare to another public key with different modulus
 
-    assertFalse(defPublicKey.equals(null));
   }
 }

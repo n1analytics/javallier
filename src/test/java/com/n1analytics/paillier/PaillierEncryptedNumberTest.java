@@ -687,4 +687,22 @@ public class PaillierEncryptedNumberTest {
     double decryptedNegativeNumber2 = negativeCiphertext2.decrypt(privateKey).decodeDouble();
     assertEquals(number, decryptedNegativeNumber2, EPSILON);
   }
+
+  @Test
+  public void testEquals() throws Exception {
+    EncryptedNumber encrypted = context.encrypt(17);
+    EncryptedNumber partialEncrypted = partialContext.encrypt(17);
+
+    assertTrue(encrypted.equals(encrypted)); // Compare to itself
+    assertFalse(encrypted.equals(context)); // Compare to other object
+    assertFalse(encrypted.equals(null)); // Compare to null
+
+    EncryptedNumber encrypted2 = null;
+    assertFalse(encrypted.equals(encrypted2)); // Compare to uninitialised encrypted number
+
+    encrypted2 = context.encrypt(3.14);
+    assertFalse(encrypted.equals(encrypted2)); // Compare to an encrypted number with different value
+
+    assertFalse(encrypted.equals(partialEncrypted)); // Compare to an encrypted number with different context
+  }
 }

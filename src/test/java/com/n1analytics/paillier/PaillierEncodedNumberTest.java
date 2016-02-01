@@ -620,20 +620,18 @@ public class PaillierEncodedNumberTest {
   public void testEquals() throws Exception {
     EncodedNumber encodedNumber = defContext.encode(17);
 
-    assertTrue(encodedNumber.equals(encodedNumber));
-    assertFalse(encodedNumber.equals(defPrivateKey));
+    assertTrue(encodedNumber.equals(encodedNumber)); // Compare to itself
+    assertFalse(encodedNumber.equals(defPrivateKey)); // Compare to other object
+    assertFalse(encodedNumber.equals(null)); // Compare to null
 
     EncodedNumber otherEncodedNumber = null;
-
-    // Check when the other public key hasn't been initialised (ie, is null)
-    assertFalse(defPublicKey.equals(otherEncodedNumber));
-
+    assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an uninitialised encoded number
     otherEncodedNumber = defContext.encode(3);
+    assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an encoded number with different value
 
-    // Check after the other private key has been initialised (ie, is not null)
-    assertFalse(defPublicKey.equals(otherEncodedNumber));
-
-    assertFalse(defPublicKey.equals(null));
+    PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
+    otherEncodedNumber = otherContext.encode(17);
+    assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an encoded number with different context
   }
 
   // NOTE: Due to rounding error/limited precision, reducing the exponent of an EncodedNumber affects its precision.

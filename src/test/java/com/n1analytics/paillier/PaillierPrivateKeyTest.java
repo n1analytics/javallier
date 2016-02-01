@@ -158,23 +158,18 @@ public class PaillierPrivateKeyTest {
     PaillierPublicKey publicKey = new PaillierPublicKey(modulus);
     PaillierPrivateKey privateKey = new PaillierPrivateKey(publicKey, totient);
 
-    assertTrue(privateKey.equals(privateKey));
-    assertFalse(privateKey.equals(publicKey));
+    assertTrue(privateKey.equals(privateKey)); // Compare to itself
+    assertFalse(privateKey.equals(publicKey)); // Compare to other object
+    assertFalse(privateKey.equals(null)); // Compare to null
 
     PaillierPrivateKey otherPrivateKey = null;
-
-    // Check when the other private key hasn't been initialised (ie, is null)
-    assertFalse(privateKey.equals(otherPrivateKey));
+    assertFalse(privateKey.equals(otherPrivateKey)); // Compare to an uninitialised private key
 
     BigInteger otherModulus = new BigInteger("13")
         .multiply(new BigInteger("17"));
     BigInteger otherTotient = new BigInteger("192");
-    new PaillierPrivateKey(new PaillierPublicKey(otherModulus), otherTotient);
-
-    // Check after the other private key has been initialised (ie, is not null)
-    assertFalse(privateKey.equals(otherPrivateKey));
-
-    assertFalse(privateKey.equals(null));
+    otherPrivateKey = new PaillierPrivateKey(new PaillierPublicKey(otherModulus), otherTotient);
+    assertFalse(privateKey.equals(otherPrivateKey)); // Compare to a private key with different public key and totient
   }
 
   // Key uniqueness tests for key of size 512 bits, 1024 bits and 2104 bits.
