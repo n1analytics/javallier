@@ -10,14 +10,11 @@ import com.n1analytics.paillier.util.BigIntegerUtil;
 import org.apache.commons.cli.*;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,11 +58,16 @@ public class JavallierCLI {
     commands.put("add", new AddCommand("add"));
     commands.put("addenc", new AddEncCommand("addenc"));
 
-    Command command = commands.get("help");
+    Optional<Command> command = Optional.empty();
+
     List<String> argsList = Arrays.asList(args);
     List<String> leftOverArgs;
     if (argsList.size() > 0) {
-      command = commands.get(argsList.get(0));
+      // Ensure that we have a valid command
+      String probableCommand = argsList.get(0);
+      if (commands.containsKey(probableCommand)) {
+        command = Optional.ofNullable(commands.get(probableCommand));
+      }
     }
 
     // create the arg parser
@@ -73,36 +75,47 @@ public class JavallierCLI {
 
     // parse the top level command line arguments
     try {
-      options = command.addOptions(options);
+      command.ifPresent(c -> options = c.addOptions(options));
       CommandLine line = parser.parse(options, args);
 
-      // Process the top level options
-      if (line.hasOption("v")) {
-        log.setLevel(Level.FINER);
-        log.info("Using cli argument -v");
-      }
+      // Process top level options
 
-      if (line.hasOption("help") || command == null) {
-        // If there is a command listed (e.g. genpkey --help)
-        // then show the help for that command
-        if (command == null) {
+      // Setup logging to console
+      Handler systemOut = new ConsoleHandler();
+      systemOut.setLevel( Level.ALL );
+      log.addHandler(systemOut);
+
+      if (line.hasOption("v")) {
+        log.setLevel(Level.INFO);
+      } else {
+        log.setLevel(Level.WARNING);
+      }
+      // Prevent logs from processed by default Console handler.
+      log.setUseParentHandlers(false);
+
+      if (line.hasOption("help") || !command.isPresent()) {
+        if ( !command.isPresent()) {
           help(commands.values());
         } else {
-          help(command);
+          // If there is a command listed (e.g. genpkey --help)
+          // then show the help for that command
+          help(command.get());
         }
-        System.exit(0);
+
       }
 
+      // At this point we must have a command
+      Command cmd = command.get();
+      cmd.processOptions(line);
 
-      command.processOptions(line);
-
-      // Capture all the other args
+      // Capture the arguments to be passed to the command
       leftOverArgs = line.getArgList();
 
       try {
-        command.run(leftOverArgs);
+        cmd.run(leftOverArgs);
       } catch (Exception e) {
-        log.warning("Failed to run command");
+        log.warning("Failed to run command. Reason: " + e.getMessage());
+        e.printStackTrace();
       }
 
     } catch (ParseException exp) {
@@ -111,8 +124,6 @@ public class JavallierCLI {
       // print the list of available options
       help(commands.values());
     }
-
-
 
   }
 
@@ -132,8 +143,11 @@ public class JavallierCLI {
     usage(command);
     System.out.println();
     System.out.println(command.getDescription());
+
+    System.exit(0);
   }
 
+  /** Prints overall program help. */
   private void help(Collection<Command> commands) {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("pheutil", options);
@@ -191,7 +205,6 @@ public class JavallierCLI {
      * Add any command specific options to the argument parser
      * */
     public Options addOptions(Options options) {
-      log.info("No additional options...");
       return options;
     }
 
@@ -308,21 +321,12 @@ public class JavallierCLI {
     }
 
     public void run(List<String> args) {
-      log.info("Running the genpkey command");
-
-      log.info(args.toString());
-      log.info("Arg Length: " + args.size());
-
-
-
 
       PaillierPrivateKey privateKey = PaillierPrivateKey.create(keysize);
       log.info("Keypair generated");
 
       PrivateKeyJsonSerialiser serializedPrivateKey = new PrivateKeyJsonSerialiser();
       privateKey.serialize(serializedPrivateKey);
-
-
 
       String outputFile;
       if( args.size() < 2) {
@@ -340,7 +344,6 @@ public class JavallierCLI {
           log.info("Couldn't find that location sorry.");
         }
       }
-
 
     }
 
@@ -368,7 +371,7 @@ public class JavallierCLI {
     }
 
     public String getOptionDescription() {
-      return "[--keysize KEYSIZE] OUTPUT";
+      return "[--keysize=KEYSIZE] OUTPUT";
     }
 
     public String getBlurb() {
@@ -452,16 +455,37 @@ public class JavallierCLI {
     }
 
     public void run(List<String> args) {
-      System.out.println("Running the extract command");
-      System.out.println(args);
+      log.info("Running the extract command");
+      log.info("Args: " + args);
+
+      String privatefn = args.get(1);
+      String publicfn = args.get(2);
+
+      Writer out;
+
+      final ObjectMapper mapper = new ObjectMapper();
+      try {
+
+        if(publicfn.equals("-")) {
+          out = new BufferedWriter(new OutputStreamWriter(System.out));
+        } else {
+          out = new PrintWriter(publicfn);
+        }
+
+        final Map privateKey = mapper.readValue(new File(privatefn), Map.class);
+        mapper.writeValue(out, privateKey.get("pub"));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
     }
 
     public String getOptionDescription() {
-      return "PRIVATEKEY";
+      return "PRIVATEKEY OUTPUT";
     }
 
     public String getBlurb() {
-      return "Extract the public key from a PRIVATE";
+      return "Extract the public key from a PRIVATE key";
     }
 
     public String getDescription() {
