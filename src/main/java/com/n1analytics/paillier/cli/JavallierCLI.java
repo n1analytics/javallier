@@ -57,7 +57,7 @@ public class JavallierCLI {
     commands.put("add", new AddCommand("add"));
     commands.put("addenc", new AddEncCommand("addenc"));
 
-    Optional<Command> command = Optional.empty();
+    Command command = null;
 
     List<String> argsList = Arrays.asList(args);
     List<String> leftOverArgs;
@@ -65,7 +65,7 @@ public class JavallierCLI {
       // Ensure that we have a valid command
       String probableCommand = argsList.get(0);
       if (commands.containsKey(probableCommand)) {
-        command = Optional.ofNullable(commands.get(probableCommand));
+        command = commands.get(probableCommand);
       }
     }
 
@@ -74,7 +74,9 @@ public class JavallierCLI {
 
     // parse the top level command line arguments
     try {
-      command.ifPresent(c -> options = c.addOptions(options));
+      if(command != null) {
+        options = command.addOptions(options);
+      }
       CommandLine line = parser.parse(options, args);
 
       // Process top level options
@@ -92,26 +94,26 @@ public class JavallierCLI {
       // Prevent logs from processed by default Console handler.
       log.setUseParentHandlers(false);
 
-      if (line.hasOption("help") || !command.isPresent()) {
-        if ( !command.isPresent()) {
+      if (line.hasOption("help") || command == null) {
+        if (command == null) {
           help(commands.values());
         } else {
           // If there is a command listed (e.g. genpkey --help)
           // then show the help for that command
-          help(command.get());
+          help(command);
         }
 
+        System.exit(0);
       }
 
       // At this point we must have a command
-      Command cmd = command.get();
-      cmd.processOptions(line);
+      command.processOptions(line);
 
       // Capture the arguments to be passed to the command
       leftOverArgs = line.getArgList();
 
       try {
-        cmd.run(leftOverArgs);
+        command.run(leftOverArgs);
       } catch (Exception e) {
         log.warning("Failed to run command. Reason: " + e.getMessage());
         e.printStackTrace();
@@ -335,34 +337,27 @@ public class JavallierCLI {
       return options;
     }
 
-    private Optional<Writer> getFileWriter(String filename) {
-      try {
-        return Optional.of((Writer) new PrintWriter(filename));
-      } catch (Exception e) {
-        System.err.println("Problem with file");
-        return Optional.empty();
-      }
-    }
-
     @Override
     public void processOptions(CommandLine line) {
 
-      Optional<String> maybeOutputFilename = Optional.empty();
+      String outputFilename = null;
 
       if(line.hasOption("output")) {
-        maybeOutputFilename = Optional.of(line.getOptionValue("output"));
+        outputFilename = line.getOptionValue("output");
       }
 
-      Optional<Writer> maybeOutput = Optional.empty();
+      if (outputFilename != null && !"-".equals(outputFilename)) {
+        try {
+          output = (Writer) new PrintWriter(outputFilename);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+          log.warning("File not found.");
+        }
+        log.info("Using given filename: " + outputFilename);
+      } else {
+        output = (Writer) new BufferedWriter(new OutputStreamWriter(System.out));
+      }
 
-      maybeOutput = maybeOutputFilename
-          .filter(fn -> !"-".equals(fn))
-          .flatMap(this::getFileWriter);
-
-      maybeOutput.ifPresent(fn -> log.info("Using given filename: " + fn));
-
-      output = maybeOutput
-          .orElse((Writer) new BufferedWriter(new OutputStreamWriter(System.out)));
     }
 
     public void run(List<String> args) {
