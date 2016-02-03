@@ -45,7 +45,16 @@ Or run just fast tests:
 Command Line Tool
 -----------------
 
-Run with sbt:
+Build the `javallier` CLI tool:
+
+    sbt stage
+
+Then run the binary for your system, e.g., on Linux:
+
+    ./target/universal/stage/bin/javallier
+
+
+Alternatively you can run directly with sbt:
 
     sbt "runMain com.n1analytics.paillier.cli.Main"
 
