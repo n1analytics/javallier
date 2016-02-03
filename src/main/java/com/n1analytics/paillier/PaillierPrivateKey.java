@@ -143,7 +143,7 @@ public final class PaillierPrivateKey {
    * @param publicKey associated with this private key.
    * @param totient of the private key.
    */
-  protected PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger totient) {
+  public PaillierPrivateKey(PaillierPublicKey publicKey, BigInteger totient) {
     // Some basic error checking. Note though that passing these tests does
     // not guarantee that the private key is valid.
     if (publicKey == null) {

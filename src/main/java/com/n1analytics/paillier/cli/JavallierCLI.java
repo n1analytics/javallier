@@ -2,15 +2,10 @@ package com.n1analytics.paillier.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.n1analytics.paillier.EncryptedNumber;
-import com.n1analytics.paillier.PaillierContext;
-import com.n1analytics.paillier.PaillierPrivateKey;
-import com.n1analytics.paillier.PaillierPublicKey;
+import com.n1analytics.paillier.*;
 import org.apache.commons.cli.*;
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -339,25 +334,13 @@ public class JavallierCLI {
 
     @Override
     public void processOptions(CommandLine line) {
-
-      String outputFilename = null;
-
-      if(line.hasOption("output")) {
-        outputFilename = line.getOptionValue("output");
+      try {
+        output = OptionParsing.processOutputOption(line);
+      } catch (FileNotFoundException e) {
+        log.warning("File not found");
+        e.printStackTrace();
+        System.exit(1);
       }
-
-      if (outputFilename != null && !"-".equals(outputFilename)) {
-        try {
-          output = (Writer) new PrintWriter(outputFilename);
-        } catch (FileNotFoundException e) {
-          e.printStackTrace();
-          log.warning("File not found.");
-        }
-        log.info("Using given filename: " + outputFilename);
-      } else {
-        output = (Writer) new BufferedWriter(new OutputStreamWriter(System.out));
-      }
-
     }
 
     public void run(List<String> args) {
@@ -373,11 +356,9 @@ public class JavallierCLI {
       try {
         final Map publicKey = mapper.readValue(new File(publicfn), Map.class);
 
-        // decode the modulus
-        BigInteger n = new BigInteger(Base64.decodeBase64((String) publicKey.get("n")));
+        PaillierPublicKey pub = SerialisationUtil.unserialise_public(publicKey);
 
-        PaillierPublicKey pub = new PaillierPublicKey(n);
-
+        // TODO precision should be variable
         PaillierContext c = pub.createSignedContext(32);
 
         EncryptedNumber enc = c.encrypt(Double.parseDouble(plaintext));
@@ -423,21 +404,70 @@ public class JavallierCLI {
    */
   protected static class DecryptCommand extends Command {
 
+    Writer output;
+
     public DecryptCommand(String name) {
       super(name);
+    }
+
+    public Options addOptions(Options options) {
+      options.addOption("o", "output", true, "Output to given file instead of stdout");
+      return options;
+    }
+
+    @Override
+    public void processOptions(CommandLine line) {
+      try {
+        output = OptionParsing.processOutputOption(line);
+      } catch (FileNotFoundException e) {
+        log.warning("File not found");
+        e.printStackTrace();
+        System.exit(1);
+      }
     }
 
     public void run(List<String> args) {
       System.out.println("Running the decrypt command");
       System.out.println(args);
+
+      String privateFn = args.get(1);
+      String ciphertextFn = args.get(2);
+
+      final ObjectMapper mapper = new ObjectMapper();
+
+      try {
+        Map encData = mapper.readValue(new File(ciphertextFn), Map.class);
+        Map privateKeyData = mapper.readValue(new File(privateFn), Map.class);
+
+        // Deserialize private key
+        PaillierPrivateKey priv = SerialisationUtil.unserialise_private(privateKeyData);
+
+        log.info("Deserialized private key");
+
+        // Deserialize the encrypted number
+        EncryptedNumber enc = SerialisationUtil.unserialise_encrypted(encData, priv.getPublicKey());
+
+        log.info("Deserialized number...");
+
+        EncodedNumber encoded = priv.decrypt(enc);
+
+        log.info("Decoding...");
+
+        output.write("" + encoded.decodeDouble() + "\n");
+        output.close();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
     }
 
     public String getOptionDescription() {
-      return "PRIVATEKEY ENCRYPTED";
+      return "PRIVATEKEY CIPHERTEXT";
     }
 
     public String getBlurb() {
-      return "Decrypt ENCRYPTED using PRIVATEKEY";
+      return "Decrypt CIPHERTEXT with PRIVATEKEY";
     }
 
     public String getDescription() {
