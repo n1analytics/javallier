@@ -393,7 +393,10 @@ public class JavallierCLI {
           "The PLAINTEXT will be interpreted as a floating point number.\n" +
           "\n" +
           "Output will be a JSON object with a \"v\" attribute containing the\n" +
-          "ciphertext as a string, and \"e\" the exponent as an integer.";
+          "ciphertext as a string, and \"e\" the exponent as an integer.\n" +
+          "\n" +
+          "Note if you are passing a negative number to encrypt, you will\n" +
+          "need to include a \"--\" between the public key and your plaintext.";
     }
   }
 
@@ -532,13 +535,63 @@ public class JavallierCLI {
    */
   protected static class AddCommand extends Command {
 
+    Writer output;
+
     public AddCommand(String name) {
       super(name);
+    }
+
+    public Options addOptions(Options options) {
+      options.addOption("o", "output", true, "Output to given file instead of stdout");
+      return options;
+    }
+
+    @Override
+    public void processOptions(CommandLine line) {
+      try {
+        output = OptionParsing.processOutputOption(line);
+      } catch (FileNotFoundException e) {
+        log.warning("File not found");
+        e.printStackTrace();
+        System.exit(1);
+      }
     }
 
     public void run(List<String> args) {
       System.out.println("Running the add command");
       System.out.println(args);
+
+      String publicFn = args.get(1);
+      String ciphertextFn = args.get(2);
+
+      // Parse the plaintext number as a double
+      Double plaintext = Double.parseDouble(args.get(3));
+
+      final ObjectMapper mapper = new ObjectMapper();
+
+      try {
+        Map encData = mapper.readValue(new File(ciphertextFn), Map.class);
+        Map pubKeyData = mapper.readValue(new File(publicFn), Map.class);
+
+        // Deserialize public key
+        PaillierPublicKey pub = SerialisationUtil.unserialise_public(pubKeyData);
+        log.info("Deserialized public key");
+
+        // Deserialize the encrypted number
+        EncryptedNumber enc = SerialisationUtil.unserialise_encrypted(encData, pub);
+        log.info("Deserialized ciphertext number...");
+
+        // Add the plaintext to the encrypted number
+        EncryptedNumber newEnc = enc.add(plaintext);
+
+        ObjectNode json = SerialisationUtil.serialise_encrypted(newEnc);
+
+        output.write(json.toString());
+        output.close();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     public String getOptionDescription() {
@@ -560,13 +613,65 @@ public class JavallierCLI {
    */
   protected static class AddEncCommand extends JavallierCLI.Command {
 
+    Writer output;
+
     public AddEncCommand(String name) {
       super(name);
+    }
+
+    public Options addOptions(Options options) {
+      options.addOption("o", "output", true, "Output to given file instead of stdout");
+      return options;
+    }
+
+    @Override
+    public void processOptions(CommandLine line) {
+      try {
+        output = OptionParsing.processOutputOption(line);
+      } catch (FileNotFoundException e) {
+        log.warning("File not found");
+        e.printStackTrace();
+        System.exit(1);
+      }
     }
 
     public void run(List<String> args) {
       System.out.println("Running the addenc command");
       System.out.println(args);
+
+
+      String publicFn = args.get(1);
+      String ciphertextAFn = args.get(2);
+      String ciphertextBFn = args.get(3);
+
+      final ObjectMapper mapper = new ObjectMapper();
+
+      try {
+        Map encAData = mapper.readValue(new File(ciphertextAFn), Map.class);
+        Map encBData = mapper.readValue(new File(ciphertextBFn), Map.class);
+        Map pubKeyData = mapper.readValue(new File(publicFn), Map.class);
+
+        // Deserialize public key
+        PaillierPublicKey pub = SerialisationUtil.unserialise_public(pubKeyData);
+        log.info("Deserialized public key");
+
+        // Deserialize the encrypted numbers
+        EncryptedNumber encA = SerialisationUtil.unserialise_encrypted(encAData, pub);
+        EncryptedNumber encB = SerialisationUtil.unserialise_encrypted(encBData, pub);
+        log.info("Deserialized encrypted numbers");
+
+        // Add the encrypted numbers together
+        EncryptedNumber newEnc = encA.add(encB);
+
+        ObjectNode json = SerialisationUtil.serialise_encrypted(newEnc);
+
+        output.write(json.toString());
+        output.close();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
     }
 
     public String getOptionDescription() {
