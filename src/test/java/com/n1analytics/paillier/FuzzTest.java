@@ -13,52 +13,24 @@
  */
 package com.n1analytics.paillier;
 
-import com.n1analytics.paillier.util.BigIntegerUtil;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static com.n1analytics.paillier.TestUtil.random;
-import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
+import static com.n1analytics.paillier.TestConfiguration.DEFAULT_KEY_SIZE;
+import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
+import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 
 @Category(SlowTests.class)
 public class FuzzTest {
+  static private PaillierContext context = SIGNED_FULL_PRECISION.context();
+  static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
 
-  static private final double EPSILON = 0.1;
+  static private int bigIntegerBitLength = DEFAULT_KEY_SIZE / 2 - 1;
 
-  static private final int keySize = 2104;
-
-  static private int bigIntegerBitLength = keySize / 2 - 1;
-
-  static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
-  static private PaillierPublicKey publicKey = privateKey.getPublicKey();
-  static private PaillierContext signedContext = publicKey.createSignedContext();
 
   static private int maxIteration = 100;
-
-  public boolean isResultValid(BigInteger result) {
-    if (BigIntegerUtil.greater(result, signedContext.getMaxSignificand()) ||
-            BigIntegerUtil.less(result, signedContext.getMinSignificand()))
-      return false;
-    return true;
-  }
-
-  public boolean isResultValid(double result) {
-    if(Double.isInfinite(result) || Double.isNaN(result))
-      return false;
-
-    if(result < 0 && signedContext.isUnsigned())
-      return false;
-
-    BigInteger bigIntegerResult = new BigDecimal(result).toBigInteger();
-    if (BigIntegerUtil.greater(bigIntegerResult, signedContext.getMaxSignificand()) ||
-            BigIntegerUtil.less(bigIntegerResult, signedContext.getMinSignificand()))
-      return false;
-    return true;
-  }
 
   @Test
   public void fuzzDoubleMixOperations1() throws Exception {
@@ -71,11 +43,11 @@ public class FuzzTest {
       b = randomFiniteDouble();
       c = randomFiniteDouble();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
 
       plainResult = (a + b) * c;
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(c);
@@ -112,11 +84,11 @@ public class FuzzTest {
       b = randomFiniteDouble();
       c = randomFiniteDouble();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a * b + c;
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult1 = ciphertextA.multiply(b);
@@ -155,17 +127,17 @@ public class FuzzTest {
       c = randomFiniteDouble();
       d = randomFiniteDouble();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      encodedC = signedContext.encode(c);
-      encodedD = signedContext.encode(d);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      encodedC = context.encode(c);
+      encodedD = context.encode(d);
 
       plainResult = a + b * (c + d);
-      if(isResultValid(plainResult))
+      if(isResultValid(context, plainResult))
         continue;
 
       additionResult = encodedC.add(encodedD);
-      encryptedResult1 = ciphertextB.multiply(c + d);
+      encryptedResult1 = ciphertextB.multiply(additionResult);
       encryptedResult2 = ciphertextA.add(encryptedResult1);
 
       decryptedResult = privateKey.decrypt(encryptedResult2);
@@ -206,12 +178,12 @@ public class FuzzTest {
         continue;
       }
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      encodedC = signedContext.encode(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      encodedC = context.encode(c);
 
       plainResult = (a + (b * c)) / d;
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult1 = ciphertextB.multiply(encodedC);
@@ -244,19 +216,19 @@ public class FuzzTest {
   public void fuzzDoubleMixOperations5() throws Exception {
     double a, b, c, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, ciphertextB, ciphertextC, encryptedResult;
-    EncodedNumber decryptedResult, numberResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
       c = randomFiniteDouble();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a + b + c;
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
@@ -287,17 +259,17 @@ public class FuzzTest {
   public void fuzzDoubleMixOperations6() throws Exception {
     double a, b, c, plainResult, decodedResult, tolerance;
     EncryptedNumber ciphertextA, encryptedResult;
-    EncodedNumber decryptedResult, numberResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
       c = randomFiniteDouble();
 
-      ciphertextA = signedContext.encrypt(a);
+      ciphertextA = context.encrypt(a);
 
       plainResult = a * b * c;
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.multiply(b).multiply(c);
@@ -337,15 +309,14 @@ public class FuzzTest {
 
       plainResult = (a + b) * c;
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
 
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(c);
       decryptedResult = privateKey.decrypt(encryptedResult);
 
       try {
         decodedResult = decryptedResult.decodeLong();
-
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -364,8 +335,8 @@ public class FuzzTest {
       b = random.nextLong();
       c = random.nextLong();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a * b + c;
 
@@ -374,7 +345,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeLong();
-
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -394,8 +364,8 @@ public class FuzzTest {
       c = random.nextLong();
       d = random.nextLong();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
 
       plainResult = a + b * (c + d);
 
@@ -404,7 +374,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeLong();
-
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -416,16 +385,16 @@ public class FuzzTest {
   public void fuzzLongMixOperations5() throws Exception {
     long a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextB, ciphertextC, encryptedResult;
-    EncodedNumber decryptedResult, numberResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
       c = random.nextLong();
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a + b + c;
 
@@ -435,7 +404,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeLong();
-
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -447,14 +415,14 @@ public class FuzzTest {
   public void fuzzLongMixOperations6() throws Exception {
     long a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, encryptedResult;
-    EncodedNumber decryptedResult, numberResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
       c = random.nextLong();
 
-      ciphertextA = signedContext.encrypt(a);
+      ciphertextA = context.encrypt(a);
 
       plainResult = a * b * c;
 
@@ -464,7 +432,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeLong();
-
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -484,12 +451,12 @@ public class FuzzTest {
       c = new BigInteger(bigIntegerBitLength, random);
 
       plainResult = (a.add(b)).multiply(c);
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      encodedC = signedContext.encode(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      encodedC = context.encode(c);
 
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(encodedC);
 
@@ -497,7 +464,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
-
         assertEquals(plainResult.toString(), decodedResult.toString());
       } catch (ArithmeticException e) {
       }
@@ -515,12 +481,12 @@ public class FuzzTest {
       b = new BigInteger(bigIntegerBitLength, random);
       c = new BigInteger(bigIntegerBitLength, random);
 
-      ciphertextA = signedContext.encrypt(a);
-      encodedB = signedContext.encode(b);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      encodedB = context.encode(b);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a.multiply(b).add(c);
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.multiply(encodedB).add(ciphertextC);
@@ -529,7 +495,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
-
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       }
@@ -548,13 +513,13 @@ public class FuzzTest {
       c = new BigInteger(bigIntegerBitLength, random);
       d = new BigInteger(bigIntegerBitLength, random);
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      encodedC = signedContext.encode(c);
-      encodedD = signedContext.encode(d);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      encodedC = context.encode(c);
+      encodedD = context.encode(d);
 
       plainResult = a.add(b.multiply(c.add(d)));
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC.add(encodedD)));
@@ -563,7 +528,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
-
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       }
@@ -574,19 +538,19 @@ public class FuzzTest {
   public void fuzzBigIntegerMixOperations5() throws Exception {
     BigInteger a, b, c, plainResult, decodedResult;
     EncryptedNumber ciphertextA, ciphertextB, ciphertextC, encryptedResult;
-    EncodedNumber decryptedResult, numberResult;
+    EncodedNumber decryptedResult;
 
     for (int i = 0; i < maxIteration; i++) {
       a = new BigInteger(bigIntegerBitLength, random);
       b = new BigInteger(bigIntegerBitLength, random);
       c = new BigInteger(bigIntegerBitLength, random);
 
-      ciphertextA = signedContext.encrypt(a);
-      ciphertextB = signedContext.encrypt(b);
-      ciphertextC = signedContext.encrypt(c);
+      ciphertextA = context.encrypt(a);
+      ciphertextB = context.encrypt(b);
+      ciphertextC = context.encrypt(c);
 
       plainResult = a.add(b).add(c);
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
@@ -595,7 +559,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
-
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -614,10 +577,10 @@ public class FuzzTest {
       b = new BigInteger(bigIntegerBitLength, random);
       c = new BigInteger(bigIntegerBitLength, random);
 
-      ciphertextA = signedContext.encrypt(a);
+      ciphertextA = context.encrypt(a);
 
       plainResult = a.multiply(b).multiply(c);
-      if(!isResultValid(plainResult))
+      if(!isResultValid(context, plainResult))
         continue;
 
       encryptedResult = ciphertextA.multiply(b).multiply(c);
@@ -626,9 +589,6 @@ public class FuzzTest {
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
-
-        if(decodedResult.compareTo(plainResult) != 0)
-            System.out.println("iteration " + i + " - decodedResult != plainResult");
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {

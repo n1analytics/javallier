@@ -13,6 +13,10 @@
  */
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Random;
 
 public class TestUtil {
@@ -55,5 +59,26 @@ public class TestUtil {
 
   public static double randomSubnormalDouble() {
     return Double.longBitsToDouble(0x800FFFFFFFFFFFFL & random.nextLong());
+  }
+
+  public static boolean isResultValid(PaillierContext context, BigInteger result) {
+    if (BigIntegerUtil.greater(result, context.getMaxSignificand()) ||
+            BigIntegerUtil.less(result, context.getMinSignificand()))
+      return false;
+    return true;
+  }
+
+  public static boolean isResultValid(PaillierContext context, double result) {
+    if(Double.isInfinite(result) || Double.isNaN(result))
+      return false;
+
+    if(result < 0 && context.isUnsigned())
+      return false;
+
+    BigInteger bigIntegerResult = new BigDecimal(result).toBigInteger();
+    if (BigIntegerUtil.greater(bigIntegerResult, context.getMaxSignificand()) ||
+            BigIntegerUtil.less(bigIntegerResult, context.getMinSignificand()))
+      return false;
+    return true;
   }
 }
