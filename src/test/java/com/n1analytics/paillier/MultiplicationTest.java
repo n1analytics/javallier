@@ -18,6 +18,7 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigInteger;
 
+import static com.n1analytics.paillier.TestConfiguration.DEFAULT_KEY_SIZE;
 import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
 import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
@@ -27,7 +28,7 @@ public class MultiplicationTest {
   static private PaillierContext context = SIGNED_FULL_PRECISION.context();
   static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
 
-  static private int bigIntegerBitLength = PaillierContext.DEFAULT_BASE / 2 - 1;
+  static private int bigIntegerBitLength = DEFAULT_KEY_SIZE / 2 - 1;
 
   static private int maxIteration = 100;
 

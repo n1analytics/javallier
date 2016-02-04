@@ -185,6 +185,7 @@ public class TestConfiguration {
 //  public static final TestConfiguration SIGNED_PARTIAL_PRECISION = SIGNED_PARTIAL_PRECISION_1024;
 //  public static final TestConfiguration[] CONFIGURATION = CONFIGURATION_1024;
 
+  public static final int DEFAULT_KEY_SIZE = 2048;
   // Default configurations, they all use 2048 bits key and Base 16 (to match with Python-Paillier)
   public static final TestConfiguration UNSIGNED_FULL_PRECISION = UNSIGNED_FULL_PRECISION_2048;
   public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION = UNSIGNED_PARTIAL_PRECISION_2048;
