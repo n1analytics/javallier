@@ -64,7 +64,7 @@ public class PaillierContext {
   /**
    * The default base value.
    */
-  private static final int DEFAULT_BASE = 16;
+  protected static final int DEFAULT_BASE = 16;
 
   // Source: http://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.3
   private static final int DOUBLE_MANTISSA_BITS = 53;

@@ -18,22 +18,16 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigInteger;
 
-import static com.n1analytics.paillier.TestUtil.random;
-import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
+import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
+import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
 
 @Category(SlowTests.class)
 public class AdditionTest {
+  static private PaillierContext context = SIGNED_FULL_PRECISION.context();
+  static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
 
-  static private final double EPSILON = 0.1;
-
-  static private final int keySize = 2104;
-
-  static private PaillierPrivateKey privateKey = PaillierPrivateKey.create(keySize);
-  static private PaillierPublicKey publicKey = privateKey.getPublicKey();
-  static private PaillierContext context = publicKey.createSignedContext();
-
-  static private int bigIntegerBitLength = keySize / 2 - 1;
+  static private int bigIntegerBitLength = PaillierContext.DEFAULT_BASE / 2 - 1;
 
   static private int maxIteration = 100;
 
