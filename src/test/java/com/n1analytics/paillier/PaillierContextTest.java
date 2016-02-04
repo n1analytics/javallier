@@ -21,15 +21,15 @@ import static org.junit.Assert.*;
 
 public class PaillierContextTest {
 
-  private final static PaillierContext signedFull = TestConfiguration.SIGNED_FULL_PRECISION_1024.context();
-  private final static PaillierContext unsignedFull = TestConfiguration.UNSIGNED_FULL_PRECISION_1024.context();
-  private final static PaillierContext signedPartial = TestConfiguration.SIGNED_PARTIAL_PRECISION_1024.context();
-  private final static PaillierContext unsignedPartial = TestConfiguration.UNSIGNED_PARTIAL_PRECISION_1024.context();
+  private final static PaillierContext signedFull = TestConfiguration.SIGNED_FULL_PRECISION.context();
+  private final static PaillierContext unsignedFull = TestConfiguration.UNSIGNED_FULL_PRECISION.context();
+  private final static PaillierContext signedPartial = TestConfiguration.SIGNED_PARTIAL_PRECISION.context();
+  private final static PaillierContext unsignedPartial = TestConfiguration.UNSIGNED_PARTIAL_PRECISION.context();
   private final static double EPSILON = 1e-5;
 
   @Test
   public void testConstructor() throws Exception {
-    PaillierPublicKey publicKey = TestConfiguration.SIGNED_FULL_PRECISION_1024.publicKey();
+    PaillierPublicKey publicKey = TestConfiguration.SIGNED_FULL_PRECISION.publicKey();
     PaillierContext context = null;
 
     try {
@@ -54,7 +54,7 @@ public class PaillierContextTest {
     assertNull(context);
 
     try {
-      context = new PaillierContext(publicKey, true, 1032);
+      context = new PaillierContext(publicKey, true, 2050);
       fail("Successfully created a context with precision greater than the public key's modulus bit length");
     } catch (IllegalArgumentException e) {
     }
@@ -139,7 +139,7 @@ public class PaillierContextTest {
 
     // Raise Exception because the two contexts have different public key
     try {
-      context.checkSameContext(TestConfiguration.SIGNED_FULL_PRECISION_512.context());
+      context.checkSameContext(TestConfiguration.UNSIGNED_FULL_PRECISION.context());
     } catch (PaillierContextMismatchException e) {
     }
 
@@ -252,7 +252,7 @@ public class PaillierContextTest {
   // Ideally this should have more thorough tests.
   @Test
   public void testChangeBase() throws Exception {
-    PaillierPublicKey publicKey = TestConfiguration.SIGNED_FULL_PRECISION_1024.publicKey();
+    PaillierPublicKey publicKey = TestConfiguration.SIGNED_FULL_PRECISION.publicKey();
 
     PaillierContext contextdefault = new PaillierContext(publicKey, true, 1024);
     PaillierContext context2 = new PaillierContext(publicKey, true, 1024, 2);
