@@ -17,6 +17,8 @@ import java.util.Random;
 
 public class TestUtil {
 
+  public static final double EPSILON = 1e-3;
+
   public static final Random random = new Random();
 
   public static double randomDouble() {

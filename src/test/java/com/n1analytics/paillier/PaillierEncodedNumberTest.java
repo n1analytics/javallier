@@ -25,19 +25,15 @@ import static com.n1analytics.paillier.PaillierContextTest.testUnencodable;
 import static com.n1analytics.paillier.TestConfiguration.*;
 import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
 import static com.n1analytics.paillier.TestUtil.randomNaNDouble;
+import static com.n1analytics.paillier.TestUtil.EPSILON;
 import static org.junit.Assert.*;
 
 public class PaillierEncodedNumberTest {
-
-  // Epsilon value for comparing floating point numbers
-  private static final double EPSILON = 1e-3;
-
   public static final Random random = new Random();
 
-  public static final TestConfiguration defConfig = CONFIGURATION_DOUBLE;
-  public static final PaillierPrivateKey defPrivateKey = defConfig.privateKey();
-  public static final PaillierPublicKey defPublicKey = defPrivateKey.getPublicKey();
-  public static final PaillierContext defContext = defConfig.context();
+  private static final PaillierContext defaultSignedContext = SIGNED_FULL_PRECISION.context();
+  private static final PaillierContext defaultUnsignedContext = UNSIGNED_FULL_PRECISION.context();
+  private static final PaillierContext defaultPartialSignedContext = SIGNED_PARTIAL_PRECISION.context();
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -62,28 +58,28 @@ public class PaillierEncodedNumberTest {
     assertNull(encodedNumber);
 
     try {
-      encodedNumber = new EncodedNumber(defContext, null, 0);
+      encodedNumber = new EncodedNumber(defaultSignedContext, null, 0);
       fail("Successfully create an encoded number with null value");
     } catch (IllegalArgumentException e) {
     }
     assertNull(encodedNumber);
 
     try {
-      encodedNumber = new EncodedNumber(defContext, BigInteger.ONE.negate(), 0);
+      encodedNumber = new EncodedNumber(defaultSignedContext, BigInteger.ONE.negate(), 0);
       fail("Successfully create an encoded number with negative value");
     } catch (IllegalArgumentException e) {
     }
     assertNull(encodedNumber);
 
     try {
-      encodedNumber = new EncodedNumber(defContext,
-                                        defContext.getPublicKey().getModulus(), 0);
+      encodedNumber = new EncodedNumber(defaultSignedContext,
+              defaultSignedContext.getPublicKey().getModulus(), 0);
       fail("Successfully create an encoded number with value equal to modulus");
     } catch (IllegalArgumentException e) {
     }
     assertNull(encodedNumber);
 
-    encodedNumber = new EncodedNumber(defContext, BigInteger.ONE, 0);
+    encodedNumber = new EncodedNumber(defaultSignedContext, BigInteger.ONE, 0);
     assertNotNull(encodedNumber);
     assertEquals(BigInteger.ONE, encodedNumber.getValue());
     assertEquals(0, encodedNumber.getExponent());
@@ -203,7 +199,8 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testDoubleConstants() {
-    TestConfiguration conf = CONFIGURATION_DOUBLE;
+//    TestConfiguration conf = CONFIGURATION_DOUBLE;
+    TestConfiguration conf = SIGNED_FULL_PRECISION_2048;
     testDouble(conf, Double.MAX_VALUE);
     testDouble(conf, Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));
     testDouble(conf, 1.0);
@@ -459,21 +456,21 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testEncrypt() throws Exception {
-    EncodedNumber encodedNumber = defContext.encode(1.0);
-    EncryptedNumber encryptedNumber = encodedNumber.encrypt();
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber = conf.context().encode(1.0);
+      EncryptedNumber encryptedNumber = encodedNumber.encrypt();
 
-    EncryptedNumber contextEncryptedNumber = defContext.encrypt(1.0);
+      EncryptedNumber contextEncryptedNumber = conf.context().encrypt(1.0);
 
-    assertTrue(encryptedNumber.equals(contextEncryptedNumber));
+      assertTrue(encryptedNumber.equals(contextEncryptedNumber));
+    }
   }
 
   @Test
   public void testCheckSameContextEncryptedNumber() throws Exception {
-    PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
-
-    EncodedNumber encodedNumber1 = defContext.encode(1.0);
-    EncryptedNumber ciphertext2 = defContext.encrypt(2.0);
-    EncryptedNumber ciphertext3 = otherContext.encrypt(2.0);
+    EncodedNumber encodedNumber1 = defaultSignedContext.encode(1.0);
+    EncryptedNumber ciphertext2 = defaultSignedContext.encrypt(2.0);
+    EncryptedNumber ciphertext3 = defaultPartialSignedContext.encrypt(2.0);
 
     EncryptedNumber check = encodedNumber1.checkSameContext(ciphertext2);
     try {
@@ -485,11 +482,9 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testCheckSameContextEncodedNumber() throws Exception {
-    PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
-
-    EncodedNumber encodedNumber1 = defContext.encode(1.0);
-    EncodedNumber encodedNumber2 = defContext.encode(2.0);
-    EncodedNumber encodedNumber3 = otherContext.encode(2.0);
+    EncodedNumber encodedNumber1 = defaultSignedContext.encode(1.0);
+    EncodedNumber encodedNumber2 = defaultSignedContext.encode(2.0);
+    EncodedNumber encodedNumber3 = defaultUnsignedContext.encode(2.0);
 
     EncodedNumber check = encodedNumber1.checkSameContext(encodedNumber2);
     try {
@@ -501,18 +496,16 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testChangeContext() throws Exception {
-    PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
-
-    EncodedNumber encodedDoubleContext1 = defContext.encode(1.7);
+    EncodedNumber encodedDoubleContext1 = defaultSignedContext.encode(1.7);
     EncodedNumber encodedDoubleContext2 = encodedDoubleContext1.changeContext(
-            otherContext);
+            defaultPartialSignedContext);
 
     assertEquals(encodedDoubleContext1.decodeDouble(),
                  encodedDoubleContext2.decodeDouble(), 0.0);
 
-    EncodedNumber encodedBigIntegerContext1 = defContext.encode(17);
+    EncodedNumber encodedBigIntegerContext1 = defaultSignedContext.encode(17);
     EncodedNumber encodedBigIntegerContext2 = encodedBigIntegerContext1.changeContext(
-            otherContext);
+            defaultPartialSignedContext);
 
     assertEquals(encodedBigIntegerContext1.decodeDouble(),
             encodedBigIntegerContext2.decodeDouble(), 0.0);
@@ -521,13 +514,12 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testIsEncodedNumberValid() throws Exception {
-    EncodedNumber encodedNumber1 = new EncodedNumber(defContext,
-                                                     defContext.getMaxEncoded(), 0);
-    EncodedNumber encodedNumber2 = new EncodedNumber(defContext,
-                                                     defContext.getMinEncoded(), 0);
-    EncodedNumber encodedNumber3 = new EncodedNumber(defContext,
-                                                     defContext.getMaxEncoded().add(
-                                                             BigInteger.ONE), 0);
+    EncodedNumber encodedNumber1 = new EncodedNumber(defaultPartialSignedContext,
+            defaultPartialSignedContext.getMaxEncoded(), 0);
+    EncodedNumber encodedNumber2 = new EncodedNumber(defaultPartialSignedContext,
+            defaultPartialSignedContext.getMinEncoded(), 0);
+    EncodedNumber encodedNumber3 = new EncodedNumber(defaultPartialSignedContext,
+            defaultPartialSignedContext.getMaxEncoded().add(BigInteger.ONE), 0);
 
     assertEquals(true, encodedNumber1.isValid());
     assertEquals(true, encodedNumber2.isValid());
@@ -536,97 +528,154 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testAddLongToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.add(2);
-    assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.add(2);
+      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testAddDoubleToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.add(2.0);
-    assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.add(2.0);
+      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testAddBigIntegerToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.add(new BigInteger("2"));
-    assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.add(new BigInteger("2"));
+      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testSubtractLongToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(17);
-    EncodedNumber encodedNumber2 = encodedNumber1.subtract(2);
-    assertEquals(15, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(17);
+      EncodedNumber encodedNumber2 = encodedNumber1.subtract(2);
+      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testSubtractDoubleToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(17);
-    EncodedNumber encodedNumber2 = encodedNumber1.subtract(2.0);
-    assertEquals(15, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(17);
+      EncodedNumber encodedNumber2 = encodedNumber1.subtract(2.0);
+      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testSubtractBigIntegerToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(17);
-    EncodedNumber encodedNumber2 = encodedNumber1.subtract(new BigInteger("2"));
-    assertEquals(15, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(17);
+      EncodedNumber encodedNumber2 = encodedNumber1.subtract(new BigInteger("2"));
+      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testMultiplyLongToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.multiply(2);
-    assertEquals(3.4, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.multiply(2);
+      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testMultiplyDoubleToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.multiply(2.0);
-    assertEquals(3.4, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.multiply(2.0);
+      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testMultiplyBigIntegerToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.multiply(new BigInteger("2"));
-    assertEquals(3.4, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.multiply(new BigInteger("2"));
+      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testDivideLongToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.divide(2);
-    assertEquals(0.85, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.divide(2);
+      assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testDivideDoubleToEncodedNumber() throws Exception {
-    EncodedNumber encodedNumber1 = defContext.encode(1.7);
-    EncodedNumber encodedNumber2 = encodedNumber1.divide(2.0);
-    assertEquals(0.85, encodedNumber2.decodeDouble(), 0.0);
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+      EncodedNumber encodedNumber2 = encodedNumber1.divide(2.0);
+      assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+    }
   }
 
   @Test
   public void testEquals() throws Exception {
-    EncodedNumber encodedNumber = defContext.encode(17);
+    EncodedNumber encodedNumber = defaultSignedContext.encode(17);
 
     assertTrue(encodedNumber.equals(encodedNumber)); // Compare to itself
-    assertFalse(encodedNumber.equals(defPrivateKey)); // Compare to other object
+    assertFalse(encodedNumber.equals(defaultSignedContext)); // Compare to other object
     assertFalse(encodedNumber.equals(null)); // Compare to null
 
     EncodedNumber otherEncodedNumber = null;
     assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an uninitialised encoded number
-    otherEncodedNumber = defContext.encode(3);
+    otherEncodedNumber = defaultSignedContext.encode(3);
     assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an encoded number with different value
 
-    PaillierContext otherContext = SIGNED_FULL_PRECISION_1024.context();
-    otherEncodedNumber = otherContext.encode(17);
+    otherEncodedNumber = defaultPartialSignedContext.encode(17);
     assertFalse(encodedNumber.equals(otherEncodedNumber)); // Compare to an encoded number with different context
+  }
+
+  @Test
+  public void testPositiveEncodedDecreaseExponentTo() throws Exception {
+    for (TestConfiguration conf : CONFIGURATION) {
+      EncodedNumber number1 = conf.context().encode(3.14);
+      int originalExp = number1.getExponent();
+      int newExp = originalExp - 20;
+      EncodedNumber number2 = number1.decreaseExponentTo(newExp);
+
+      if(originalExp < number2.getExponent()){
+        fail("Fail to decrease the encoded number's exponent");
+      }
+      assertEquals(newExp, number2.getExponent());
+      double decodedNumber = number2.decodeDouble();
+      assertEquals(3.14, decodedNumber, EPSILON);
+    }
+  }
+
+  @Test
+  public void testNegativeEncodedDecreaseExponentTo() throws Exception {
+    for (TestConfiguration conf : CONFIGURATION) {
+      if(conf.signed()) {
+        EncodedNumber number1 = conf.context().encode(-3.14);
+        int originalExp = number1.getExponent();
+        int newExp = originalExp - 20;
+        EncodedNumber number2 = number1.decreaseExponentTo(newExp);
+
+        if(originalExp < number2.getExponent()){
+          fail("Fail to decrease the encoded number's exponent");
+        }
+        assertEquals(newExp, number2.getExponent());
+        double decodedNumber = number2.decodeDouble();
+        assertEquals(-3.14, decodedNumber, EPSILON);
+      }
+    }
   }
 
   // NOTE: Due to rounding error/limited precision, reducing the exponent of an EncodedNumber affects its precision.
@@ -634,7 +683,7 @@ public class PaillierEncodedNumberTest {
   //       3.1399999999999999023003738329862243016303180218865632677037090457780224)
   @Test
   public void testEncodedDecreaseExponentTo0() throws Exception {
-    EncodedNumber number1 = defContext.encode(3.14);
+    EncodedNumber number1 = defaultSignedContext.encode(3.14);
     assert -30 < number1.getExponent();
     EncodedNumber number2 = number1.decreaseExponentTo(-30);
 
@@ -648,7 +697,7 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testEncodedDecreaseExponentTo1() throws Exception {
-    EncodedNumber number1 = defContext.encode(-3.14);
+    EncodedNumber number1 = defaultSignedContext.encode(-3.14);
     assert -30 < number1.getExponent();
     EncodedNumber number2 = number1.decreaseExponentTo(-30);
 
@@ -662,7 +711,7 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testEncodedDecreaseInvalidExponent() throws Exception {
-    EncodedNumber enc1 = defContext.encode(3.14);
+    EncodedNumber enc1 = defaultSignedContext.encode(3.14);
     assert enc1.getExponent() < -10;
 
     try {
@@ -676,13 +725,13 @@ public class PaillierEncodedNumberTest {
     double originalNumber = 3.171234e-7;
     double precision = 1e-8;
 
-    EncodedNumber number = defContext.encode(originalNumber, precision);
+    EncodedNumber number = defaultSignedContext.encode(originalNumber, precision);
     double decodedNumber = number.decodeDouble();
     if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
       fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
     }
 
-    EncodedNumber number2 = defContext.encode(decodedNumber + 0.500001 * precision, precision);
+    EncodedNumber number2 = defaultSignedContext.encode(decodedNumber + 0.500001 * precision, precision);
     double decodedNumber2 = number2.decodeDouble();
     if(decodedNumber == decodedNumber2)
       fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
@@ -691,7 +740,7 @@ public class PaillierEncodedNumberTest {
       fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
 
     double value = decodedNumber + precision / 16;
-    EncodedNumber number3 = defContext.encode(value, precision);
+    EncodedNumber number3 = defaultSignedContext.encode(value, precision);
     double decodedNumber3 = number3.decodeDouble();
     assertEquals(decodedNumber, decodedNumber3, EPSILON);
   }
@@ -701,13 +750,13 @@ public class PaillierEncodedNumberTest {
     double originalNumber = -3.171234e-7;
     double precision = 1e-8;
 
-    EncodedNumber number = defContext.encode(originalNumber, precision);
+    EncodedNumber number = defaultSignedContext.encode(originalNumber, precision);
     double decodedNumber = number.decodeDouble();
     if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
       fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
     }
 
-    EncodedNumber number2 = defContext.encode(decodedNumber + 0.500001 * precision, precision);
+    EncodedNumber number2 = defaultSignedContext.encode(decodedNumber + 0.500001 * precision, precision);
     double decodedNumber2 = number2.decodeDouble();
     if(decodedNumber == decodedNumber2)
       fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
@@ -716,98 +765,93 @@ public class PaillierEncodedNumberTest {
       fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
 
     double value = decodedNumber + precision / 16;
-    EncodedNumber number3 = defContext.encode(value, precision);
+    EncodedNumber number3 = defaultSignedContext.encode(value, precision);
     double decodedNumber3 = number3.decodeDouble();
     assertEquals(decodedNumber, decodedNumber3, EPSILON);
   }
 
   @Test
   public void testInvalidNumber() throws Exception {
-    PaillierContext signedContext = defPublicKey.createSignedContext();
-    PaillierContext unsignedContext = defPublicKey.createUnsignedContext();
-
-    EncodedNumber encoded1;
-
     try {
-      signedContext.encode(Double.NaN);
+      defaultSignedContext.encode(Double.NaN);
       fail("Successfully encode a NaN");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.POSITIVE_INFINITY);
+      defaultSignedContext.encode(Double.POSITIVE_INFINITY);
       fail("Successfully encode positive infinity");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.NEGATIVE_INFINITY);
+      defaultSignedContext.encode(Double.NEGATIVE_INFINITY);
       fail("Successfully encode negative infinity");
     } catch (EncodeException e) {
     }
 
     try {
-      unsignedContext.encode(-1.0);
+      defaultUnsignedContext.encode(-1.0);
       fail("Successfully encode a negative number using an unsigned Paillier context");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.NaN, 1);
+      defaultSignedContext.encode(Double.NaN, 1);
       fail("Successfully encode a NaN with a specific exponent");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.POSITIVE_INFINITY, 1);
+      defaultSignedContext.encode(Double.POSITIVE_INFINITY, 1);
       fail("Successfully encode positive infinity with a specific exponent");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.NEGATIVE_INFINITY, 1);
+      defaultSignedContext.encode(Double.NEGATIVE_INFINITY, 1);
       fail("Successfully encode negative infinity with a specific exponent");
     } catch (EncodeException e) {
     }
 
     try {
-      unsignedContext.encode(-1.0, 1);
+      defaultUnsignedContext.encode(-1.0, 1);
       fail("Successfully encode a negative number with a specific exponent using an unsigned Paillier context");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.NaN, 1e-3);
+      defaultSignedContext.encode(Double.NaN, 1e-3);
       fail("Successfully encode a NaN with a specific precision");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.POSITIVE_INFINITY, 1e-3);
+      defaultSignedContext.encode(Double.POSITIVE_INFINITY, 1e-3);
       fail("Successfully encode positive infinity with a specific precision");
     } catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(Double.NEGATIVE_INFINITY, 1e-3);
+      defaultSignedContext.encode(Double.NEGATIVE_INFINITY, 1e-3);
       fail("Successfully encode negative infinity with a specific precision");
     }catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(-1.0, -1e-3);
+      defaultSignedContext.encode(-1.0, -1e-3);
       fail("Successfully encode a number with invalid precision");
     }catch (EncodeException e) {
     }
 
     try {
-      signedContext.encode(-1.0, 1e3);
+      defaultSignedContext.encode(-1.0, 1e3);
       fail("Successfully encode a number with invalid precision");
     }catch (EncodeException e) {
     }
 
     try {
-      unsignedContext.encode(-1.0, 1e-3);
+      defaultUnsignedContext.encode(-1.0, 1e-3);
       fail("Successfully encode a negative number using an unsigned Paillier context");
     }catch (EncodeException e) {
     }
