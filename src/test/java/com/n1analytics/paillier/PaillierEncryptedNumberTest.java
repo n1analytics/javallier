@@ -22,31 +22,24 @@ import java.math.BigInteger;
 import java.util.Random;
 
 import static com.n1analytics.paillier.TestConfiguration.*;
-import static com.n1analytics.paillier.TestUtil.randomFiniteDouble;
+import static com.n1analytics.paillier.TestUtil.*;
 import static com.n1analytics.paillier.util.BigIntegerUtil.*;
 import static org.junit.Assert.*;
 
 public class PaillierEncryptedNumberTest {
-
-  // Epsilon value for comparing floating point numbers
-  private static final double EPSILON = 1e-5;
-
   static final Random random = new Random();
 
-  static private PaillierPublicKey publicKey;
-  static private PaillierPrivateKey privateKey;
-  static private PaillierContext context;
+  private static PaillierPrivateKey privateKey;
+  private static PaillierContext context;
 
-  static private PaillierPublicKey partialPublicKey;
-  static private PaillierPrivateKey partialPrivateKey;
-  static private PaillierContext partialContext;
+  private static PaillierPrivateKey partialPrivateKey;
+  private static PaillierContext partialContext;
 
-  static private PaillierPublicKey otherPublicKey;
-  static private PaillierPrivateKey otherPrivateKey;
-  static private PaillierContext otherContext;
+  private static PaillierPrivateKey otherPrivateKey;
+  private static PaillierContext otherContext;
 
-  static private BigInteger plaintextList[];
-  static private EncryptedNumber encryptionList[];
+  private static BigInteger plaintextList[];
+  private static EncryptedNumber encryptionList[];
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
@@ -59,16 +52,13 @@ public class PaillierEncryptedNumberTest {
       }
     }
 
-    context = SIGNED_FULL_PRECISION_1024.context();
-    privateKey = SIGNED_FULL_PRECISION_1024.privateKey();
-    publicKey = SIGNED_FULL_PRECISION_1024.publicKey();
+    context = SIGNED_FULL_PRECISION.context();
+    privateKey = SIGNED_FULL_PRECISION.privateKey();
 
-    partialContext = SIGNED_PARTIAL_PRECISION_1024.context();
-    partialPrivateKey = SIGNED_PARTIAL_PRECISION_1024.privateKey();
-    partialPublicKey = SIGNED_PARTIAL_PRECISION_1024.publicKey();
+    partialContext = SIGNED_PARTIAL_PRECISION.context();
+    partialPrivateKey = SIGNED_PARTIAL_PRECISION.privateKey();
 
-    otherPrivateKey = PaillierPrivateKey.create(1024);
-    otherPublicKey = otherPrivateKey.getPublicKey();
+    otherPrivateKey = PaillierPrivateKey.create(DEFAULT_KEY_SIZE);
     otherContext = createSignedFullPrecision(otherPrivateKey).context();
 
     plaintextList = new BigInteger[]{new BigInteger("123456789"), new BigInteger(
@@ -185,41 +175,52 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testAutomaticPrecision0() throws Exception {
-    double eps = Math.ulp(1.0d);
-    double onePlusEps = 1.0d + eps;
-    assert onePlusEps > 1;
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        double eps = Math.ulp(1.0d);
+        double onePlusEps = 1.0d + eps;
+        assert onePlusEps > 1;
 
-    EncryptedNumber ciphertext1 = context.encrypt(onePlusEps);
-    double decryption1 = privateKey.decrypt(ciphertext1).decodeDouble();
-    assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption1));
+        EncryptedNumber ciphertext1 = conf.context().encrypt(onePlusEps);
+        double decryption1 = conf.privateKey().decrypt(ciphertext1).decodeDouble();
+        assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption1));
 
-    EncryptedNumber ciphertext2 = ciphertext1.add(eps);
-    double decryption2 = privateKey.decrypt(ciphertext2).decodeDouble();
-    assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption2));
+        EncryptedNumber ciphertext2 = ciphertext1.add(eps);
+        double decryption2 = conf.privateKey().decrypt(ciphertext2).decodeDouble();
+        assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption2));
 
-    EncryptedNumber ciphertext3 = ciphertext1.add(eps / 5.0d);
-    double decryption3 = privateKey.decrypt(ciphertext3).decodeDouble();
-    assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption3));
+        EncryptedNumber ciphertext3 = ciphertext1.add(eps / 5.0d);
+        double decryption3 = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+        assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption3));
 
-    EncryptedNumber ciphertext4 = ciphertext3.add(eps * 4.0d / 5.0d);
-    double decryption4 = privateKey.decrypt(ciphertext4).decodeDouble();
-    assertNotEquals(onePlusEps, decryption4, 0.0d);
-    assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption4));
+        EncryptedNumber ciphertext4 = ciphertext3.add(eps * 4.0d / 5.0d);
+        double decryption4 = conf.privateKey().decrypt(ciphertext4).decodeDouble();
+        assertNotEquals(onePlusEps, decryption4, 0.0d);
+        assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption4));
+      }
+    }
   }
 
   @Test
   public void testMulZero() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(3.);
-    EncryptedNumber ciphertext2 = ciphertext1.multiply(0);
-
-    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(3.0);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(0);
+        assertEquals(0.0, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
   }
 
   @Test
   public void testMulZeroRight() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(3.);
-    EncryptedNumber ciphertext2 = context.encode(0).multiply(ciphertext1);
-    assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(3.0);
+        EncryptedNumber ciphertext2 = conf.context().encode(0).multiply(ciphertext1);
+        assertEquals(0.0, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
   }
 
   public void testEncryptDecryptLong(TestConfiguration conf, long value) {
@@ -282,7 +283,7 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testDoubleConstants() throws Exception {
-    TestConfiguration conf = CONFIGURATION_DOUBLE;
+    TestConfiguration conf = SIGNED_FULL_PRECISION_2048;
     testEncryptDecryptDouble(conf, Double.MAX_VALUE);
     testEncryptDecryptDouble(conf,
                              Math.nextAfter(Double.MAX_VALUE, Double.NEGATIVE_INFINITY));
@@ -309,7 +310,7 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testDoubleRandom() throws Exception {
-    TestConfiguration conf = CONFIGURATION_DOUBLE;
+    TestConfiguration conf = SIGNED_FULL_PRECISION;
     for (int i = 0; i < 100; ++i) {
       testEncryptDecryptDouble(conf, randomFiniteDouble());
     }
@@ -524,19 +525,25 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testSubWithDifferentPrecisionFloat0() throws Exception {
-    EncodedNumber number1 = context.encode(0.1, 1e-3);
-    EncodedNumber number2 = context.encode(0.2, 1e-20);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber number1 = conf.context().encode(0.1, 1e-3);
+        EncodedNumber number2 = conf.context().encode(0.2, 1e-20);
 
-    EncryptedNumber ciphertext1 = context.encrypt(number1);
-    EncryptedNumber ciphertext2 = context.encrypt(number2);
+        EncryptedNumber ciphertext1 = conf.context().encrypt(number1);
+        EncryptedNumber ciphertext2 = conf.context().encrypt(number2);
 
-    assertNotEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+        assertNotEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
 
-    EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
-    assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
+        if (conf.signed()) {
+          EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
+          assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
 
-    double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
-    assertEquals(-0.1, decryption, 1e-3);
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(-0.1, decryption, 1e-3);
+   }
+      }
+    }
   }
 
   @Test
@@ -592,100 +599,172 @@ public class PaillierEncryptedNumberTest {
 
   @Test
   public void testAddLongToEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.add(4);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if(conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.add(4);
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testAddDoubleToEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.add(4.0);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.add(4.0);
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testAddBigIntegerToEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.add(new BigInteger("4"));
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.add(new BigInteger("4"));
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testSubtractLongFromEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.subtract(-4);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.subtract(-4);
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testSubtractDoubleFromEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.0);
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.0);
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testSubtractBigIntegerFromEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.subtract(new BigInteger("-4"));
-    assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.subtract(new BigInteger("-4"));
+          assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testMultiplyLongByEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.multiply(4);
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(4);
+          assertEquals(-7.92, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testMultiplyDoubleByEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.multiply(4.0);
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(4.0);
+          assertEquals(-7.92, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testMultiplyBigIntegerByEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.multiply(new BigInteger("4"));
-    assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(new BigInteger("4"));
+          assertEquals(-7.92, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testDivideLongByEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.divide(4);
-    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.divide(4);
+          assertEquals(-0.495, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testDivideDoubleByEncryptedNumber() throws Exception {
-    EncryptedNumber ciphertext1 = context.encrypt(-1.98);
-    EncryptedNumber ciphertext2 = ciphertext1.divide(4.0);
-    assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.divide(4.0);
+          assertEquals(-0.495, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
   }
 
   @Test
   public void testAdditiveInverse() throws Exception {
-    double number = 1.98;
-    EncryptedNumber ciphertext = context.encrypt(number);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          double number = 1.98;
+          EncryptedNumber ciphertext = conf.context().encrypt(number);
 
-    EncryptedNumber negativeCiphertext = ciphertext.additiveInverse();
-    assertEquals(ciphertext.multiply(-1), negativeCiphertext);
+          EncryptedNumber negativeCiphertext = ciphertext.additiveInverse();
+          assertEquals(ciphertext.multiply(-1), negativeCiphertext);
 
-    double decryptedNegativeNumber = negativeCiphertext.decrypt(privateKey).decodeDouble();
-    assertEquals(-number, decryptedNegativeNumber, EPSILON);
+          double decryptedNegativeNumber = negativeCiphertext.decrypt(conf.privateKey()).decodeDouble();
+          assertEquals(-number, decryptedNegativeNumber, EPSILON);
 
-    double number2 = -number;
-    EncryptedNumber ciphertext2 = context.encrypt(number2);
+          double number2 = -number;
+          EncryptedNumber ciphertext2 = conf.context().encrypt(number2);
 
-    EncryptedNumber negativeCiphertext2 = ciphertext2.additiveInverse();
-    assertEquals(ciphertext2.multiply(-1), negativeCiphertext2);
+          EncryptedNumber negativeCiphertext2 = ciphertext2.additiveInverse();
+          assertEquals(ciphertext2.multiply(-1), negativeCiphertext2);
 
-    double decryptedNegativeNumber2 = negativeCiphertext2.decrypt(privateKey).decodeDouble();
-    assertEquals(number, decryptedNegativeNumber2, EPSILON);
+          double decryptedNegativeNumber2 = negativeCiphertext2.decrypt(conf.privateKey()).decodeDouble();
+          assertEquals(number, decryptedNegativeNumber2, EPSILON);
+        }
+      }
+    }
   }
 
   @Test
