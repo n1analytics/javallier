@@ -206,11 +206,11 @@ public class PaillierPrivateKeyTest {
 
   @Category(SlowTests.class)
   @Test
-  public void testKeyUniqueness2104() throws Exception {
+  public void testKeyUniqueness2048() throws Exception {
     int repeats = 100;
     HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>();
     while (keypairs.size() < repeats) {
-      PaillierPrivateKey privateKey = PaillierPrivateKey.create(2104);
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(2048);
       if (keypairs.contains(privateKey)) {
         fail("Non unique keypair.");
       }
