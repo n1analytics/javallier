@@ -27,7 +27,7 @@ public class PaillierPublicKeyTest {
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    defPrivateKey = PaillierPrivateKey.create(1024);
+    defPrivateKey = PaillierPrivateKey.create(2048);
     defPublicKey = defPrivateKey.getPublicKey();
   }
 
@@ -74,12 +74,12 @@ public class PaillierPublicKeyTest {
 
   @Test
   public void testCreateSignedPartialContext() throws Exception {
-    PaillierContext context = defPublicKey.createSignedContext(1022);
+    PaillierContext context = defPublicKey.createSignedContext(2044);
     assertNotNull(context);
     assertEquals(true, context.isSigned());
     assertEquals(false, context.isFullPrecision());
 
-    context = defPublicKey.createSignedContext(1024);
+    context = defPublicKey.createSignedContext(2048);
     assertNotNull(context);
     assertEquals(true, context.isSigned());
     assertEquals(true, context.isFullPrecision());
@@ -87,12 +87,12 @@ public class PaillierPublicKeyTest {
 
   @Test
   public void testCreateUnsignedPartialContext() throws Exception {
-    PaillierContext context = defPublicKey.createUnsignedContext(1022);
+    PaillierContext context = defPublicKey.createUnsignedContext(2044);
     assertNotNull(context);
     assertEquals(false, context.isSigned());
     assertEquals(false, context.isFullPrecision());
 
-    context = defPublicKey.createUnsignedContext(1024);
+    context = defPublicKey.createUnsignedContext(2048);
     assertNotNull(context);
     assertEquals(false, context.isSigned());
     assertEquals(true, context.isFullPrecision());
