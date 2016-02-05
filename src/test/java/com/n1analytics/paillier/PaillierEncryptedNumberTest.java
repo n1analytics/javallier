@@ -852,4 +852,24 @@ public class PaillierEncryptedNumberTest {
 
     assertFalse(encrypted.equals(partialEncrypted)); // Compare to an encrypted number with different context
   }
+
+  @Test
+  public void testDecreaseExponentTo() throws Exception {
+    EncryptedNumber ciphertext1 = context.encrypt(context.encode(1.01, Math.pow(1.0, -8)));
+    assert -30 < ciphertext1.getExponent();
+    EncryptedNumber ciphertext2 = ciphertext1.decreaseExponentTo(-30);
+
+    assert -30 < ciphertext1.getExponent();
+    assertEquals(-30, ciphertext2.getExponent());
+    assertEquals(1.01, privateKey.decrypt(ciphertext2).decodeDouble(), Math.pow(1.0, -8));
+  }
+
+  @Test
+  public void testDecreaseInvalidExponent() throws Exception {
+    EncryptedNumber ciphertext = context.encrypt(context.encode(1.01, 1e-8));
+    assert ciphertext.getExponent() < 20;
+
+    exception.expect(IllegalArgumentException.class);
+    ciphertext.decreaseExponentTo(20);
+  }
 }

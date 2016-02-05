@@ -576,6 +576,27 @@ public class PaillierContext {
   }
 
   /**
+   * Decreases the exponent of an {@code EncryptedNumber} to {@code newExp}. If {@code newExp} is greater than
+   * the {@code EncryptedNumber}'s current {@code exponent}, throws an IllegalArgumentException.
+   *
+   * @param encryptedNumber the {@code EncryptedNumber} which {@code exponent} will be reduced.
+   * @param newExp the new {@code exponent}, must be less than the current {@code exponent}.
+   * @return an {@code EncryptedNumber} representing the same value with {@code exponent} equals to {@code newExp}.
+   */
+  public EncryptedNumber decreaseExponentTo(EncryptedNumber encryptedNumber, int newExp) {
+    int exponent = encryptedNumber.getExponent();
+    if(newExp > exponent){
+      throw new IllegalArgumentException("New exponent: "+ newExp +
+              "should be more negative than old exponent: " + exponent + ".");
+    }
+
+    int expDiff = exponent - newExp;
+    BigInteger bigFactor = getRescalingFactor(expDiff);
+    BigInteger newEnc = publicKey.raw_multiply(encryptedNumber.calculateCiphertext(), bigFactor);
+    return new EncryptedNumber(this, newEnc, newExp);
+  }
+
+  /**
    * Returns the value of an {@code EncodedNumber} for decoding. Throws a DecodeException if the value is
    * greater than the {@code publicKey}'s {@code modulus}. If the value is less than or equal to
    * {@code maxEncoded}, return the value. If the {@code PaillierContext} is signed and the value is

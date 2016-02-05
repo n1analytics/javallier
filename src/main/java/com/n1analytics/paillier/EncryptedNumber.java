@@ -182,6 +182,18 @@ public final class EncryptedNumber {
   }
 
   /**
+   * Decreases the exponent of this {@code EncryptedNumber} to {@code newExp}, if {@code newExp} is less than
+   * the current {@code exponent}.
+   * See {@link com.n1analytics.paillier.PaillierContext#decreaseExponentTo(EncryptedNumber, int)} for details.
+   *
+   * @param newExp the new {@code exponent}, must be less than the current {@code exponent}.
+   * @return an {@code EncryptedNumber} representing the same value with {@code exponent} equals to {@code newExp}.
+   */
+  public EncryptedNumber decreaseExponentTo(int newExp) {
+    return context.decreaseExponentTo(this, newExp);
+  }
+
+  /**
    * Adds another {@code EncryptedNumber} to this {@code EncryptedNumber}. See
    * {@link com.n1analytics.paillier.PaillierContext#add(EncryptedNumber, EncryptedNumber)} for more details.
    *
