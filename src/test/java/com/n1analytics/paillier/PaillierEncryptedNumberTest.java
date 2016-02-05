@@ -152,7 +152,7 @@ public class PaillierEncryptedNumberTest {
   @Test
   public void testEncryptIntPositiveOverflowAdd() throws Exception {
     EncryptedNumber ciphertext1 = partialContext.encrypt(
-            partialContext.getMaxEncoded());
+            partialContext.getMaxSignificand());
     EncryptedNumber ciphertext2 = partialContext.encrypt(BigInteger.ONE);
 
     EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
@@ -594,6 +594,74 @@ public class PaillierEncryptedNumberTest {
       check = ciphertext1.checkSameContext(encodedNumber3);
       fail("encodedNumber1 and encodedNumber3 have different context");
     } catch (PaillierContextMismatchException e) {
+    }
+  }
+
+  @Test
+  public void testAddWithEncryptDecryptInt0() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if(conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-15);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(1);
+
+          EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+          long additionResult = conf.privateKey().decrypt(ciphertext3).decodeLong();
+
+          assertEquals(-14, additionResult);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddWithEncryptDecryptInt1() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(15);
+        EncryptedNumber ciphertext2 = conf.context().encrypt(1);
+
+        EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+        long additionResult = conf.privateKey().decrypt(ciphertext3).decodeLong();
+
+        assertEquals(16, additionResult);
+      }
+    }
+  }
+
+  @Test
+  public void testAddWithEncryptDecryptInt2() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-15);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(-1);
+
+          EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+          long additionResult = conf.privateKey().decrypt(ciphertext3).decodeLong();
+
+          assertEquals(-16, additionResult);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSubWithEncryptDecryptInt0() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(15);
+        EncryptedNumber ciphertext2 = conf.context().encrypt(1);
+
+        EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
+
+        long decryption = conf.privateKey().decrypt(ciphertext3).decodeLong();
+
+        assertEquals(14, decryption);
+      }
     }
   }
 
