@@ -51,6 +51,7 @@ public class JavallierCLI {
     commands.put("decrypt", new DecryptCommand("decrypt"));
     commands.put("add", new AddCommand("add"));
     commands.put("addenc", new AddEncCommand("addenc"));
+    commands.put("multiply", new MultiplyCommand("multiply"));
 
     Command command = null;
 
@@ -334,13 +335,7 @@ public class JavallierCLI {
 
     @Override
     public void processOptions(CommandLine line) {
-      try {
-        output = OptionParsing.processOutputOption(line);
-      } catch (FileNotFoundException e) {
-        log.warning("File not found");
-        e.printStackTrace();
-        System.exit(1);
-      }
+      output = OptionParsing.processOutputOption(line);
     }
 
     public void run(List<String> args) {
@@ -420,13 +415,7 @@ public class JavallierCLI {
 
     @Override
     public void processOptions(CommandLine line) {
-      try {
-        output = OptionParsing.processOutputOption(line);
-      } catch (FileNotFoundException e) {
-        log.warning("File not found");
-        e.printStackTrace();
-        System.exit(1);
-      }
+      output = OptionParsing.processOutputOption(line);
     }
 
     public void run(List<String> args) {
@@ -548,13 +537,7 @@ public class JavallierCLI {
 
     @Override
     public void processOptions(CommandLine line) {
-      try {
         output = OptionParsing.processOutputOption(line);
-      } catch (FileNotFoundException e) {
-        log.warning("File not found");
-        e.printStackTrace();
-        System.exit(1);
-      }
     }
 
     public void run(List<String> args) {
@@ -608,6 +591,80 @@ public class JavallierCLI {
     }
   }
 
+
+  /**
+   * This command multiplies a plaintext number with an encrypted
+   * number.
+   */
+  protected static class MultiplyCommand extends Command {
+
+    Writer output;
+
+    public MultiplyCommand(String name) {
+      super(name);
+    }
+
+    public Options addOptions(Options options) {
+      options.addOption("o", "output", true, "Output to given file instead of stdout");
+      return options;
+    }
+
+    @Override
+    public void processOptions(CommandLine line) {
+        output = OptionParsing.processOutputOption(line);
+    }
+
+    public void run(List<String> args) {
+      System.out.println("Running the multiply command");
+      System.out.println(args);
+
+      String publicFn = args.get(1);
+      String ciphertextFn = args.get(2);
+
+      // Parse the plaintext number as a double
+      Double plaintext = Double.parseDouble(args.get(3));
+
+      final ObjectMapper mapper = new ObjectMapper();
+
+      try {
+        Map encData = mapper.readValue(new File(ciphertextFn), Map.class);
+        Map pubKeyData = mapper.readValue(new File(publicFn), Map.class);
+
+        // Deserialize public key
+        PaillierPublicKey pub = SerialisationUtil.unserialise_public(pubKeyData);
+        log.info("Deserialized public key");
+
+        // Deserialize the encrypted number
+        EncryptedNumber enc = SerialisationUtil.unserialise_encrypted(encData, pub);
+        log.info("Deserialized ciphertext number...");
+
+        // Multiply the plaintext by the encrypted number
+        EncryptedNumber newEnc = enc.multiply(plaintext);
+
+        ObjectNode json = SerialisationUtil.serialise_encrypted(newEnc);
+
+        output.write(json.toString());
+        output.close();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    public String getOptionDescription() {
+      return "PUBLICKEY ENCRYPTED PLAINTEXT";
+    }
+
+    public String getBlurb() {
+      return "Multiply ENCRYPTED with PLAINTEXT";
+    }
+
+    public String getDescription() {
+      return "Multiply ENCRYPTED and PLAINTEXT numbers together \n" +
+              "producing a new encrypted number.";
+    }
+  }
+
   /**
    * This command adds two encrypted numbers together.
    */
@@ -626,13 +683,7 @@ public class JavallierCLI {
 
     @Override
     public void processOptions(CommandLine line) {
-      try {
-        output = OptionParsing.processOutputOption(line);
-      } catch (FileNotFoundException e) {
-        log.warning("File not found");
-        e.printStackTrace();
-        System.exit(1);
-      }
+      output = OptionParsing.processOutputOption(line);
     }
 
     public void run(List<String> args) {

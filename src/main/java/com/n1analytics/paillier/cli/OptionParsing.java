@@ -6,7 +6,7 @@ import java.io.*;
 
 public class OptionParsing {
 
-  public static Writer processOutputOption(CommandLine line) throws FileNotFoundException {
+  public static Writer processOutputOption(CommandLine line) {
     Writer output;
     String outputFilename = null;
 
@@ -14,11 +14,17 @@ public class OptionParsing {
       outputFilename = line.getOptionValue("output");
     }
 
+    output = (Writer) new BufferedWriter(new OutputStreamWriter(System.out));
+
     if (outputFilename != null && !"-".equals(outputFilename)) {
-      output = (Writer) new PrintWriter(outputFilename);
-    } else {
-      output = (Writer) new BufferedWriter(new OutputStreamWriter(System.out));
+      try {
+        output = (Writer) new PrintWriter(outputFilename);
+      } catch (FileNotFoundException e) {
+        System.err.println("Output file path not found. " + outputFilename);
+        System.exit(1);
+      }
     }
+
     return output;
   }
 }
