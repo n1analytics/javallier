@@ -15,7 +15,7 @@ public class MockPaillierContextTest {
   
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    key = PaillierPrivateKey.create(1024);
+    key = PaillierPrivateKey.create(2048);
     publicKey = key.getPublicKey();
     mockContext = publicKey.createMockSignedContext();
   }
