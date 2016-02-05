@@ -207,6 +207,11 @@ public class PaillierContext {
   }
 
   /**
+   * @return encoding base used in this PaillierContext.
+   */
+  public int getBase() { return base; }
+
+  /**
    * Checks whether this PaillierContext support signed numbers.
    *
    * @return true if this PaillierContext support signed numbers, false otherwise.

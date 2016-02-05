@@ -85,55 +85,81 @@ public class PaillierEncodedNumberTest {
     assertEquals(0, encodedNumber.getExponent());
   }
 
+//  public void testLong(TestConfiguration conf, long value) {
+//    BigInteger valueBig = BigInteger.valueOf(value);
+//    double valueDouble = (double) value;
+//
+//    // Attempt to encode and decode the long. If the number is
+//    // less than zero and the encoding is unsigned then it must
+//    // throw an ArithmeticException.
+//    try {
+////      Number valueFixed = Number.encode(value);
+//      EncodedNumber encoded = conf.context().encode(value);
+//      if (value < 0 && conf.unsigned()) {
+//        fail("ERROR: Successfully encoded negative integer with unsigned encoding");
+//      }
+//      assertEquals(conf.context(), encoded.getContext());
+//      BigInteger expected = valueBig.shiftRight(encoded.getExponent());
+//      if (value < 0) {
+//        expected = conf.modulus().add(expected);
+//      }
+//      assertEquals(expected, encoded.getValue());
+////      assertEquals(value, encoded.decodeApproximateLong());
+//      assertEquals(value, encoded.decodeLong());
+////      assertEquals(valueFixed, encoded.decode());
+////      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
+//      assertEquals(valueBig, encoded.decodeBigInteger());
+//      // NOTE: If value has 11 or less leading zeros then it is not exactly
+//      //      representable as a float and the various rounding modes come
+//      //      into play. We should aim for exact binary compatibility with
+//      //      whatever the rounding mode is.
+//      //if(valueDouble != encoded.decode().decodeDouble()) {
+//      //	System.out.format(
+//      //		"value:           %d\n" +
+//      //		"value.hex:       %016X\n" +
+//      //		"valueDouble.hex: %016X\n" +
+//      //		"decoded.hex:     %016X\n\n",
+//      //		value,
+//      //		value,
+//      //		Double.doubleToLongBits(valueDouble),
+//      //		Double.doubleToLongBits(encoded.decode().decodeDouble()));
+//      //}
+//      if (Long.numberOfLeadingZeros(value) > 10) {
+////        assertEquals(valueDouble, encoded.decodeApproximateDouble(), 0);
+//        assertEquals(valueDouble, encoded.decodeDouble(), 0);
+//      } else {
+//        // NOTE for the moment we allow the least significant bit of the
+//        //      decoded double to differ:
+//        double delta = (double) (1 << (11 - Long.numberOfLeadingZeros(value)));
+////        assertEquals(valueDouble, encoded.decodeApproximateDouble(), delta);
+//        assertEquals(valueDouble, encoded.decodeDouble(), delta);
+//      }
+//    } catch (EncodeException e) {
+//      if (value >= 0 || conf.signed()) {
+//        throw e;
+//      }
+//    }
+//  }
+
   public void testLong(TestConfiguration conf, long value) {
     BigInteger valueBig = BigInteger.valueOf(value);
     double valueDouble = (double) value;
 
-    // Attempt to encode and decode the long. If the number is
-    // less than zero and the encoding is unsigned then it must
-    // throw an ArithmeticException.
     try {
-//      Number valueFixed = Number.encode(value);
       EncodedNumber encoded = conf.context().encode(value);
       if (value < 0 && conf.unsigned()) {
         fail("ERROR: Successfully encoded negative integer with unsigned encoding");
       }
       assertEquals(conf.context(), encoded.getContext());
-      BigInteger expected = valueBig.shiftRight(encoded.getExponent());
+      BigInteger expected = valueBig;
       if (value < 0) {
         expected = conf.modulus().add(expected);
       }
       assertEquals(expected, encoded.getValue());
-//      assertEquals(value, encoded.decodeApproximateLong());
       assertEquals(value, encoded.decodeLong());
-//      assertEquals(valueFixed, encoded.decode());
-//      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
       assertEquals(valueBig, encoded.decodeBigInteger());
-      // NOTE: If value has 11 or less leading zeros then it is not exactly
-      //      representable as a float and the various rounding modes come
-      //      into play. We should aim for exact binary compatibility with
-      //      whatever the rounding mode is.
-      //if(valueDouble != encoded.decode().decodeDouble()) {
-      //	System.out.format(
-      //		"value:           %d\n" +
-      //		"value.hex:       %016X\n" +
-      //		"valueDouble.hex: %016X\n" +
-      //		"decoded.hex:     %016X\n\n",
-      //		value,
-      //		value,
-      //		Double.doubleToLongBits(valueDouble),
-      //		Double.doubleToLongBits(encoded.decode().decodeDouble()));
-      //}
-      if (Long.numberOfLeadingZeros(value) > 10) {
-//        assertEquals(valueDouble, encoded.decodeApproximateDouble(), 0);
-        assertEquals(valueDouble, encoded.decodeDouble(), 0);
-      } else {
-        // NOTE for the moment we allow the least significant bit of the
-        //      decoded double to differ:
-        double delta = (double) (1 << (11 - Long.numberOfLeadingZeros(value)));
-//        assertEquals(valueDouble, encoded.decodeApproximateDouble(), delta);
-        assertEquals(valueDouble, encoded.decodeDouble(), delta);
-      }
+
+      assertEquals(valueDouble, encoded.decodeDouble(), EPSILON);
     } catch (EncodeException e) {
       if (value >= 0 || conf.signed()) {
         throw e;
@@ -174,33 +200,12 @@ public class PaillierEncodedNumberTest {
   }
 
   public void testDouble(TestConfiguration conf, double value) {
-    try {
-//      Number valueFixed = Number.encode(value);
-//      BigInteger valueBig = valueFixed.getSignificand().shiftLeft(valueFixed.getExponent());
-//      long valueLong = valueBig.longValue();
-
-      EncodedNumber encoded = conf.context().encode(value);
-      if (value < 0 && conf.unsigned()) {
-        fail("ERROR: Successfully encoded negative double with unsigned encoding");
-      }
-
-//      BigInteger expected = Number.encode(value).getSignificand();
-//      if (value < 0) {
-//        expected = conf.modulus().add(expected);
-//      }
-      BigInteger expected = conf.context().encode(value).getValue();
-
-      assertEquals(conf.context(), encoded.getContext());
-      assertEquals(expected, encoded.getValue());
-      assertEquals(value, encoded.decodeDouble(), EPSILON);
-//      assertEquals(valueFixed, encoded.decode());
-//      assertEquals(valueBig, encoded.decodeBigInteger());
-//      assertEquals(valueLong, encoded.decodeLong());
-    } catch (ArithmeticException e) {
-      if (value >= 0 || conf.signed()) {
-        throw e;
-      }
+    EncodedNumber encoded = conf.context().encode(value);
+    if (value < 0 && conf.unsigned()) {
+      fail("ERROR: Successfully encoded negative double with unsigned encoding");
     }
+
+    assertEquals(value, encoded.decodeDouble(), EPSILON);
   }
 
   @Test
@@ -266,9 +271,6 @@ public class PaillierEncodedNumberTest {
     if (configuration.unsignedFullPrecision()) {
       BigInteger max = modulus.subtract(ONE);
 
-//      assertEquals(new Number(max, exponent), context.getMax(0));
-//      assertEquals(new Number(ZERO, exponent), context.getMin(0));
-
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(ZERO, context.getMinSignificand());
 
@@ -290,9 +292,6 @@ public class PaillierEncodedNumberTest {
     } else if (configuration.unsignedPartialPrecision()) {
       BigInteger max = ONE.shiftLeft(precision).subtract(ONE);
 
-//      assertEquals(new Number(max, exponent), context.getMax(0));
-//      assertEquals(new Number(ZERO, exponent), context.getMin(0));
-
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(ZERO, context.getMinSignificand());
 
@@ -311,9 +310,6 @@ public class PaillierEncodedNumberTest {
     } else if (configuration.signedFullPrecision()) {
       BigInteger max = context.getPublicKey().getModulus().shiftRight(1);
       BigInteger min = max.negate();
-
-//      assertEquals(new Number(max, exponent), context.getMax(0));
-//      assertEquals(new Number(min, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
@@ -341,9 +337,6 @@ public class PaillierEncodedNumberTest {
     } else if (configuration.signedPartialPrecision()) {
       BigInteger max = ONE.shiftLeft(precision - 1).subtract(ONE);
       BigInteger min = max.negate();
-
-//      assertEquals(new Number(max, exponent), context.getMax(0));
-//      assertEquals(new Number(min, exponent), context.getMin(0));
 
       assertEquals(max.shiftLeft(exponent), context.getMaxSignificand());
       assertEquals(min.shiftLeft(exponent), context.getMinSignificand());
@@ -754,52 +747,62 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testManualPrecisionPositiveDouble() throws Exception {
-    double originalNumber = 3.171234e-7;
-    double precision = 1e-8;
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        double originalNumber = 3.171234e-7;
+        double precision = 1e-8;
 
-    EncodedNumber number = defaultSignedContext.encode(originalNumber, precision);
-    double decodedNumber = number.decodeDouble();
-    if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
-      fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+        EncodedNumber number = conf.context().encode(originalNumber, precision);
+        double decodedNumber = number.decodeDouble();
+        if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
+          fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+        }
+
+        EncodedNumber number2 = conf.context().encode(decodedNumber + 0.500001 * precision, precision);
+        double decodedNumber2 = number2.decodeDouble();
+        if(decodedNumber == decodedNumber2)
+          fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
+
+        if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
+          fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
+
+        double value = decodedNumber + precision / 16;
+        EncodedNumber number3 = conf.context().encode(value, precision);
+        double decodedNumber3 = number3.decodeDouble();
+        assertEquals(decodedNumber, decodedNumber3, EPSILON);
+      }
     }
-
-    EncodedNumber number2 = defaultSignedContext.encode(decodedNumber + 0.500001 * precision, precision);
-    double decodedNumber2 = number2.decodeDouble();
-    if(decodedNumber == decodedNumber2)
-      fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
-
-    if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
-      fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
-
-    double value = decodedNumber + precision / 16;
-    EncodedNumber number3 = defaultSignedContext.encode(value, precision);
-    double decodedNumber3 = number3.decodeDouble();
-    assertEquals(decodedNumber, decodedNumber3, EPSILON);
   }
 
   @Test
   public void testManualPrecisionNegativeDouble() throws Exception {
-    double originalNumber = -3.171234e-7;
-    double precision = 1e-8;
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        if(conf.signed()) {
+          double originalNumber = -3.171234e-7;
+          double precision = 1e-8;
 
-    EncodedNumber number = defaultSignedContext.encode(originalNumber, precision);
-    double decodedNumber = number.decodeDouble();
-    if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
-      fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+          EncodedNumber number = conf.context().encode(originalNumber, precision);
+          double decodedNumber = number.decodeDouble();
+          if(decodedNumber < originalNumber - precision || decodedNumber > originalNumber + precision) {
+            fail("decodedNumber: " + decodedNumber + " is not in the correct range.");
+          }
+
+          EncodedNumber number2 = conf.context().encode(decodedNumber + 0.500001 * precision, precision);
+          double decodedNumber2 = number2.decodeDouble();
+          if(decodedNumber == decodedNumber2)
+            fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
+
+          if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
+            fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
+
+          double value = decodedNumber + precision / 16;
+          EncodedNumber number3 = conf.context().encode(value, precision);
+          double decodedNumber3 = number3.decodeDouble();
+          assertEquals(decodedNumber, decodedNumber3, EPSILON);
+        }
+      }
     }
-
-    EncodedNumber number2 = defaultSignedContext.encode(decodedNumber + 0.500001 * precision, precision);
-    double decodedNumber2 = number2.decodeDouble();
-    if(decodedNumber == decodedNumber2)
-      fail("decodedNumber: " + decodedNumber + " should not be the same as decodedNumber2: " + decodedNumber2);
-
-    if(decodedNumber2 < originalNumber - precision / 2 || decodedNumber2 > originalNumber + precision * 1.5001)
-      fail("decodedNumber2: " + decodedNumber2 + "is not in the correct range.");
-
-    double value = decodedNumber + precision / 16;
-    EncodedNumber number3 = defaultSignedContext.encode(value, precision);
-    double decodedNumber3 = number3.decodeDouble();
-    assertEquals(decodedNumber, decodedNumber3, EPSILON);
   }
 
   @Test
@@ -888,5 +891,29 @@ public class PaillierEncodedNumberTest {
     }catch (EncodeException e) {
     }
   }
+
+  @Test
+  public void testAutomaticPrecisionAgreesWithEpsilon() throws Exception {
+    PaillierContext context = SIGNED_FULL_PRECISION.context();
+
+    double eps = Math.ulp(1.0);
+
+    double floorHappy = Math.ceil(Math.log((double) PaillierContext.DEFAULT_BASE)/ Math.log(2.0)) * 2;
+
+    for(double i = -floorHappy; i <= floorHappy; i++){
+      EncodedNumber enc1 = context.encode(Math.pow(2.0, i));
+      EncodedNumber enc2 = context.encode(Math.pow(2.0, i), (eps * Math.pow(2.0, i)));
+      assertEquals(String.valueOf(i), enc1.getExponent(), enc2.getExponent());
+
+      double realEps = eps * Math.pow(2.0, (i - 1));
+      double val = Math.pow(2.0, i) - realEps;
+      assert val != Math.pow(2.0, i);
+
+      EncodedNumber enc3 = context.encode(val);
+      EncodedNumber enc4 = context.encode(val, realEps);
+      assertEquals(String.valueOf(i), enc3.getExponent(), enc4.getExponent());
+    }
+  }
+
 }
 
