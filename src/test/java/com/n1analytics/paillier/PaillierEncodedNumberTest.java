@@ -143,26 +143,32 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testLongSmall() {
-    for (TestConfiguration conf : CONFIGURATION) {
-      for (long i = -1024; i <= 1024; ++i) {
-        testLong(conf, i);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        for (long i = -1024; i <= 1024; ++i) {
+          testLong(conf, i);
+        }
       }
     }
   }
 
   @Test
   public void testLongLarge() {
-    for (TestConfiguration conf : CONFIGURATION) {
-      testLong(conf, Long.MAX_VALUE);
-      testLong(conf, Long.MIN_VALUE);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        testLong(conf, Long.MAX_VALUE);
+        testLong(conf, Long.MIN_VALUE);
+      }
     }
   }
 
   @Test
   public void testLongRandom() {
-    for (TestConfiguration conf : CONFIGURATION) {
-      for (int i = 0; i < 100000; ++i) {
-        testLong(conf, random.nextLong());
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        for (int i = 0; i < 100000; ++i) {
+          testLong(conf, random.nextLong());
+        }
       }
     }
   }
@@ -221,7 +227,7 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testDoubleRandom() {
-    TestConfiguration conf = CONFIGURATION_DOUBLE;
+    TestConfiguration conf = SIGNED_FULL_PRECISION_2048;
     for (int i = 0; i < 100000; ++i) {
       testDouble(conf, randomFiniteDouble());
     }
@@ -231,7 +237,7 @@ public class PaillierEncodedNumberTest {
   public void testDoubleNonFinite() {
     // Test constants
     double[] nonFinite = {Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NaN};
-    TestConfiguration conf = CONFIGURATION_DOUBLE;
+    TestConfiguration conf = SIGNED_FULL_PRECISION_2048;
     for (double value : nonFinite) {
       try {
         conf.context().encode(value);
@@ -528,100 +534,122 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testAddLongToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.add(2);
-      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.add(2);
+        assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testAddDoubleToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.add(2.0);
-      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.add(2.0);
+        assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testAddBigIntegerToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.add(new BigInteger("2"));
-      assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.add(new BigInteger("2"));
+        assertEquals(3.7, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testSubtractLongToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(17);
-      EncodedNumber encodedNumber2 = encodedNumber1.subtract(2);
-      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(17);
+        EncodedNumber encodedNumber2 = encodedNumber1.subtract(2);
+        assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testSubtractDoubleToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(17);
-      EncodedNumber encodedNumber2 = encodedNumber1.subtract(2.0);
-      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(17);
+        EncodedNumber encodedNumber2 = encodedNumber1.subtract(2.0);
+        assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testSubtractBigIntegerToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(17);
-      EncodedNumber encodedNumber2 = encodedNumber1.subtract(new BigInteger("2"));
-      assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(17);
+        EncodedNumber encodedNumber2 = encodedNumber1.subtract(new BigInteger("2"));
+        assertEquals(15, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testMultiplyLongToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.multiply(2);
-      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.multiply(2);
+        assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testMultiplyDoubleToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.multiply(2.0);
-      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.multiply(2.0);
+        assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testMultiplyBigIntegerToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.multiply(new BigInteger("2"));
-      assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.multiply(new BigInteger("2"));
+        assertEquals(3.4, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testDivideLongToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.divide(2);
-      assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.divide(2);
+        assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
   @Test
   public void testDivideDoubleToEncodedNumber() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber encodedNumber1 = conf.context().encode(1.7);
-      EncodedNumber encodedNumber2 = encodedNumber1.divide(2.0);
-      assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber encodedNumber1 = conf.context().encode(1.7);
+        EncodedNumber encodedNumber2 = encodedNumber1.divide(2.0);
+        assertEquals(0.85, encodedNumber2.decodeDouble(), EPSILON);
+      }
     }
   }
 
@@ -644,36 +672,40 @@ public class PaillierEncodedNumberTest {
 
   @Test
   public void testPositiveEncodedDecreaseExponentTo() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      EncodedNumber number1 = conf.context().encode(3.14);
-      int originalExp = number1.getExponent();
-      int newExp = originalExp - 20;
-      EncodedNumber number2 = number1.decreaseExponentTo(newExp);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncodedNumber number1 = conf.context().encode(3.14);
+        int originalExp = number1.getExponent();
+        int newExp = originalExp - 20;
+        EncodedNumber number2 = number1.decreaseExponentTo(newExp);
 
-      if(originalExp < number2.getExponent()){
-        fail("Fail to decrease the encoded number's exponent");
+        if (originalExp < number2.getExponent()) {
+          fail("Fail to decrease the encoded number's exponent");
+        }
+        assertEquals(newExp, number2.getExponent());
+        double decodedNumber = number2.decodeDouble();
+        assertEquals(3.14, decodedNumber, EPSILON);
       }
-      assertEquals(newExp, number2.getExponent());
-      double decodedNumber = number2.decodeDouble();
-      assertEquals(3.14, decodedNumber, EPSILON);
     }
   }
 
   @Test
   public void testNegativeEncodedDecreaseExponentTo() throws Exception {
-    for (TestConfiguration conf : CONFIGURATION) {
-      if(conf.signed()) {
-        EncodedNumber number1 = conf.context().encode(-3.14);
-        int originalExp = number1.getExponent();
-        int newExp = originalExp - 20;
-        EncodedNumber number2 = number1.decreaseExponentTo(newExp);
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncodedNumber number1 = conf.context().encode(-3.14);
+          int originalExp = number1.getExponent();
+          int newExp = originalExp - 20;
+          EncodedNumber number2 = number1.decreaseExponentTo(newExp);
 
-        if(originalExp < number2.getExponent()){
-          fail("Fail to decrease the encoded number's exponent");
+          if (originalExp < number2.getExponent()) {
+            fail("Fail to decrease the encoded number's exponent");
+          }
+          assertEquals(newExp, number2.getExponent());
+          double decodedNumber = number2.decodeDouble();
+          assertEquals(-3.14, decodedNumber, EPSILON);
         }
-        assertEquals(newExp, number2.getExponent());
-        double decodedNumber = number2.decodeDouble();
-        assertEquals(-3.14, decodedNumber, EPSILON);
       }
     }
   }
