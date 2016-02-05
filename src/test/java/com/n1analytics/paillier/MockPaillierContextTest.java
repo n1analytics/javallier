@@ -46,13 +46,13 @@ public class MockPaillierContextTest {
     assertNull(context);
 
     try {
-      context = new MockPaillierContext(publicKey, true, 1032);
+      context = new MockPaillierContext(publicKey, true, 2080);
       fail("Successfully created a context with precision greater than the public key's modulus bit length");
     } catch (IllegalArgumentException e) {
     }
     assertNull(context);
 
-    context = new MockPaillierContext(publicKey, true, 1024);
+    context = new MockPaillierContext(publicKey, true, 2048);
     assertNotNull(context);
     // Check public key
     assertNotNull(context.getPublicKey());
@@ -61,7 +61,7 @@ public class MockPaillierContextTest {
     assertTrue(context.isSigned());
     // Check precision
     assertNotNull(context.getPrecision());
-    assertEquals(1024, context.getPrecision());
+    assertEquals(2048, context.getPrecision());
   }
   
   @Test
