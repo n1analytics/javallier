@@ -547,8 +547,8 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testCiphertextObfuscation1() throws Exception {
-    EncryptedNumber encryptedNumber = context.encrypt(10.0);
+  public void testCalculateCiphertext() throws Exception {
+    EncryptedNumber encryptedNumber = context.encrypt(3.14);
 
     BigInteger unsafeCiphertext = encryptedNumber.ciphertext;
     BigInteger safeCiphertext = encryptedNumber.calculateCiphertext();
@@ -558,13 +558,55 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testCiphertextObfuscation2() throws Exception {
-    EncryptedNumber encryptedNumber = context.encrypt(10.0);
+  public void testCiphertextObfuscation() throws Exception {
+    EncryptedNumber encryptedNumber = context.encrypt(3.14);
+    BigInteger ciphertext = encryptedNumber.ciphertext;
+    assertEquals(encryptedNumber.isSafe, false);
 
     EncryptedNumber obfuscatedEncryptedNumber = encryptedNumber.obfuscate();
+    BigInteger obfuscatedCiphertext = obfuscatedEncryptedNumber.ciphertext;
 
     assertNotNull(obfuscatedEncryptedNumber);
+    assertEquals(obfuscatedEncryptedNumber.isSafe, true);
     assertNotEquals(encryptedNumber, obfuscatedEncryptedNumber);
+    assertNotEquals(ciphertext, obfuscatedCiphertext);
+  }
+
+  @Test
+  public void testNotObfuscated() throws Exception {
+    EncryptedNumber encryptedNumber = context.encrypt(context.encode(3.14, 103));
+    assertEquals(encryptedNumber.isSafe, false);
+    BigInteger ciphertext1 = encryptedNumber.ciphertext;
+
+    EncryptedNumber encryptedNumber2 = encryptedNumber.obfuscate();
+    BigInteger ciphertext2 = encryptedNumber2.ciphertext;
+    assertEquals(encryptedNumber2.isSafe, true);
+
+    EncryptedNumber encryptedNumber3 = encryptedNumber2.obfuscate();
+    BigInteger ciphertext3 = encryptedNumber3.ciphertext;
+    assertEquals(encryptedNumber3.isSafe, true);
+
+    BigInteger ciphertext4 = encryptedNumber2.calculateCiphertext();
+
+    assertNotEquals(ciphertext1, ciphertext2);
+    assertNotEquals(ciphertext2, ciphertext3);
+    assertEquals(ciphertext2, ciphertext4);
+    assertNotEquals(ciphertext3, ciphertext4);
+
+    double decryptedNumber = privateKey.decrypt(encryptedNumber).decodeDouble();
+    assertEquals(3.14, decryptedNumber, 0.0);
+  }
+
+  @Test
+  public void testAddObfuscated() throws Exception {
+    EncryptedNumber encryptedNumber1 = context.encrypt(94.5);
+    EncryptedNumber encryptedNumber2 = context.encrypt(107.3);
+    assertEquals(encryptedNumber1.isSafe, false);
+    assertEquals(encryptedNumber2.isSafe, false);
+    EncryptedNumber encryptedNumber3 = encryptedNumber1.add(encryptedNumber2);
+    assertEquals(encryptedNumber3.isSafe, false);
+    EncryptedNumber encryptedNumber4 = encryptedNumber3.obfuscate();
+    assertEquals(encryptedNumber4.isSafe, true);
   }
 
   @Test
@@ -598,7 +640,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddWithEncryptDecryptInt0() throws Exception {
+  public void testEncryptedNegativeLongWithEncryptedLong() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if(conf.signed()) {
@@ -616,7 +658,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddWithEncryptDecryptInt1() throws Exception {
+  public void testAddEncryptedLongs() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         EncryptedNumber ciphertext1 = conf.context().encrypt(15);
@@ -632,7 +674,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddWithEncryptDecryptInt2() throws Exception {
+  public void testAddWithEncryptedNegativeLongWithEncryptedNegativeLong() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -650,7 +692,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testSubWithEncryptDecryptInt0() throws Exception {
+  public void testSubtractEncryptedLongWithEncryptedLong() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         EncryptedNumber ciphertext1 = conf.context().encrypt(15);
@@ -666,7 +708,121 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddLongToEncryptedNumber() throws Exception {
+  public void testAddEncryptedNegativeDoubleWithEncryptedDouble() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-15.0);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(1.0);
+          EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(-14.0, decryption, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedDoubleWithEncryptedNegativeDouble() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-15.0);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(1.0);
+          EncryptedNumber ciphertext3 = ciphertext2.add(ciphertext1);
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(-14.0, decryption, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedDoubles() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(15.0);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(1.0);
+          EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(16.0, decryption, EPSILON);
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedNegativeDoubleWithEncryptedNegativeDouble() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-15.0);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(-1.0);
+          EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(-16.0, decryption, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedDoubleWithEncryptedNegativeDouble2() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(1.3842);
+          EncryptedNumber ciphertext2 = conf.context().encrypt(-0.4);
+          EncryptedNumber ciphertext3 = ciphertext2.add(ciphertext1);
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(0.9842, decryption, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedDoublesDiffPrec() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(conf.context().encode(0.1, 1e-3));
+        EncryptedNumber ciphertext2 = conf.context().encrypt(conf.context().encode(0.2, 1e-20));
+        assertNotEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+
+        EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
+        assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
+
+        double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+        assertEquals(0.3, decryption, EPSILON);
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractEncryptedDoubleFromEncryptedDoubleDiffPrec() throws Exception {
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(conf.context().encode(0.1, 1e-3));
+          EncryptedNumber ciphertext2 = conf.context().encrypt(conf.context().encode(0.2, 1e-20));
+          assertNotEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+
+          EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
+          assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
+
+          double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+          assertEquals(-0.1, decryption, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddLongToEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if(conf.signed()) {
@@ -679,7 +835,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddDoubleToEncryptedNumber() throws Exception {
+  public void testAddDoubleToEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -692,7 +848,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testAddBigIntegerToEncryptedNumber() throws Exception {
+  public void testAddBigIntegerToEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -705,7 +861,45 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testSubtractLongFromEncryptedNumber() throws Exception {
+  public void testAddDoubleWithEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(1.98);
+        EncryptedNumber ciphertext2 = ciphertext1.add(4.3);
+        assertEquals(6.28, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+      }
+    }
+  }
+
+  @Test
+  public void testAddNegativeDoubleWithEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if(conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(240.9);
+          EncryptedNumber ciphertext2 = ciphertext1.add(-40.8);
+          assertEquals(200.1, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddLongWithEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(3.9);
+          EncryptedNumber ciphertext2 = ciphertext1.add(-40);
+          assertEquals(-36.1, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
+  }
+
+
+  @Test
+  public void testSubtractLongFromEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -718,7 +912,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testSubtractDoubleFromEncryptedNumber() throws Exception {
+  public void testSubtractDoubleFromEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -731,13 +925,99 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testSubtractBigIntegerFromEncryptedNumber() throws Exception {
+  public void testSubtractBigIntegerFromEncryptedNegativeDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
           EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
           EncryptedNumber ciphertext2 = ciphertext1.subtract(new BigInteger("-4"));
           assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractEncryptedDoubleFromEncodedLong() throws Exception {
+    // Right-operation: 4 - encrypt(1.98)
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(1.98);
+        EncryptedNumber ciphertext2 = conf.context().encode(4).subtract(ciphertext1);
+        assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractEncryptedDoubleFromEncodedDouble() throws Exception {
+    // Right-operation: 4 - encrypt(1.98)
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(1.98);
+        EncryptedNumber ciphertext2 = conf.context().encode(4.0).subtract(ciphertext1);
+        assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractEncryptedDoubleFromEncodedBigInteger() throws Exception {
+    // Right-operation: 4 - encrypt(1.98)
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(1.98);
+        EncryptedNumber ciphertext2 = conf.context().encode(new BigInteger("4")).subtract(ciphertext1);
+        assertEquals(2.02, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractNegativeDoubleWithEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(1.98);
+          EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.3);
+          assertEquals(6.28, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSubDoubleFromEncodedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.98);
+          EncryptedNumber ciphertext2 = conf.context().encode(4.3).subtract(ciphertext1);
+          assertEquals(6.28, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractDoubleFromEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(240.9);
+        EncryptedNumber ciphertext2 = ciphertext1.subtract(40.8);
+        assertEquals(200.1, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+      }
+    }
+  }
+
+  @Test
+  public void testSubtractLongFromEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(3.9);
+          EncryptedNumber ciphertext2 = ciphertext1.subtract(40);
+          assertEquals(-36.1, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
         }
       }
     }
@@ -757,7 +1037,7 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testMultiplyDoubleByEncryptedNumber() throws Exception {
+  public void testMultiplyDoubleByEncryptedDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -783,6 +1063,130 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
+  public void testMultiplyEncryptedNegativeDoubleWithOne() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.3);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(1);
+          double decryption = conf.privateKey().decrypt(ciphertext2).decodeDouble();
+
+          assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+          assertEquals(-1.3, decryption, 0.0);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncryptedDoubleWithTwo() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(2.3);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(2);
+        double decryption = conf.privateKey().decrypt(ciphertext2).decodeDouble();
+
+        assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+        assertEquals(4.6, decryption, 0.0);
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplicationResultExponent() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-0.1);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(31.4);
+
+          assertEquals(-3.14, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+          assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
+
+          int expOf314 = conf.context().encode(-31.4).getExponent();
+
+          assertEquals(ciphertext2.getExponent(), ciphertext1.getExponent() + expOf314);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncodedDoubleWithEncryptedNumber() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(conf.context().encode(1.2345678e-12, 1e-14));
+        EncodedNumber encoded1 = conf.context().encode(1.38734864, 1e-2);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
+        assertEquals(1.71e-12, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncryptedNegativeDoubleWithNegativeOne() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-1.3);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(-1);
+          double decryption = conf.privateKey().decrypt(ciphertext2).decodeDouble();
+
+          assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+          assertEquals(1.3, decryption, 0.0);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncryptedDoubleWithNegativeTwo() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(2.3);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(-2);
+          double decryption = conf.privateKey().decrypt(ciphertext2).decodeDouble();
+
+          assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+          assertEquals(-4.6, decryption, 0.0);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplicationResultExponent2() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-0.1);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(-31.4);
+
+          assertEquals(3.14, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+          assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
+
+          int expOf314 = conf.context().encode(-31.4).getExponent();
+
+          assertEquals(ciphertext2.getExponent(), ciphertext1.getExponent() + expOf314);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncodedNegativeDoubleWithEncryptedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(conf.context().encode(1.2345678e-12, 1e-14));
+        EncodedNumber encoded1 = conf.context().encode(1.38734864, 1e-2);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
+        assertEquals(-1.71e-12, conf.privateKey().decrypt(ciphertext2).decodeDouble(), EPSILON);
+      }
+    }
+  }
+
+  @Test
   public void testDivideLongByEncryptedNumber() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
@@ -796,7 +1200,21 @@ public class PaillierEncryptedNumberTest {
   }
 
   @Test
-  public void testDivideDoubleByEncryptedNumber() throws Exception {
+  public void testMultiplyRight() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(0.1);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(31.4);
+        EncryptedNumber ciphertext3 = (conf.context().encode(31.4)).multiply(ciphertext1);
+
+        assertEquals(conf.privateKey().decrypt(ciphertext3).decodeDouble(), conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(3.14, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+      }
+    }
+  }
+
+  @Test
+  public void testDivideEncryptedNegativeDoubleByDouble() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
       for (TestConfiguration conf : confs) {
         if (conf.signed()) {
@@ -808,6 +1226,19 @@ public class PaillierEncryptedNumberTest {
     }
   }
 
+  @Test
+  public void testDivideEncryptedDoubleWithLong() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(6.28);
+        EncryptedNumber ciphertext2 = ciphertext1.divide(2);
+        assertEquals(3.14, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+
+        EncryptedNumber ciphertext3 = ciphertext1.divide(3.14);
+        assertEquals(2.0, conf.privateKey().decrypt(ciphertext3).decodeDouble(), 0.0);
+      }
+    }
+  }
   @Test
   public void testAdditiveInverse() throws Exception {
     for (TestConfiguration[] confs : CONFIGURATIONS) {
@@ -830,6 +1261,42 @@ public class PaillierEncryptedNumberTest {
 
           double decryptedNegativeNumber2 = negativeCiphertext2.decrypt(conf.privateKey()).decodeDouble();
           assertEquals(number, decryptedNegativeNumber2, EPSILON);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testAddEncryptedDoubleWithEncodedDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        EncryptedNumber ciphertext1 = conf.context().encrypt(conf.context().encode(0.1, 1e-3));
+        EncodedNumber encoded1 = conf.context().encode(0.2, 1e-20);
+        assertNotEquals(ciphertext1.getExponent(), encoded1.getExponent());
+
+        EncryptedNumber ciphertext3 = ciphertext1.add(encoded1);
+        assertEquals(encoded1.getExponent(), ciphertext3.getExponent());
+
+        double decryption = conf.privateKey().decrypt(ciphertext3).decodeDouble();
+        assertEquals(0.3, decryption, 1e-3);
+      }
+    }
+  }
+
+  @Test
+  public void testMultiplyEncryptedNegativeDoubleWithEncodedNegativeDouble() throws Exception {
+    for (TestConfiguration[] confs : CONFIGURATIONS) {
+      for (TestConfiguration conf : confs) {
+        if (conf.signed()) {
+          EncryptedNumber ciphertext1 = conf.context().encrypt(-0.1);
+          EncodedNumber encoded1 = conf.context().encode(-31.4);
+          EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
+
+          assertEquals(3.14, conf.privateKey().decrypt(ciphertext2).decodeDouble(), 0.0);
+          assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
+
+          int expOf314 = conf.context().encode(-31.4).getExponent();
+          assertEquals(ciphertext2.getExponent(), ciphertext1.getExponent() + expOf314);
         }
       }
     }
