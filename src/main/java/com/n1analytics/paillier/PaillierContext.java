@@ -22,9 +22,12 @@ import java.math.BigInteger;
 import java.math.MathContext;
 
 /**
- * Represents an encoding scheme that allows signed fractional numbers to be
- * used in the Paillier cryptosystem. There are several attributes that define
- * an encoding scheme:
+ * The PaillierContext combines an encoding scheme and a public key.
+ * 
+ * The encoding scheme used to convert numbers into unsigned 
+ * integers for use in the Paillier cryptosystem.
+ * 
+ * There are several attributes that define an encoding scheme:
  * <ul>
  *   <li>
  *     A <code>PaillierPublicKey</code> used to generate this PaillierContext.
@@ -45,19 +48,19 @@ import java.math.MathContext;
  *   </li>
  * </ul>
  *
- * PaillierContext defines the methods:
+ * PaillierContext defines methods:
  * <ul>
- *     <li>To check whether another PaillierContext is the same as this PaillierContext</li>
  *     <li>To check whether a BigInteger, long, double, Number or EncodedNumber is valid</li>
  *     <li>To encode a BigInteger, long, double and Number to an EncodedNumber</li>
  *     <li>To decode an EncodedNumber to a Number, BigInteger, long or double</li>
  *     <li>To encrypt a BigInteger, long, double, Number and EncodedNumber</li>
  *     <li>To perform arithmetic computation (support addition, subtraction,
  *     limited multiplication and limited division)</li>
+ *     <li>To check whether another PaillierContext is the same as this PaillierContext</li>
  * </ul>
  *
  * Note you can create a PaillierContext directly from the create methods
- * on a PaillierPublicKey e.g., createSignedContext.
+ * on a PaillierPublicKey e.g., {@link PaillierPublicKey#createSignedContext()}.
  */
 public class PaillierContext {
 
@@ -75,7 +78,7 @@ public class PaillierContext {
   private final PaillierPublicKey publicKey;
 
   /**
-   * The signed of this PaillierContext, denotes whether the numbers represented are signed or unsigned.
+   * Denotes whether the numbers represented are signed or unsigned.
    */
   private final boolean signed;
 
@@ -108,7 +111,7 @@ public class PaillierContext {
   private final BigInteger minSignificand;
 
   /**
-   * The base use to compute encoding.
+   * The base used to compute encoding.
    */
   private final int base;
 
@@ -118,10 +121,7 @@ public class PaillierContext {
   private final double log2Base;
 
   /**
-   * Constructs a Paillier context based on a {@code PaillierPublicKey}, a boolean {@code signed}
-   * to denote whether the context supports signed or unsigned numbers, a {@code precision}
-   * to denote the number of bits used to represent valid numbers, and a {@code base} to denote
-   * the base used for encoding.
+   * Constructs a Paillier context
    *
    * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
    * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
@@ -186,10 +186,7 @@ public class PaillierContext {
   }
 
   /**
-   * Constructs a Paillier context based on a {@code PaillierPublicKey}, a boolean {@code signed}
-   * to denote whether the context supports signed or unsigned number, and a {@code precision}
-   * to denote the number of bits used to represent valid numbers. The base for encoding is
-   * set to the {@code DEFAULT_BASE}.
+   * Constructs a Paillier context using the  {@code DEFAULT_BASE}.
    *
    * @param publicKey associated with this PaillierContext.
    * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
@@ -212,7 +209,7 @@ public class PaillierContext {
   public int getBase() { return base; }
 
   /**
-   * Checks whether this PaillierContext support signed numbers.
+   * Checks whether this PaillierContext supports signed numbers.
    *
    * @return true if this PaillierContext support signed numbers, false otherwise.
    */
@@ -221,7 +218,7 @@ public class PaillierContext {
   }
 
   /**
-   * Checks whether this PaillierContext support unsigned numbers.
+   * Checks whether this PaillierContext supports unsigned numbers.
    *
    * @return true if this PaillierContext support unsigned numbers, false otherwise.
    */
@@ -332,10 +329,12 @@ public class PaillierContext {
 
   /**
    * Checks whether an {@code EncodedNumber}'s {@code value} is valid, that is the {@code value}
-   * can be encrypted using the associated {@code publicKey}. For an unsigned {@code PaillierContext},
-   * a valid {@code value} is less than or equal to {@code maxEncoded}. While for a signed
-   * {@code PaillierContext}, a valid {@code value} is less than or equal to {@code maxEncoded}
-   * (for positive numbers) or is greater than or equal to {@code minEncoded} (for negative numbers).
+   * can be encrypted using the associated {@code publicKey}. 
+   * 
+   * For an unsigned {@code PaillierContext}, a valid {@code value} is less than or equal 
+   * to {@code maxEncoded}. While for a signed {@code PaillierContext}, a valid {@code value} 
+   * is less than or equal to {@code maxEncoded} (for positive numbers) or is greater than or 
+   * equal to {@code minEncoded} (for negative numbers).
    *
    * @param encoded the {@code EncodedNumber} to be checked.
    * @return true if it is valid, false otherwise.
@@ -356,13 +355,10 @@ public class PaillierContext {
 
   /**
    * Encodes a {@code BigInteger} using this {@code PaillierContext}. Throws EncodeException if the input
-   * value is greater than {@code maxSignificand} or is less than {@code minSignificand}. For positive input value,
-   * the number is encoded to an {@code EncodedNumber} with the input value as the significand and 0 as
-   * the exponent. Negative number is encoded to an {@code EncodedNumber} with the significand equals to
-   * <code>value + PublicKey.modulus</code> and 0 as the exponent.
+   * value is greater than {@code maxSignificand} or is less than {@code minSignificand}.
    *
    * @param value the {@code BigInteger} to be encoded.
-   * @return the encoding result.
+   * @return the encoding result - {@code EncodedNumber}
    * @throws EncodeException if the {@code value} is not valid.
    */
   public EncodedNumber encode(BigInteger value) throws EncodeException {
@@ -376,24 +372,9 @@ public class PaillierContext {
     return new EncodedNumber(this, value, exponent);
   }
 
-//  public EncodedNumber encode(BigInteger value, int maxExponent) {
-//    if (!isValid(value))
-//      throw new EncodeException();
-//    if(maxExponent < 0)
-//      throw new EncodeException("Max exponent must be >= 0.");
-//    int exponent = getExponent(0, maxExponent);
-//    return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
-//  }
-
-//  public EncodedNumber encode(BigInteger scalar, double precision) {
-//    if(precision > 1 || precision <= 0)
-//      throw new EncodeException("Precision must be 10^-i where i > 0.");
-//    return innerEncode(new BigDecimal(scalar), getPrecExponent(precision));
-//  }
-
   /**
    * Encodes a {@code double} using this {@code PaillierContext}. If the input value is not valid (that is
-   * if {@code value} is infinite, is a NaN or is negative when this context is unsigned) then throw
+   * if {@code value} is infinite, is a NaN, or is negative when this context is unsigned) then throw
    * EncodeException.
    *
    * @param value the {@code double} to be encoded.
@@ -466,18 +447,6 @@ public class PaillierContext {
     return encode(BigInteger.valueOf(value));
   }
 
-//  public EncodedNumber encode(long value, int maxExponent) {
-//    if (maxExponent < 0)
-//      throw new EncodeException("Max exponent must be >= 0.");
-//    return encode(BigInteger.valueOf(value), maxExponent);
-//  }
-
-//  public EncodedNumber encode(long scalar, double precision) {
-//    if (precision > 1 || precision <= 0)
-//      throw new EncodeException("Precision must be 10^-i where i > 0.");
-//    return encode(BigInteger.valueOf(scalar), precision);
-//  }
-
   /**
    * Returns an exponent derived from precision. The exponent is calculated as
    * <code>floor(log<sub>base</sub>precision)</code>.
@@ -516,7 +485,7 @@ public class PaillierContext {
   /**
    * Returns an integer ({@code BigInteger}) representation of a floating point number.
    * The integer representation is computed as <code>value * base<sup>exponent</sup></code> for non-negative
-   * number and <code>modulus + (value * base<sup>exponent</sup>)</code> for negative number.
+   * numbers and <code>modulus + (value * base<sup>exponent</sup>)</code> for negative numbers.
    *
    * @param value a floating point number to be encoded.
    * @param exponent the exponent to encode the number.
