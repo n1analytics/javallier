@@ -25,7 +25,6 @@ public class PaillierContextTest {
   private final static PaillierContext unsignedFull = TestConfiguration.UNSIGNED_FULL_PRECISION.context();
   private final static PaillierContext signedPartial = TestConfiguration.SIGNED_PARTIAL_PRECISION.context();
   private final static PaillierContext unsignedPartial = TestConfiguration.UNSIGNED_PARTIAL_PRECISION.context();
-  private final static double EPSILON = 1e-5;
 
   @Test
   public void testConstructor() throws Exception {
@@ -184,14 +183,6 @@ public class PaillierContextTest {
                                                                   BigInteger.ONE), 0)));
   }
 
-  // NOTE: the other getMax() and getMin() methods are tested in PaillierEncodedNumberTest
-  @Test
-  public void testGetMaxLong() throws Exception {
-    PaillierPrivateKey privateKey = PaillierPrivateKey.create(32);
-    PaillierPublicKey publicKey = privateKey.getPublicKey();
-    PaillierContext context = publicKey.createUnsignedContext();
-  }
-
   @Test
   public void testEquals() throws Exception {
     assertTrue(signedFull.equals(signedFull)); // Compare to itself
@@ -247,36 +238,4 @@ public class PaillierContextTest {
     } catch (EncodeException e) {
     }
   }
-
-  // Quick test to check whether encode/decode work for different bases.
-  // Ideally this should have more thorough tests.
-  @Test
-  public void testChangeBase() throws Exception {
-    PaillierPublicKey publicKey = TestConfiguration.SIGNED_FULL_PRECISION.publicKey();
-
-    PaillierContext contextdefault = new PaillierContext(publicKey, true, 1024);
-    PaillierContext context2 = new PaillierContext(publicKey, true, 1024, 2);
-    PaillierContext context17 = new PaillierContext(publicKey, true, 1024, 17);
-    PaillierContext context20 = new PaillierContext(publicKey, true, 1024, 20);
-
-    long numberLong = 17;
-    BigInteger numberBigInteger = BigInteger.valueOf(numberLong);
-    double numberDouble = (double) numberLong;
-
-    PaillierContext[] contexts = {contextdefault, context2, context17, context20};
-    for(PaillierContext context : contexts) {
-      EncodedNumber encodedLong = context.encode(numberLong);
-      long decodedLong = encodedLong.decodeLong();
-      assertEquals(numberLong, decodedLong);
-
-      EncodedNumber encodedBigInteger = context.encode(numberBigInteger);
-      BigInteger decodedBigInteger = encodedBigInteger.decodeBigInteger();
-      assertEquals(numberBigInteger, decodedBigInteger);
-
-      EncodedNumber encodedDouble = context.encode(numberDouble);
-      double decodedDouble = encodedDouble.decodeDouble();
-      assertEquals(numberDouble, decodedDouble, EPSILON);
-    }
-  }
-
 }

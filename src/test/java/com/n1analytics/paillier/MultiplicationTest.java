@@ -15,22 +15,41 @@ package com.n1analytics.paillier;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import static com.n1analytics.paillier.TestConfiguration.DEFAULT_KEY_SIZE;
-import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
+import static com.n1analytics.paillier.TestConfiguration.CONFIGURATIONS;
 import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 @Category(SlowTests.class)
 public class MultiplicationTest {
-  static private PaillierContext context = SIGNED_FULL_PRECISION.context();
-  static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
-
-  static private int bigIntegerBitLength = DEFAULT_KEY_SIZE / 2 - 1;
+  private PaillierContext context;
+  private PaillierPrivateKey privateKey;
 
   static private int maxIteration = 100;
+
+  @Parameterized.Parameters
+  public static Collection<Object[]> configurations() {
+    Collection<Object[]> configurationParams = new ArrayList<>();
+
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        configurationParams.add(new Object[]{conf});
+      }
+    }
+    return configurationParams;
+  }
+
+  public MultiplicationTest(TestConfiguration conf) {
+    context = conf.context();
+    privateKey = conf.privateKey();
+  }
 
   interface BinaryMultiplier1
           extends TwoInputsFunction<EncryptedNumber, EncodedNumber, EncryptedNumber> {
@@ -93,9 +112,13 @@ public class MultiplicationTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a * b;
 
@@ -108,15 +131,14 @@ public class MultiplicationTest {
       try {
         decodedResult = decryptedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
       }
@@ -128,9 +150,13 @@ public class MultiplicationTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a * b;
 
@@ -155,22 +181,26 @@ public class MultiplicationTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
+    for(int i = 0; i < maxIteration; i++) {
+      a = new BigInteger(context.getPrecision(), random);
+      b = new BigInteger(context.getPrecision(), random);
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
+      if(context.isSigned()) {
+        if(i % 4 == 1) {
+          b = b.negate();
+        } else if(i % 4 == 2) {
+          a = a.negate();
+        } else if(i % 4 == 3) {
+          a = a.negate();
+          b = b.negate();
+        }
       }
 
       plainResult = a.multiply(b);
+      if(!isValid(context, a) || !isValid(context, b) || !isValid(context, plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
@@ -191,9 +221,13 @@ public class MultiplicationTest {
     double a, b, plainResult, decodedResult, tolerance;
     EncodedNumber encodedNumberA, encodedNumberB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a * b;
 
@@ -205,15 +239,14 @@ public class MultiplicationTest {
       try {
         decodedResult = encodedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
       }
@@ -224,9 +257,13 @@ public class MultiplicationTest {
     long a, b, plainResult, decodedResult;
     EncodedNumber encodedNumberA, encodedNumberB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a * b;
 
@@ -249,22 +286,26 @@ public class MultiplicationTest {
     BigInteger a, b, plainResult, decodedResult;
     EncodedNumber encodedNumberA, encodedNumberB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
+    for(int i = 0; i < maxIteration; i++) {
+      a = new BigInteger(context.getPrecision(), random);
+      b = new BigInteger(context.getPrecision(), random);
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
+      if(context.isSigned()) {
+        if(i % 4 == 1) {
+          b = b.negate();
+        } else if(i % 4 == 2) {
+          a = a.negate();
+        } else if(i % 4 == 3) {
+          a = a.negate();
+          b = b.negate();
+        }
       }
 
       plainResult = a.multiply(b);
+      if(!isValid(context, a) || !isValid(context, b) || !isValid(context, plainResult))
+        continue;
 
       encodedNumberA = context.encode(a);
       encodedNumberB = context.encode(b);
@@ -282,7 +323,7 @@ public class MultiplicationTest {
 
   @Test
   public void testMultiplicationEncryptedNumbers1() throws Exception {
-    for (BinaryMultiplier1 multiplier : binaryMultipliers1) {
+    for(BinaryMultiplier1 multiplier : binaryMultipliers1) {
       testDoubleMultiplication(multiplier);
       testLongMultiplication(multiplier);
       testBigIntegerMultiplication(multiplier);
@@ -291,7 +332,7 @@ public class MultiplicationTest {
 
   @Test
   public void testMultiplicationEncryptedNumbers3() throws Exception {
-    for (BinaryMultiplier3 multiplier : binaryMultipliers3) {
+    for(BinaryMultiplier3 multiplier : binaryMultipliers3) {
       testDoubleMultiplication(multiplier);
       testLongMultiplication(multiplier);
       testBigIntegerMultiplication(multiplier);

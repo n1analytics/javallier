@@ -16,26 +16,54 @@ package com.n1analytics.paillier;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static com.n1analytics.paillier.TestConfiguration.CONFIGURATIONS;
 import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Parameterized.class)
 @Category(SlowTests.class)
 public class DivisionTest {
-  static private PaillierContext context = SIGNED_FULL_PRECISION.context();
-  static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
+  private PaillierContext context;
+  private PaillierPrivateKey privateKey;
 
   static private int maxIteration = 100;
+
+  @Parameters
+  public static Collection<Object[]> configurations() {
+    Collection<Object[]> configurationParams = new ArrayList<>();
+
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        configurationParams.add(new Object[]{conf});
+      }
+    }
+    return configurationParams;
+  }
+
+  public DivisionTest(TestConfiguration conf) {
+    context = conf.context();
+    privateKey = conf.privateKey();
+  }
 
   @Test
   public void testDivideEncryptedNumber1() throws Exception {
     double a, b, invertedB, plainResult, decodedResult, tolerance;
     EncryptedNumber cipherTextA, encryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       invertedB = 1 / b;
       if (Double.isInfinite(invertedB)) {
@@ -48,22 +76,17 @@ public class DivisionTest {
 
       encryptedResult = cipherTextA.divide(b);
 
-      if (!context.isValid(context.encode(a).divide(b))) {
-        continue;
-      }
-
       try {
         decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }
@@ -76,12 +99,16 @@ public class DivisionTest {
     double a, invertedB, plainResult, decodedResult, tolerance;
     EncryptedNumber cipherTextA, encryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = random.nextLong();
 
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
       invertedB = 1 / (double) b;
-      if (Double.isInfinite(invertedB)) {
+      if(Double.isInfinite(invertedB)) {
         continue;
       }
 
@@ -91,22 +118,17 @@ public class DivisionTest {
 
       encryptedResult = cipherTextA.divide(b);
 
-      if (!context.isValid(context.encode(a).divide(b))) {
-        continue;
-      }
-
       try {
         decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }
@@ -118,12 +140,16 @@ public class DivisionTest {
     double a, b, invertedB, plainResult, decodedResult, tolerance;
     EncodedNumber encodedNumberA, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
 
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
       invertedB = 1 / b;
-      if (Double.isInfinite(invertedB)) {
+      if(Double.isInfinite(invertedB)) {
         continue;
       }
 
@@ -133,22 +159,17 @@ public class DivisionTest {
 
       encodedResult = encodedNumberA.divide(b);
 
-      if (!context.isValid(context.encode(a).divide(b))) {
-        continue;
-      }
-
       try {
         decodedResult = encodedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }
@@ -161,12 +182,16 @@ public class DivisionTest {
     double a, invertedB, plainResult, decodedResult, tolerance;
     EncodedNumber encodedNumberA, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = random.nextLong();
 
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
       invertedB = 1 / (double) b;
-      if (Double.isInfinite(invertedB)) {
+      if(Double.isInfinite(invertedB)) {
         continue;
       }
 
@@ -176,22 +201,17 @@ public class DivisionTest {
 
       encodedResult = encodedNumberA.divide(b);
 
-      if (!context.isValid(context.encode(a).divide(b))) {
-        continue;
-      }
-
       try {
         decodedResult = encodedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if(absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isInfinite(plainResult)) {
-          assertEquals(plainResult, decodedResult, tolerance);
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }

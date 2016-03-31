@@ -30,18 +30,19 @@ public class TestConfiguration {
   // true,
   // 1+Number.FLOAT_MAX_PRECISION);
 
-  private static final int DOUBLE_MAX_PRECISION = 2098;
-
-  // A test configurations which are just big enough to encode all
-  // floating point values exactly. The modulus key length is chosen to be
-  // 2104 since a Number representation of Double.MAX_VALUE with respect
-  // to the exponent Number.DOUBLE_MIN_VALUE_EXPONENT uses 2098 bits. We
-  // add one bit for negative numbers and another for room underneath the
-  // public key modulus then round up to the nearest multiple of 8.
-  public static final PaillierPrivateKey PRIVATE_KEY_DOUBLE = PaillierPrivateKey
-      .create(2104);
-  public static final TestConfiguration CONFIGURATION_DOUBLE = create(
-      PRIVATE_KEY_DOUBLE, true, 1 + DOUBLE_MAX_PRECISION);
+//  // Double configuration is only relevant when using base = 2 and encoding/decoding are done using bit shift.
+//  private static final int DOUBLE_MAX_PRECISION = 2098;
+//
+//  // A test configurations which are just big enough to encode all
+//  // floating point values exactly. The modulus key length is chosen to be
+//  // 2104 since a Number representation of Double.MAX_VALUE with respect
+//  // to the exponent Number.DOUBLE_MIN_VALUE_EXPONENT uses 2098 bits. We
+//  // add one bit for negative numbers and another for room underneath the
+//  // public key modulus then round up to the nearest multiple of 8.
+//  public static final PaillierPrivateKey PRIVATE_KEY_DOUBLE = PaillierPrivateKey
+//      .create(2104);
+//  public static final TestConfiguration CONFIGURATION_DOUBLE = create(
+//      PRIVATE_KEY_DOUBLE, true, 1 + DOUBLE_MAX_PRECISION);
 
   public static final PaillierPrivateKey PRIVATE_KEY_512 = PaillierPrivateKey
       .create(512);
@@ -194,9 +195,8 @@ public class TestConfiguration {
   public static final TestConfiguration[] CONFIGURATION = CONFIGURATION_2048;
 
   public static final TestConfiguration[][] CONFIGURATIONS = {
-      // new TestConfiguration[] {CONFIGURATION_FLOAT},
-      new TestConfiguration[] { CONFIGURATION_DOUBLE }, CONFIGURATION_512,
-      CONFIGURATION_1024, CONFIGURATION_2048 };
+      // new TestConfiguration[] {CONFIGURATION_FLOAT}, new TestConfiguration[] { CONFIGURATION_DOUBLE },
+      CONFIGURATION_512, CONFIGURATION_1024, CONFIGURATION_2048 };
 
   private final PaillierPrivateKey privateKey;
   private final PaillierContext context;

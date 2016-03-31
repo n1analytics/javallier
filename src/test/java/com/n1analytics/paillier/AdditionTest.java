@@ -13,24 +13,44 @@
  */
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import static com.n1analytics.paillier.TestConfiguration.DEFAULT_KEY_SIZE;
+import static com.n1analytics.paillier.TestConfiguration.CONFIGURATIONS;
 import static com.n1analytics.paillier.TestUtil.*;
 import static org.junit.Assert.assertEquals;
-import static com.n1analytics.paillier.TestConfiguration.SIGNED_FULL_PRECISION;
 
+@RunWith(Parameterized.class)
 @Category(SlowTests.class)
 public class AdditionTest {
-  static private PaillierContext context = SIGNED_FULL_PRECISION.context();
-  static private PaillierPrivateKey privateKey = SIGNED_FULL_PRECISION.privateKey();
-
-  static private int bigIntegerBitLength = DEFAULT_KEY_SIZE / 2 - 1;
+  private PaillierContext context;
+  private PaillierPrivateKey privateKey;
 
   static private int maxIteration = 100;
+
+  @Parameterized.Parameters
+  public static Collection<Object[]> configurations() {
+    Collection<Object[]> configurationParams = new ArrayList<>();
+
+    for(TestConfiguration[] confs : CONFIGURATIONS) {
+      for(TestConfiguration conf : confs) {
+        configurationParams.add(new Object[]{conf});
+      }
+    }
+    return configurationParams;
+  }
+
+  public AdditionTest(TestConfiguration conf) {
+    context = conf.context();
+    privateKey = conf.privateKey();
+  }
 
   interface BinaryAdder1
           extends TwoInputsFunction<EncryptedNumber, EncryptedNumber, EncryptedNumber> {
@@ -121,13 +141,20 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, ciphertTextB, encryptedResult;
     EncodedNumber decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
 
-      plainResult = a + b;
-      if(Double.isInfinite(plainResult))
+      // Check if B and A are "close enough", otherwise there will be an undetected overflow
+      double minB = a - (a * EPSILON), maxB = a + (a * EPSILON);
+      if(b > maxB || b < minB)
         continue;
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
+      plainResult = a + b;
 
       ciphertTextA = context.encrypt(a);
       ciphertTextB = context.encrypt(b);
@@ -135,24 +162,17 @@ public class AdditionTest {
       encryptedResult = adder.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
-
       try {
         decodedResult = decryptedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if (absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       }
     }
@@ -163,9 +183,13 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, ciphertTextB, encryptedResult;
     EncodedNumber decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a + b;
 
@@ -190,32 +214,38 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, ciphertTextB, encryptedResult;
     EncodedNumber decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
+    for(int i = 0; i < maxIteration; i++) {
+      a = new BigInteger(context.getPrecision(), random);
+      b = new BigInteger(context.getPrecision(), random);
+
+      if(BigIntegerUtil.greater(a, context.getMaxSignificand()) || BigIntegerUtil.less(a, context.getMinSignificand()))
+        continue;
+
+      if(BigIntegerUtil.greater(b, context.getMaxSignificand()) || BigIntegerUtil.less(b, context.getMinSignificand()))
+        continue;
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
+      if(context.isSigned()) {
+        if(i % 4 == 1) {
+          b = b.negate();
+        } else if(i % 4 == 2) {
+          a = a.negate();
+        } else if(i % 4 == 3) {
+          a = a.negate();
+          b = b.negate();
+        }
       }
 
       plainResult = a.add(b);
+      if(!isValid(context, plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       ciphertTextB = context.encrypt(b);
 
       encryptedResult = adder.eval(ciphertTextA, ciphertTextB);
       decryptedResult = encryptedResult.decrypt(privateKey);
-
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
@@ -231,13 +261,20 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
 
-      plainResult = a + b;
-      if(Double.isInfinite(plainResult))
+      // Check if B and A are "close enough", otherwise there will be an undetected overflow
+      double minB = a - (a * EPSILON), maxB = a + (a * EPSILON);
+      if(b > maxB || b < minB)
         continue;
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
+      plainResult = a + b;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
@@ -245,24 +282,17 @@ public class AdditionTest {
       encryptedResult = adder.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
 
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
-
       try {
         decodedResult = decryptedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        double absValue = Math.abs(plainResult);
+        if (absValue == 0.0 || absValue > 1.0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       }
     }
@@ -273,9 +303,13 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a + b;
 
@@ -300,32 +334,33 @@ public class AdditionTest {
     EncryptedNumber ciphertTextA, encryptedResult;
     EncodedNumber encodedB, decryptedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
+    for(int i = 0; i < maxIteration; i++) {
+      a = new BigInteger(context.getPrecision(), random);
+      b = new BigInteger(context.getPrecision(), random);
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
+      if(context.isSigned()) {
+        if(i % 4 == 1) {
+          b = b.negate();
+        } else if(i % 4 == 2) {
+          a = a.negate();
+        } else if(i % 4 == 3) {
+          a = a.negate();
+          b = b.negate();
+        }
       }
 
       plainResult = a.add(b);
+
+      if(!isValid(context, a) || !isValid(context, b) || !isValid(context, plainResult))
+        continue;
 
       ciphertTextA = context.encrypt(a);
       encodedB = context.encode(b);
 
       encryptedResult = adder.eval(ciphertTextA, encodedB);
       decryptedResult = encryptedResult.decrypt(privateKey);
-
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
 
       try {
         decodedResult = decryptedResult.decodeBigInteger();
@@ -340,36 +375,35 @@ public class AdditionTest {
     double a, b, plainResult, decodedResult, tolerance;
     EncodedNumber encodedA, encodedB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = randomFiniteDouble();
       b = randomFiniteDouble();
 
-      plainResult = a + b;
-      if(Double.isInfinite(plainResult))
+      // Check if B and A are "close enough", otherwise there will be an undetected overflow
+      double minB = a - (a * EPSILON), maxB = a + (a * EPSILON);
+      if(b > maxB || b < minB)
         continue;
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
+
+      plainResult = a + b;
 
       encodedA = context.encode(a);
       encodedB = context.encode(b);
-
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
 
       try {
         encodedResult = adder.eval(encodedA, encodedB);
         decodedResult = encodedResult.decodeDouble();
 
-        if (Math.getExponent(decodedResult) > 0) {
-          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(decodedResult));
+        if(Math.getExponent(plainResult) > 0) {
+          tolerance = EPSILON * Math.pow(2.0, Math.getExponent(plainResult));
         } else {
           tolerance = EPSILON;
         }
 
-        if (!Double.isNaN(decodedResult)) {
-          if (!Double.isInfinite(decodedResult)) {
-            assertEquals(plainResult, decodedResult, tolerance);
-          }
-        }
+        assertEquals(plainResult, decodedResult, tolerance);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
       }
@@ -380,9 +414,13 @@ public class AdditionTest {
     long a, b, plainResult, decodedResult;
     EncodedNumber encodedA, encodedB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
+    for(int i = 0; i < maxIteration; i++) {
       a = random.nextLong();
       b = random.nextLong();
+
+      if(context.isUnsigned() && (a < 0 || b < 0)) {
+        continue;
+      }
 
       plainResult = a + b;
 
@@ -404,29 +442,29 @@ public class AdditionTest {
     BigInteger a, b, plainResult, decodedResult;
     EncodedNumber encodedA, encodedB, encodedResult;
 
-    for (int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(bigIntegerBitLength, random);
-      b = new BigInteger(bigIntegerBitLength, random);
+    for(int i = 0; i < maxIteration; i++) {
+      a = new BigInteger(context.getPrecision(), random);
+      b = new BigInteger(context.getPrecision(), random);
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
-      if (i % 4 == 1) {
-        b = b.negate();
-      } else if (i % 4 == 2) {
-        a = a.negate();
-      } else if (i % 4 == 3) {
-        a = a.negate();
-        b = b.negate();
+      if(context.isSigned()) {
+        if (i % 4 == 1) {
+          b = b.negate();
+        } else if (i % 4 == 2) {
+          a = a.negate();
+        } else if (i % 4 == 3) {
+          a = a.negate();
+          b = b.negate();
+        }
       }
 
       plainResult = a.add(b);
+      if(!isValid(context, a) || !isValid(context, b) || !isValid(context, plainResult))
+        continue;
 
       encodedA = context.encode(a);
       encodedB = context.encode(b);
-
-      if (!context.isValid(context.encode(a).add(context.encode(b)))) {
-        continue;
-      }
 
       try {
         encodedResult = adder.eval(encodedA, encodedB);
@@ -440,7 +478,7 @@ public class AdditionTest {
 
   @Test
   public void testAdditionEncryptedNumbers1() throws Exception {
-    for (BinaryAdder1 adder : binaryAdders1) {
+    for(BinaryAdder1 adder : binaryAdders1) {
       testDoubleAddition(adder);
       testLongAddition(adder);
       testBigIntegerAddition(adder);
@@ -449,7 +487,7 @@ public class AdditionTest {
 
   @Test
   public void testAdditionEncryptedNumbers2() throws Exception {
-    for (BinaryAdder2 adder : binaryAdders2) {
+    for(BinaryAdder2 adder : binaryAdders2) {
       testDoubleAddition(adder);
       testLongAddition(adder);
       testBigIntegerAddition(adder);
@@ -458,7 +496,7 @@ public class AdditionTest {
 
   @Test
   public void testAdditionEncodedNumbers1() throws Exception {
-    for (BinaryAdder4 adder : binaryAdders4) {
+    for(BinaryAdder4 adder : binaryAdders4) {
       testDoubleAddition(adder);
       testLongAddition(adder);
       testBigIntegerAddition(adder);
