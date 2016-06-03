@@ -30,7 +30,10 @@ lazy val root = project.in(file(".")).
 
 lazy val benchmark = project.in(file("benchmark")).
   settings(commonSettings: _*).settings(
-    name := "javallier-benchmark"
+    name := "javallier-benchmark",
+    libraryDependencies ++= Seq(
+      "com.squareup.jnagmp" % "jnagmp" % "1.0.1"
+      )
   ).dependsOn(root).
   enablePlugins(JmhPlugin)
 
