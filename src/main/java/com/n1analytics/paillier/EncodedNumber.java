@@ -15,7 +15,6 @@ package com.n1analytics.paillier;
 
 import com.n1analytics.paillier.util.HashChain;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -158,28 +157,6 @@ public final class EncodedNumber {
    */
   public long decodeLong() throws ArithmeticException {
     return context.decodeLong(this);
-  }
-
-  /**
-   * Re-encodes this number with the specified context.
-   *
-   * @param context the context to re-encode this number with.
-   * @return the re-encoded number.
-   */
-  public EncodedNumber changeContext(PaillierContext context) {
-//    if(exponent < 0)
-//      return context.encode(this.context.decodeDouble(this));
-//    else
-//      return context.encode(this.context.decodeBigInteger(this));
-
-    BigDecimal decodedValue = this.context.decodeBigDecimal(this);
-
-
-    if(decodedValue.compareTo(BigDecimal.valueOf(Double.MAX_VALUE)) >= 0 ||
-      decodedValue.compareTo(BigDecimal.valueOf(Double.MIN_VALUE)) <= 0) {
-      throw new PaillierRuntimeException("This value is greater than infinity.");
-    }
-    return context.encode(decodedValue.doubleValue());
   }
 
   /**

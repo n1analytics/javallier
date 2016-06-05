@@ -660,24 +660,6 @@ public class PaillierEncodedNumberTest {
     }
 
     @Test
-    public void testChangeContext() throws Exception {
-      EncodedNumber encodedDoubleContext1 = defaultSignedContext.encode(1.7);
-      EncodedNumber encodedDoubleContext2 = encodedDoubleContext1.changeContext(
-              defaultPartialSignedContext);
-
-      assertEquals(encodedDoubleContext1.decodeDouble(),
-              encodedDoubleContext2.decodeDouble(), 0.0);
-
-      EncodedNumber encodedBigIntegerContext1 = defaultSignedContext.encode(17);
-      EncodedNumber encodedBigIntegerContext2 = encodedBigIntegerContext1.changeContext(
-              defaultPartialSignedContext);
-
-      assertEquals(encodedBigIntegerContext1.decodeDouble(),
-              encodedBigIntegerContext2.decodeDouble(), 0.0);
-
-    }
-
-    @Test
     public void testIsEncodedNumberValid() throws Exception {
       EncodedNumber encodedNumber1 = new EncodedNumber(defaultPartialSignedContext,
               defaultPartialSignedContext.getMaxEncoded(), 0);
