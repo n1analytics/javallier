@@ -519,7 +519,7 @@ public class PaillierContext {
    * @return the rescaling factor.
    */
   public BigInteger getRescalingFactor(int expDiff) {
-    return (new BigInteger(String.valueOf(base))).pow(expDiff);
+    return (BigInteger.valueOf(base)).pow(expDiff);
   }
 
   /**
@@ -561,8 +561,8 @@ public class PaillierContext {
 
     int expDiff = exponent - newExp;
     BigInteger bigFactor = getRescalingFactor(expDiff);
-    BigInteger newEnc = publicKey.raw_multiply(encryptedNumber.calculateCiphertext(), bigFactor);
-    return new EncryptedNumber(this, newEnc, newExp);
+    BigInteger newEnc = publicKey.raw_multiply(encryptedNumber.ciphertext, bigFactor);
+    return new EncryptedNumber(this, newEnc, newExp, encryptedNumber.isSafe);
   }
 
   /**
@@ -606,7 +606,7 @@ public class PaillierContext {
    */
   public BigInteger decodeBigInteger(EncodedNumber encoded) throws DecodeException {
     BigInteger significand = getSignificand(encoded);
-    return significand.multiply((new BigInteger(String.valueOf(base))).pow(encoded.getExponent()));
+    return significand.multiply(BigInteger.valueOf(base).pow(encoded.getExponent()));
   }
 
   /**
