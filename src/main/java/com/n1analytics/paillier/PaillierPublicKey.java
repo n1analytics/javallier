@@ -75,8 +75,6 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Returns the modulus of the public key.
-   *
    * @return the modulus.
    */
   public BigInteger getModulus() {
@@ -84,8 +82,6 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Returns the modulus<sup>2</sup>.
-   *
    * @return the modulus<sup>2</sup>.
    */
   public BigInteger getModulusSquared() {
@@ -93,8 +89,6 @@ public final class PaillierPublicKey {
   }
 
   /**
-   * Returns the generator of the public key.
-   *
    * @return the generator.
    */
   public BigInteger getGenerator() {

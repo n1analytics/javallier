@@ -208,39 +208,6 @@ public class BigIntegerUtil {
   }
 
   /**
-   * The number of bits required to represent {@code abs(n)}, excluding the
-   * sign bit. This is useful because {@code absBitLength(n) == absBitLength(n.negate)}
-   * whereas the same is not necessarily true of {@code n.bitLength()} and
-   * {@code n.negate().bitLength()}.
-   *
-   * @param n input.
-   * @return number of bits.
-   */
-  public static int absBitLength(BigInteger n) {
-    return n.abs().bitLength();
-  }
-
-  /**
-   * Converts a {@code BigInteger} to a {@code long}. Throws an ArithmeticException
-   * if the conversion can not be done exactly.
-   *
-   * @param n Number to convert.
-   * @return The converted value.
-   * @throws ArithmeticException If {@code n} cannot be exactly.
-   * represented as a long.
-   */
-  public static long longValueExact(BigInteger n) throws ArithmeticException {
-    // TODO Issue #13: optimisation?
-    if (n.compareTo(LONG_MIN_VALUE) < 0) {
-      throw new ArithmeticException("Cannot represent exactly");
-    }
-    if (n.compareTo(LONG_MAX_VALUE) > 0) {
-      throw new ArithmeticException("Cannot represent exactly");
-    }
-    return n.longValue();
-  }
-
-  /**
    * Computes the Integer part of the square root of {@code BigInteger} {@code n}.
    * This code is adapted from Faruk Akgul's code found at:
    * http://faruk.akgul.org/blog/javas-missing-algorithm-biginteger-sqrt/
