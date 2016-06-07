@@ -481,6 +481,23 @@ public class PaillierContext {
   private int getExponent(int precExponent, int maxExponent){
     return Math.min(precExponent, maxExponent);
   }
+  
+  /**
+   * Returns the signum function of this EncodedNumber.
+   * @return -1, 0 or 1 as the value of this EncodedNumber is negative, zero or positive.
+   */
+  public int signum(EncodedNumber number){
+    if(number.value.equals(BigInteger.ZERO)){
+      return 0;
+    }
+    if(isUnsigned()){
+      return 1;
+    }
+    //if this context is signed, then a negative significant is strictly greater 
+    //than modulus/2.
+    BigInteger halfModulus = getPublicKey().modulus.shiftRight(1);
+    return number.value.compareTo(halfModulus) > 0 ? -1 : 1;
+  }
 
   /**
    * Returns an integer ({@code BigInteger}) representation of a floating point number.
@@ -746,6 +763,29 @@ public class PaillierContext {
    */
   public EncryptedNumber add(EncryptedNumber operand1, EncodedNumber operand2)
           throws PaillierContextMismatchException {
+    checkSameContext(operand1);
+    checkSameContext(operand2);
+    //addition only works if both numbers have the same exponent. Adjusting the exponent of an 
+    //encrypted number can only be done with an encrypted multiplication (internally, this is
+    //done with a modular exponentiation). 
+    //It is going to be computationally much cheaper to adjust the encoded number before the 
+    //encryption as we only need to do a modular multiplication.
+    int exponent1 = operand1.getExponent();
+    int exponent2 = operand2.getExponent();
+    BigInteger value2 = operand2.value;
+    if(exponent1 < exponent2){
+      value2 = value2.multiply(getRescalingFactor(exponent2-exponent1)).mod(publicKey.getModulus());
+      return add(operand1, encrypt(new EncodedNumber(this, value2, exponent1)));
+    }
+    if(exponent1 > exponent2 && operand2.signum() == 1){
+      //test if we can shift value2 to the right without loosing information
+      //Note, this only works for positive values.
+      boolean canShift = value2.mod(getRescalingFactor(exponent1-exponent2)).equals(BigInteger.ZERO);
+      if(canShift){
+        value2 = value2.divide(getRescalingFactor(exponent1-exponent2));
+        return add(operand1, encrypt(new EncodedNumber(this, value2, exponent1)));
+      }
+    }
     return add(operand1, encrypt(operand2));
   }
 
@@ -761,7 +801,7 @@ public class PaillierContext {
    */
   public EncryptedNumber add(EncodedNumber operand1, EncryptedNumber operand2)
           throws PaillierContextMismatchException {
-    return add(encrypt(operand1), operand2);
+    return add(operand2, operand1);
   }
 
   /**

@@ -101,6 +101,14 @@ public final class EncodedNumber {
   public boolean isValid() {
     return context.isValid(this);
   }
+  
+  /**
+   * Returns the signum function of this EncodedNumber.
+   * @return -1, 0 or 1 as the value of this EncodedNumber is negative, zero or positive.
+   */
+  public int signum(){
+    return context.signum(this);
+  }
 
   /**
    * Checks whether an {@code EncryptedNumber} has the same context as this {@code EncodedNumber}.
