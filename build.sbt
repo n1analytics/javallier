@@ -84,3 +84,9 @@ testOptions in Test += Tests.Setup(classLoader =>
     .invoke(null, "ROOT"))
 
 jacoco.settings
+
+assemblyJarName in assembly := "javallier.jar"
+
+test in assembly := {}
+
+mainClass in assembly := Some("com.n1analytics.paillier.cli.Main")

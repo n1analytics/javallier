@@ -51,18 +51,21 @@ Use the `javallier` cli tool to:
 - encrypt and serialize signed floating point numbers given a public key
 - add two encrypted numbers together
 - add an encrypted number to a plaintext number
-- TODO multiply an encrypted number by a plaintext number
+- multiply an encrypted number by a plaintext number
 - decrypt an encrypted number given the private key
 
 
 Build the `javallier` CLI tool:
 
-    sbt stage
+    sbt assembly
 
-Then run the binary for your system, e.g., on Linux:
+This creates a `javallier.jar` jar file in:
 
-    ./target/universal/stage/bin/javallier
+    ./target/scala-2.10
 
+To run it:
+
+    java -jar javallier.jar <COMMAND>  
 
 Alternatively you can run directly with sbt:
 
@@ -71,7 +74,7 @@ Alternatively you can run directly with sbt:
 
 ### Example CLI session
 
-    $ javallier genpkey --keysize 256 -m "Example keypair" examplekey.priv
+    $ java -jar javallier.jar genpkey --keysize 256 -m "Example keypair" examplekey.priv
     $ cat examplekey.priv | python -m json.tool
     {
         "kty": "DAJ",
@@ -88,14 +91,14 @@ Alternatively you can run directly with sbt:
         "mu": "c6zkHofGK9uWqWX1eXTIydCqUnvBJKlDHOZ0fEcZCeQ="
     }
 
-    $ javallier extract examplekey.priv examplekey.pub
-    $ javallier encrypt examplekey.pub "12" -o encA.json
-    $ javallier encrypt examplekey.pub "8" -o encB.json
-    $ javallier addenc examplekey.pub encA.json encB.json -o encC.json
-    $ javallier decrypt examplekey.priv encC.json
+    $ java -jar javallier.jar extract examplekey.priv examplekey.pub
+    $ java -jar javallier.jar encrypt examplekey.pub "12" -o encA.json
+    $ java -jar javallier.jar encrypt examplekey.pub "8" -o encB.json
+    $ java -jar javallier.jar addenc examplekey.pub encA.json encB.json -o encC.json
+    $ java -jar javallier.jar java -jar target/scala-2.10/javallier.jar  decrypt examplekey.priv encC.json
     20.0
-    $ javallier add -o encD.json examplekey.pub encA.json 12
-    $ javallier decrypt examplekey.priv encD.json
+    $ java -jar javallier.jar add -o encD.json examplekey.pub encA.json 12
+    $ java -jar javallier.jar decrypt examplekey.priv encD.json
     24.0
 
 Release
