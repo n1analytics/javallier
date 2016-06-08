@@ -48,7 +48,7 @@ public class SerialisationUtil {
   public static EncryptedNumber unserialise_encrypted(Map data, PaillierPublicKey pub) {
     BigInteger ciphertext = new BigInteger(data.get("v").toString());
     int exponent = Integer.parseInt(data.get("e").toString());
-    PaillierContext context = pub.createSignedContext(32);
+    PaillierContext context = pub.createSignedContext();
     return new EncryptedNumber(context, ciphertext, exponent);
   }
 
