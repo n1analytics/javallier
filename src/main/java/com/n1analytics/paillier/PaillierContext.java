@@ -385,10 +385,12 @@ public class PaillierContext {
     if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
-    if(value < 0 && isUnsigned())
+    if(value < 0.0 && isUnsigned())
       throw new EncodeException("Input value cannot be encoded using this Paillier context.");
 
-    int exponent = getDoublePrecExponent(value);
+    // Force exponent = 0 for value = 0.0
+    int exponent = value == 0.0 ? 0 : getDoublePrecExponent(value);
+
     return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
   }
 
