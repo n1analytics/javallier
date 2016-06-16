@@ -17,8 +17,8 @@ To use the library add the following dependency to your SBT configuration:
     libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.4.2"
 
 
-Example usages are provided in the `/examples` source directory. A benchmarking script
-can be found in `/benchmark`.
+Example usages are provided in the `/examples` source directory. A 
+benchmarking script can be found in `/benchmark`.
 
 
 ## Build
@@ -101,11 +101,25 @@ Alternatively you can run directly with sbt:
     $ java -jar javallier.jar decrypt examplekey.priv encD.json
     24.0
 
-Release
--------
+Releases
+--------
 
 Releases will be signed by Brian Thorne with the PGP key
 [C18347DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
+
+Creating a release
+~~~~~~~~~~~~~~~~~~
+
+Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
+Update the (CHANGELOG)[./CHANGELOG], git tag the new release.
+
+Ensure you have sonatype credentials in `~/.sbt/0.13/sonatype.sbt`, and
+[install the pgp plugin](http://www.scala-sbt.org/sbt-pgp/) 
+(`~/.sbt/0.13/plugins/pgp.sbt`). Run `sbt publishSigned`, then visit the
+[staging repositories](https://oss.sonatype.org/#stagingRepositories) of 
+sonatype. **Close** the staging repository which will allow you to move
+to the release channel. Once you have successfully closed the staging 
+repository, you can **release** it.
 
 * http://www.scala-sbt.org/release/docs/Using-Sonatype.html
 * http://central.sonatype.org/pages/releasing-the-deployment.html

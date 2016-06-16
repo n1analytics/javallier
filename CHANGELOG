@@ -1,0 +1,13 @@
+# Version 0.5.0 (2016-06-08)
+
+- Reconfigurable base.
+- command line utility. 
+- Additional speed improvements using GMP
+- Bug fixes.
+
+# Version 0.4.0 (2015-07-16)
+
+- Introduction of Paillier Context api
+- Significant speed improvements
+- Compatibility with Oracle JDK 7
+
