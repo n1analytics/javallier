@@ -5,7 +5,7 @@
 A Java library for [Paillier partially homomorphic encryption](https://en.wikipedia.org/wiki/Paillier_cryptosystem)
 based on [python-paillier](https://github.com/NICTA/python-paillier).
 
-The homomorphic properties of the paillier crypto system are:
+The homomorphic properties of the paillier cryptosystem are:
 
 - Encrypted numbers can be multiplied by a non encrypted scalar.
 - Encrypted numbers can be added together.
@@ -14,7 +14,7 @@ The homomorphic properties of the paillier crypto system are:
 
 To use the library add the following dependency to your SBT configuration:
 
-    libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.4.2"
+    libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.5.0"
 
 
 Example usages are provided in the `/examples` source directory. A 
@@ -40,6 +40,14 @@ Run all tests with `sbt`:
 Or run just fast tests:
 
     $ ./test-fast.sh
+
+
+## Documentation
+
+JavaDoc for the latest version release (v0.5.0):
+[https://www.javadoc.io/doc/com.n1analytics/javallier_2.10/0.5.0]
+(https://www.javadoc.io/doc/com.n1analytics/javallier_2.10/0.5.0)
+
 
 ## Command Line Tool
 
@@ -101,40 +109,37 @@ Alternatively you can run directly with sbt:
     $ java -jar javallier.jar decrypt examplekey.priv encD.json
     24.0
 
-Releases
---------
+
+## Releases
 
 Releases will be signed by Brian Thorne with the PGP key
 [C18347DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
 
-Creating a release
-~~~~~~~~~~~~~~~~~~
 
-Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
-Update the (CHANGELOG)[./CHANGELOG], git tag the new release.
+### Creating a release
 
-Ensure you have sonatype credentials in `~/.sbt/0.13/sonatype.sbt`, and
-[install the pgp plugin](http://www.scala-sbt.org/sbt-pgp/) 
-(`~/.sbt/0.13/plugins/pgp.sbt`). Run `sbt publishSigned`, then visit the
-[staging repositories](https://oss.sonatype.org/#stagingRepositories) of 
-sonatype. **Close** the staging repository which will allow you to move
-to the release channel. Once you have successfully closed the staging 
+1. Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
+2. Update the [CHANGELOG](./CHANGELOG), git tag the new release.
+3. Ensure you have sonatype credentials in `~/.sbt/0.13/sonatype.sbt`, and
+[install the pgp plugin](http://www.scala-sbt.org/sbt-pgp/)
+(`~/.sbt/0.13/plugins/pgp.sbt`). 
+4. Run `sbt publishSigned`, then visit the
+[staging repositories](https://oss.sonatype.org/#stagingRepositories) of
+sonatype. 
+5. **Close** the staging repository which will allow you to move
+to the release channel. 
+6. Once you have successfully closed the staging
 repository, you can **release** it.
 
+For more information:
 * http://www.scala-sbt.org/release/docs/Using-Sonatype.html
 * http://central.sonatype.org/pages/releasing-the-deployment.html
 
 
-Limitations
------------
+## Limitation
 
-*   Arithmetic functions that involve a combination of addition and multiplication operations, such as 
-    (a + b) &times; c, might result in overflow in the `EncryptedNumber` domain. When overflow occurs, the computation 
-    result is incorrect even though the the result was succesfully decrypted and decoded. At the moment, the 
-    implementation does not detect overflow cause by such computation. 
+Adding two encrypted numbers where the exponents differs wildly may result in overflow 
+in the `EncryptedNumber` domain. The addition result can be successfully decrypted and 
+decoded but the computation result is incorrect. Current implementation does not detect 
+such overflow. 
     
-    One way to detect this is to ensure that the inputs to the function are carefully chosen such that it does not 
-    lead to overflow. For more complex arithmetic functions, such approach may not be possible. The alternative is to 
-    initially perform the same arithmetic function in the `Number` domain and check whether the result is a valid 
-    `Number`. The computation in the `EncryptedNumber` domain should only be performed if the result in the  the 
-    `Number` domain is valid.
