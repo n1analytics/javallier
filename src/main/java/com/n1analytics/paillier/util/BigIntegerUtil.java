@@ -13,12 +13,12 @@
  */
 package com.n1analytics.paillier.util;
 
-import com.squareup.jnagmp.Gmp;
-
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.squareup.jnagmp.Gmp;
 
 /**
  * A class containing the common methods for {@code BigInteger} manipulation, including:
@@ -64,7 +64,7 @@ public class BigIntegerUtil {
     try{
       Gmp.checkLoaded();
       return true;
-    }catch(Exception e){
+    }catch(Error e){
       logger.log(Level.WARNING, "can't load Gmp library. Falling back to native Java for modPow. Unfortunately, that's a 'lot' slower.", e);
       return  false;
     }
