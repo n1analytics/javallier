@@ -139,17 +139,23 @@ public class PaillierContextTest {
     // Raise Exception because the two contexts have different public key
     try {
       context.checkSameContext(TestConfiguration.UNSIGNED_FULL_PRECISION.context());
+      fail("these contexts are different!");
     } catch (PaillierContextMismatchException e) {
     }
 
     // Shouldn't raise exception
-    context.checkSameContext(signedFull);
-
+    try {
+      context.checkSameContext(signedFull);
+    } catch (PaillierContextMismatchException e) {
+      fail("these contexts are actually the same!");
+    }
 
     // Raise Exception because the two contexts have different signed
     PaillierContext unsignedClonedContext = context.getPublicKey().createUnsignedContext();
     try {
       context.checkSameContext(unsignedClonedContext);
+      System.out.println(context.isSigned() + " vs " + unsignedClonedContext.isSigned());
+      fail("should have raised Exception because the two contexts have different signed");
     } catch (PaillierContextMismatchException e) {
     }
 
@@ -158,11 +164,17 @@ public class PaillierContextTest {
             1022);
     try {
       context.checkSameContext(partialClonedContext);
+      fail("Raise Exception because the two contexts have different precision");
     } catch (PaillierContextMismatchException e) {
     }
-
+    
     PaillierContext clonedContext = context.getPublicKey().createSignedContext();
-    context.checkSameContext(clonedContext);
+    try {
+      context.checkSameContext(clonedContext);
+    } catch (PaillierContextMismatchException e) {
+      fail("this is a clone. checkSameContext should be true! But: " + e.getMessage());
+    }
+    assertTrue(true); //if we got here, then everything is fine
   }
 
   @Test

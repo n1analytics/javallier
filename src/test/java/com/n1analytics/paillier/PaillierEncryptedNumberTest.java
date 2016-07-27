@@ -558,10 +558,11 @@ public class PaillierEncryptedNumberTest {
     @Test
     public void testMultiplyEncryptedDoubleWithTwo() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(2.3);
-      EncryptedNumber ciphertext2 = ciphertext1.multiply(2);
+      EncodedNumber two = context.encode(2);
+      EncryptedNumber ciphertext2 = ciphertext1.multiply(two);
       double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
 
-      assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+      assertEquals(ciphertext1.getExponent() + two.getExponent(), ciphertext2.getExponent());
       assertEquals(4.6, decryption, 0.0);
     }
 
@@ -604,10 +605,11 @@ public class PaillierEncryptedNumberTest {
     public void testMultiplyEncryptedDoubleWithNegativeTwo() throws Exception {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(2.3);
-        EncryptedNumber ciphertext2 = ciphertext1.multiply(-2);
+        EncodedNumber minusTwo = context.encode(-2);
+        EncryptedNumber ciphertext2 = ciphertext1.multiply(minusTwo);
         double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
 
-        assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
+        assertEquals(ciphertext1.getExponent() + minusTwo.getExponent(), ciphertext2.getExponent());
         assertEquals(-4.6, decryption, 0.0);
       }
     }

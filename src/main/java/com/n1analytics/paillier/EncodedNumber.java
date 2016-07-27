@@ -13,9 +13,10 @@
  */
 package com.n1analytics.paillier;
 
-import com.n1analytics.paillier.util.HashChain;
-
+import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import com.n1analytics.paillier.util.HashChain;
 
 /**
  * Represents encoded numbers, enabling Paillier encrypted operations on
@@ -165,6 +166,10 @@ public final class EncodedNumber {
    */
   public long decodeLong() throws ArithmeticException {
     return context.decodeLong(this);
+  }
+  
+  public BigDecimal decodeBigDecimal() throws ArithmeticException {
+    return context.decodeBigDecimal(this);
   }
 
   /**
