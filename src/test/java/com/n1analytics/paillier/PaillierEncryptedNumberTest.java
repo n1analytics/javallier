@@ -1140,6 +1140,17 @@ public class PaillierEncryptedNumberTest {
       exception.expect(IllegalArgumentException.class);
       ciphertext.decreaseExponentTo(20);
     }
+    
+    @Test
+    public void testGetThisThingInSafe() {
+        EncryptedNumber unSafeEN = context.encrypt(context.encode(1.01, 1e-8));
+        assertFalse(unSafeEN.isSafe);
+        EncryptedNumber safeEN = unSafeEN.getSafeEncryptedNumber();
+        assertTrue(safeEN.isSafe);
+        assertNotEquals(unSafeEN.ciphertext, safeEN.ciphertext);
+        assertTrue(safeEN.getSafeEncryptedNumber().isSafe);
+        assertEquals(safeEN.ciphertext, safeEN.getSafeEncryptedNumber().ciphertext);
+    }
   }
 
 }
