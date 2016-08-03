@@ -98,14 +98,12 @@ Alternatively you can run directly with sbt:
     $ javallier decrypt examplekey.priv encD.json
     24.0
 
-Releases
---------
+##  Releases
 
-Releases will be signed by Brian Thorne with the PGP key
-[C18347DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
+Releases will be signed by [Brian Thorne](https://keybase.io/hardbyte) with the PGP key
+[22AD F3BF C183 47DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
 
-Creating a release
-~~~~~~~~~~~~~~~~~~
+### Creating a release
 
 Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
 Update the (CHANGELOG)[./CHANGELOG], git tag the new release.
