@@ -15,7 +15,7 @@ lazy val root = project.in(file(".")).
   settings(commonSettings: _*)
   .settings(
     name := "javallier",
-    version := "0.5.0",
+    version := "0.5.1",
     description := "A Java library for Paillier partially homomorphic encryption.",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.13",
