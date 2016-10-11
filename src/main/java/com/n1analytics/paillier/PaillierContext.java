@@ -91,7 +91,7 @@ public class PaillierContext {
   }
   
   /**
-   * Constructs a Paillier context
+   * Constructs a Paillier context with a floating point encoding scheme.
    *
    * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
    * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
@@ -109,13 +109,22 @@ public class PaillierContext {
     this.encoding = new StandardEncodingScheme(this, signed, precision, base);
   }
   
-  
-  public PaillierContext(PaillierPublicKey publicKey, EncodingScheme encoding) {
+  /**
+   * Constructs a Paillier context with a fixed point encoding scheme.
+   *
+   * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
+   * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
+   *
+   * @param publicKey associated with this PaillierContext.
+   * @param scale for the fixed-point encoding. A number x is encoded to x = significand * 2 ^ scale, where
+   * significand is a Integer value. 
+   */
+  public PaillierContext(PaillierPublicKey publicKey, int scale) {
     if (publicKey == null) {
       throw new NullPointerException("publicKey must not be null");
     }
     this.publicKey = publicKey;
-    this.encoding = encoding;
+    this.encoding = new FixedPointEncodingScheme(this, scale);
   }
 
   /**
