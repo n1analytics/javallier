@@ -736,7 +736,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
         exception.expect(DecodeException.class);
-        BigInteger result = privateKey.decrypt(ciphertext3).decodeBigInteger();
+        privateKey.decrypt(ciphertext3).decodeBigInteger();
       }
     }
 
@@ -750,7 +750,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
         exception.expect(DecodeException.class);
-        BigInteger result = privateKey.decrypt(ciphertext3).decodeBigInteger();
+        privateKey.decrypt(ciphertext3).decodeBigInteger();
       }
     }
 
@@ -909,7 +909,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = otherContext.encrypt(1);
 
       exception.expect(PaillierContextMismatchException.class);
-      EncryptedNumber result = ciphertext1.add(ciphertext2);
+      ciphertext1.add(ciphertext2);
     }
 
     @Test
@@ -919,7 +919,7 @@ public class PaillierEncryptedNumberTest {
               ciphertext1.getExponent());
 
       exception.expect(PaillierContextMismatchException.class);
-      EncryptedNumber result = ciphertext1.add(ciphertext2);
+      ciphertext1.add(ciphertext2);
     }
 
     @Test
@@ -1090,10 +1090,10 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = context.encrypt(2.0);
       EncryptedNumber ciphertext3 = otherContext.encrypt(2.0);
 
-      EncryptedNumber check = ciphertext1.checkSameContext(ciphertext2);
+      ciphertext1.checkSameContext(ciphertext2);
 
       try {
-        check = ciphertext1.checkSameContext(ciphertext3);
+        ciphertext1.checkSameContext(ciphertext3);
         fail("ciphertext1 and ciphertext3 have different context");
       } catch (PaillierContextMismatchException e) {
       }
@@ -1105,10 +1105,10 @@ public class PaillierEncryptedNumberTest {
       EncodedNumber encodedNumber2 = context.encode(2.0);
       EncodedNumber encodedNumber3 = otherContext.encode(2.0);
 
-      EncodedNumber check = ciphertext1.checkSameContext(encodedNumber2);
+      ciphertext1.checkSameContext(encodedNumber2);
 
       try {
-        check = ciphertext1.checkSameContext(encodedNumber3);
+        ciphertext1.checkSameContext(encodedNumber3);
         fail("encodedNumber1 and encodedNumber3 have different context");
       } catch (PaillierContextMismatchException e) {
       }
