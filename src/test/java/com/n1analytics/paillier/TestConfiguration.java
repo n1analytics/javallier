@@ -186,7 +186,10 @@ public class TestConfiguration {
 //  public static final TestConfiguration SIGNED_PARTIAL_PRECISION = SIGNED_PARTIAL_PRECISION_1024;
 //  public static final TestConfiguration[] CONFIGURATION = CONFIGURATION_1024;
 
+  /* default key-size to use in test if not otherwise specified */
   public static final int DEFAULT_KEY_SIZE = 2048;
+  /* max iterations for a specific test (usually used for randomized tests)*/
+  public static final int MAX_ITERATIONS = 50;
   // Default configurations, they all use 2048 bits key and Base 16 (to match with Python-Paillier)
   public static final TestConfiguration UNSIGNED_FULL_PRECISION = UNSIGNED_FULL_PRECISION_2048;
   public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION = UNSIGNED_PARTIAL_PRECISION_2048;
@@ -318,7 +321,7 @@ public class TestConfiguration {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
     return create(modulusLength, true, modulusLength - 2, base);
   }
-
+  
   public PaillierPrivateKey privateKey() {
     return privateKey;
   }

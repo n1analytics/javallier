@@ -32,7 +32,7 @@ public class MultiplicationTest {
   private PaillierContext context;
   private PaillierPrivateKey privateKey;
 
-  static private int maxIteration = 100;
+  static private int maxIteration = TestConfiguration.MAX_ITERATIONS;
 
   @Parameterized.Parameters
   public static Collection<Object[]> configurations() {
