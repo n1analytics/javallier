@@ -21,7 +21,7 @@ lazy val root = project.in(file(".")).
       "ch.qos.logback" % "logback-classic" % "1.0.13",
       "commons-cli" % "commons-cli" % "1.3.1",
       "commons-codec" % "commons-codec" % "1.10",
-      "com.squareup.jnagmp" % "jnagmp" % "1.0.1",
+      "com.squareup.jnagmp" % "jnagmp" % "2.0.0",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.7.0",
       "com.novocode" % "junit-interface" % "0.11" % Test
     ),
@@ -32,7 +32,7 @@ lazy val benchmark = project.in(file("benchmark")).
   settings(commonSettings: _*).settings(
     name := "javallier-benchmark",
     libraryDependencies ++= Seq(
-      "com.squareup.jnagmp" % "jnagmp" % "1.0.1"
+      "com.squareup.jnagmp" % "jnagmp" % "2.0.0"
       )
   ).dependsOn(root).
   enablePlugins(JmhPlugin)

@@ -95,11 +95,11 @@ public class BigIntegerUtil {
    * @return x, where a * x == 1 mod b
    */
   public static BigInteger invert(BigInteger a, BigInteger b) throws ArithmeticException {
-//    if(USE_GMP){
-//      // TODO use gmp if available
-//      //return Gmp.invert(a, b);
-//    } else {
+    if(USE_GMP){
+      return Gmp.modInverse(a, b);
+    } else {
     return a.modInverse(b);
+    }
   }
 
   /**
