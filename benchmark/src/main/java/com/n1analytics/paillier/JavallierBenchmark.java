@@ -57,6 +57,10 @@ public class JavallierBenchmark {
     return pair.n1.add(pair.n2);
   }
   
+  @Benchmark public EncryptedNumber additiveInverse(EncryptedNumberPairSameExponent pair) {
+    return context.additiveInverse(pair.n1);
+  }
+  
   @State(Scope.Benchmark)
   public static class EncryptedNumberPairDifferentExponent{
     public EncryptedNumber n1, n2;
