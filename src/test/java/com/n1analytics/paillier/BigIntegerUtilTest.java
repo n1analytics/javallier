@@ -18,12 +18,14 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Random;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.*;
 
 public class BigIntegerUtilTest {
 
+  final int MAX_ITERATIONS = 100;
   final private BigInteger BigOne = BigInteger.ONE;
   final private BigInteger BigZero = BigInteger.ZERO;
   final private BigInteger BigNegativeOne = BigInteger.ONE.negate();
@@ -92,5 +94,28 @@ public class BigIntegerUtilTest {
         .shiftLeft(512));
     BigInteger nSquared = n.multiply(n);
     assertEquals(BigIntegerUtil.sqrt(nSquared), n);
+  }
+  
+  @Test
+  public void testModPow() {
+    Random rnd = new Random();
+    BigInteger modulus = TestConfiguration.PRIVATE_KEY_2048.getPublicKey().getModulus();
+    for (int i = 0; i < MAX_ITERATIONS; i++) {
+      BigInteger base = BigIntegerUtil.randomPositiveNumber(modulus);
+      BigInteger exponent = new BigInteger(10, rnd);
+      if (rnd.nextBoolean()) {
+        exponent = exponent.negate();
+      }
+      assertEquals(base.modPow(exponent, modulus), BigIntegerUtil.modPow(base, exponent, modulus));
+    }  
+  }
+  
+  @Test
+  public void testModInverse() {
+    BigInteger modulus = TestConfiguration.PRIVATE_KEY_2048.getPublicKey().getModulus();
+    for (int i = 0; i < MAX_ITERATIONS; i++) {
+      BigInteger base = BigIntegerUtil.randomPositiveNumber(modulus);
+      assertEquals(base.modInverse(modulus), BigIntegerUtil.modInverse(base, modulus));
+    }
   }
 }
