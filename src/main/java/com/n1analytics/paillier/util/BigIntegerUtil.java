@@ -78,10 +78,12 @@ public class BigIntegerUtil {
    * @param modulus
    * @return (base ^ exponent) mod modulus
    */
-  public static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus){
-    if(USE_GMP){
-      return Gmp.modPowSecure(base, exponent, modulus);
-    }else{
+  public static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus) {
+    if (USE_GMP) {
+      return exponent.signum() < 0 //Gmp library can't handle negative exponents
+          ? modInverse(Gmp.modPowSecure(base, exponent.negate(), modulus), modulus)
+          : Gmp.modPowSecure(base, exponent, modulus);
+    } else {
       return base.modPow(exponent, modulus);
     }
   }
@@ -94,7 +96,7 @@ public class BigIntegerUtil {
    * @throws ArithmeticException if the inverse doesn't exist
    * @return x, where a * x == 1 mod b
    */
-  public static BigInteger invert(BigInteger a, BigInteger b) throws ArithmeticException {
+  public static BigInteger modInverse(BigInteger a, BigInteger b) throws ArithmeticException {
     if(USE_GMP){
       return Gmp.modInverse(a, b);
     } else {
