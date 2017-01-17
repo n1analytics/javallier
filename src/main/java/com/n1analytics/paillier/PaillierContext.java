@@ -624,7 +624,7 @@ public class PaillierContext {
   public EncryptedNumber additiveInverse(EncryptedNumber operand1)
           throws PaillierContextMismatchException {
     checkSameContext(operand1);
-    return new EncryptedNumber(operand1.getContext(), operand1.ciphertext.modInverse(
+    return new EncryptedNumber(operand1.getContext(), BigIntegerUtil.modInverse(operand1.ciphertext,
             operand1.getContext().getPublicKey().getModulusSquared()),
                                operand1.getExponent(), operand1.isSafe);
   }
