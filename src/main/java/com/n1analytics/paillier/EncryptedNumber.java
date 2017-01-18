@@ -121,6 +121,14 @@ public final class EncryptedNumber {
   public PaillierContext getContext() {
     return context;
   }
+  
+  /**
+   * Obfuscates this number only if necessary.
+   * @return a version of this encrypted number which is guaranteed to be safe.
+   */
+  public EncryptedNumber getSafeEncryptedNumber() {
+      return new EncryptedNumber(context, calculateCiphertext(), exponent, true);
+  }
 
   /**
    * @return the {@code ciphertext}.

@@ -19,7 +19,9 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
@@ -126,6 +128,12 @@ public class PaillierEncodedNumberTest {
         }
         assertEquals(context, encoded.getContext());
         BigInteger expected = valueBig;
+        
+        if(!expected.equals(BigInteger.ZERO)) {
+          while (expected.mod(BigInteger.valueOf(context.getBase())).compareTo(BigInteger.ZERO) == 0) {
+            expected = expected.divide(BigInteger.valueOf(context.getBase()));
+          }
+        }
         if(value < 0) {
           expected = context.getPublicKey().getModulus().add(expected);
         }
@@ -167,7 +175,6 @@ public class PaillierEncodedNumberTest {
         if(value < 0 && context.isUnsigned()) {
           fail("ERROR: Successfully encoded negative double with unsigned encoding");
         }
-
         double tolerance = EPSILON;
         double decodedResult = encoded.decodeDouble();
         double absValue = Math.abs(value);
@@ -177,6 +184,12 @@ public class PaillierEncodedNumberTest {
         assertEquals(value, decodedResult, tolerance);
       } catch (EncodeException e) {
       }
+    }
+    
+    @Test
+    public void testZeroDouble() {
+      EncodedNumber zero = context.encode(0.0);
+      assertTrue(zero.exponent==0);
     }
 
     @Test
@@ -225,6 +238,37 @@ public class PaillierEncodedNumberTest {
           fail("ERROR: Successfully encoded non-finite double");
         } catch (EncodeException e) {
         }
+      }
+    }
+    
+    public void testBigDecimal(BigDecimal value) {
+      try {
+        EncodedNumber encoded = context.encode(value);
+        if(value.compareTo(BigDecimal.ZERO) < 0 && context.isUnsigned()) {
+          fail("ERROR: Successfully encoded negative BigDecimal with unsigned encoding");
+        }
+        BigDecimal decodedResult = encoded.decodeBigDecimal();
+        BigDecimal EPSILON = new BigDecimal(BigInteger.ONE, StandardEncodingScheme.BIG_DECIMAL_ENCODING_PRECISION);
+        BigDecimal relError = value.compareTo(BigDecimal.ZERO) == 0 ? decodedResult : value.subtract(decodedResult).divide(value, new MathContext(StandardEncodingScheme.BIG_DECIMAL_ENCODING_PRECISION + 1)).abs();
+        assertTrue(relError.compareTo(EPSILON) <= 0);
+      } catch (EncodeException e) {
+      }
+    }
+    
+    @Test
+    public void testBigDecimalConstants() {
+      testBigDecimal(BigDecimal.ZERO);
+      testBigDecimal(BigDecimal.ONE);
+      testBigDecimal(BigDecimal.ONE.negate());
+      testBigDecimal(new BigDecimal(context.getMaxSignificand()));
+      testBigDecimal(new BigDecimal(context.getMinSignificand()));
+    }
+    
+    @Test
+    public void testBigDecimalRandom() {
+      int numBits = context.getPrecision()/2;
+      for(int i = 0; i < 100000; ++i) {        
+        testBigDecimal(new BigDecimal(new BigInteger(numBits, random), random.nextInt(60)-30));
       }
     }
 
@@ -367,13 +411,16 @@ public class PaillierEncodedNumberTest {
 
     @Test
     public void testInvalidLargeMaxNumber() throws Exception {
-      BigInteger humongous = context.getMaxSignificand().add(BigInteger.ONE);
+      BigInteger humongous = context.getMaxSignificand().nextProbablePrime(); //so base won't divide significant
       testUnencodable(context, humongous);
     }
 
     @Test
     public void testInvalidLargeMinNumber() throws Exception {
       BigInteger negHumongous = context.getMinSignificand().subtract(BigInteger.ONE);
+      while(!negHumongous.isProbablePrime(20)){
+        negHumongous = negHumongous.subtract(BigInteger.ONE);
+      }
       testUnencodable(context, negHumongous);
     }
 

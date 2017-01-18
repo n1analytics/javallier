@@ -109,27 +109,25 @@ Alternatively you can run directly with sbt:
     $ java -jar javallier.jar decrypt examplekey.priv encD.json
     24.0
 
+##  Releases
 
-## Releases
-
-Releases will be signed by Brian Thorne with the PGP key
-[C18347DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
+Releases will be signed by [Brian Thorne](https://keybase.io/hardbyte) with the PGP key
+[22AD F3BF C183 47DE](https://pgp.mit.edu/pks/lookup?op=vindex&search=0x22ADF3BFC18347DE)
 
 
 ### Creating a release
 
-1. Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
-2. Update the [CHANGELOG](./CHANGELOG), git tag the new release.
-3. Ensure you have sonatype credentials in `~/.sbt/0.13/sonatype.sbt`, and
+Update the version in `build.sbt` using [semantic versioning](http://semver.org/).
+Update the [CHANGELOG](./CHANGELOG), git tag the new release.
+
+Ensure you have sonatype credentials in `~/.sbt/0.13/sonatype.sbt`, and
 [install the pgp plugin](http://www.scala-sbt.org/sbt-pgp/)
-(`~/.sbt/0.13/plugins/pgp.sbt`). 
-4. Run `sbt publishSigned`, then visit the
+(`~/.sbt/0.13/plugins/pgp.sbt`). Run `sbt publishSigned`, then visit the
 [staging repositories](https://oss.sonatype.org/#stagingRepositories) of
-sonatype. 
-5. **Close** the staging repository which will allow you to move
-to the release channel. 
-6. Once you have successfully closed the staging
+sonatype. **Close** the staging repository which will allow you to move
+to the release channel. Once you have successfully closed the staging
 repository, you can **release** it.
+
 
 For more information:
 * http://www.scala-sbt.org/release/docs/Using-Sonatype.html

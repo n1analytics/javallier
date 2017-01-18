@@ -1,3 +1,10 @@
+# Version 0.5.1 (2016-08-03)
+
+- Add ability to encode BigDecimal values
+- Add `getSafeEncryptedNumber` to api
+- Refactoring to separate Encoding from Context.
+- Bug fix for overflow in mock context
+
 # Version 0.5.0 (2016-06-08)
 
 - Reconfigurable base.
