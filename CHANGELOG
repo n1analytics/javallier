@@ -1,3 +1,9 @@
+# Version 0.5.2 (2017-01-20)
+
+- Paillier context uses full precision
+- Testing of the command line utility
+- Minor fixes to the command line utility
+
 # Version 0.5.1 (2016-08-03)
 
 - Add ability to encode BigDecimal values

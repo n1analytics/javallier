@@ -15,7 +15,7 @@ lazy val root = project.in(file(".")).
   settings(commonSettings: _*)
   .settings(
     name := "javallier",
-    version := "0.5.1",
+    version := "0.5.2",
     description := "A Java library for Paillier partially homomorphic encryption.",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % "1.0.13",
@@ -90,3 +90,7 @@ assemblyJarName in assembly := "javallier.jar"
 test in assembly := {}
 
 mainClass in assembly := Some("com.n1analytics.paillier.cli.Main")
+
+import sbtassembly.AssemblyPlugin.defaultShellScript
+
+assemblyOption in assembly := (assemblyOption in assembly).value.copy(prependShellScript = Some(defaultShellScript))

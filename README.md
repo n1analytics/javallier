@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/NICTA/javallier.svg?branch=master)](https://travis-ci.org/NICTA/javallier)
 
+[![Javadocs](https://www.javadoc.io/badge/com.n1analytics/javallier_2.10.svg)](https://www.javadoc.io/doc/com.n1analytics/javallier_2.10)
+
 # javallier
 
 A Java library for [Paillier partially homomorphic encryption](https://en.wikipedia.org/wiki/Paillier_cryptosystem)
@@ -14,7 +16,7 @@ The homomorphic properties of the paillier cryptosystem are:
 
 To use the library add the following dependency to your SBT configuration:
 
-    libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.5.0"
+    libraryDependencies += "com.n1analytics" % "javallier_2.10" % "0.5.2"
 
 
 Example usages are provided in the `/examples` source directory. A 
@@ -40,13 +42,6 @@ Run all tests with `sbt`:
 Or run just fast tests:
 
     $ ./test-fast.sh
-
-
-## Documentation
-
-JavaDoc for the latest version release (v0.5.0):
-[https://www.javadoc.io/doc/com.n1analytics/javallier_2.10/0.5.0]
-(https://www.javadoc.io/doc/com.n1analytics/javallier_2.10/0.5.0)
 
 
 ## Command Line Tool
