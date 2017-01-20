@@ -7,6 +7,7 @@ import random
 
 from util import *
 
+
 class HelpTest(TestCase):
 
     def test_empty_argument(self):
@@ -176,6 +177,9 @@ class JavallierTestHelper(TestCase):
     def tearDownClass(cls):
         cls.private_keyfile.close()
         cls.public_keyfile.close()
+
+    def assertAlmostEqual(self, a, b):
+        assert isclose(a, b)
 
     def encrypt(self, num, encr_out=None):
         '''Encrypt num and return the serialise encrypted number

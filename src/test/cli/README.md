@@ -10,8 +10,8 @@ To run, generate `javallier.jar` using:
 
 The jar file is available in `target/scala-2.10/`.
  
-Then go to this directory (i.e., `src/test/java/com/n1analytics/paillier/cli/`) and run:
+Then run the tests:
 
-    python cliTest.py
+    python src/test/cli/cliTest.py
 
 Note: the tests take around 400 to 450 seconds to complete. 
