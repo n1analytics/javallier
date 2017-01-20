@@ -353,8 +353,9 @@ public class JavallierCLI {
 
         PaillierPublicKey pub = SerialisationUtil.unserialise_public(publicKey);
 
-        // TODO precision should be variable
-        PaillierContext c = pub.createSignedContext(32);
+        // TODO Paillier context should be variable (Issue #36)
+        // Currently Paillier context generated is signed and has full precision
+        PaillierContext c = pub.createSignedContext();
 
         EncryptedNumber enc = c.encrypt(Double.parseDouble(plaintext));
         log.info("Encrypted");
