@@ -3,74 +3,42 @@ package com.n1analytics.paillier;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
 public class MockPaillierContextTest {
 
-  static PaillierPrivateKey key;
+  static MockPaillierPrivateKey key;
   static PaillierPublicKey publicKey;
-  static MockPaillierContext mockContext;
+  static PaillierContext mockContext;
   
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
-    key = PaillierPrivateKey.create(2048);
+    key = MockPaillierPrivateKey.create(2048);
     publicKey = key.getPublicKey();
-    mockContext = publicKey.createMockSignedContext();
+    mockContext = new PaillierContext(publicKey, new StandardEncodingScheme(publicKey, true));
   }
 
   @Test
-  public void testConstructor() throws Exception {
-    PaillierContext context = null;
-
-    try {
-      context = new MockPaillierContext(null, false, 10);
-      fail("Successfully created a context with null public key");
-    } catch (NullPointerException e) {
-    }
-    assertNull(context);
-
-    try {
-      context = new MockPaillierContext(publicKey, false, 0);
-      fail("Successfully created a context with precision less than one");
-    } catch (IllegalArgumentException e) {
-    }
-    assertNull(context);
-
-    try {
-      context = new MockPaillierContext(publicKey, true, 1);
-      fail("Successfully created a context with precision less than one when signed is true");
-    } catch (IllegalArgumentException e) {
-    }
-    assertNull(context);
-
-    try {
-      context = new MockPaillierContext(publicKey, true, 2080);
-      fail("Successfully created a context with precision greater than the public key's modulus bit length");
-    } catch (IllegalArgumentException e) {
-    }
-    assertNull(context);
-
-    context = new MockPaillierContext(publicKey, true, 2048);
-    assertNotNull(context);
-    // Check public key
-    assertNotNull(context.getPublicKey());
-    assertEquals(publicKey, context.getPublicKey());
-    // Check signed
-    assertTrue(context.isSigned());
-    // Check precision
-    assertNotNull(context.getPrecision());
-    assertEquals(2048, context.getPrecision());
+  public void testMockPublicKey() throws Exception {
+    assertTrue(publicKey instanceof MockPaillierPublicKey);
+  }
+  
+  @Test
+  public void testForMockEncryptedNumbers() {
+    EncryptedNumber e = mockContext.encrypt(42);
+    assertTrue(e instanceof MockEncryptedNumber);
+    e = mockContext.encode(42).encrypt();
+    assertTrue(e instanceof MockEncryptedNumber);
   }
   
   @Test
   public void testObfuscate(){
-    EncryptedNumber n = new EncryptedNumber(mockContext, BigInteger.ONE, 0);
-    EncryptedNumber m = mockContext.obfuscate(n);
+    EncryptedNumber n = mockContext.encrypt(0);
+    EncryptedNumber m = n.obfuscate();
     assertEquals(n.ciphertext, m.ciphertext);
     assertEquals(n.exponent, m.exponent);
-    assertEquals(n.context, m.context);
+    assertEquals(n.encoding, m.encoding);
     assertEquals(n.isSafe, m.isSafe);
   }
   
@@ -102,13 +70,13 @@ public class MockPaillierContextTest {
   @Test
   public void testAdditiveInverse(){
     EncodedNumber n = mockContext.encode(123.456);
-    EncodedNumber minusN = mockContext.additiveInverse(n);
+    EncodedNumber minusN = n.additiveInverse();
     assertEquals(minusN.decodeDouble(), n.decodeDouble()*-1, 1e-100);
     EncryptedNumber en = mockContext.encrypt(n);
-    EncryptedNumber minusEN = mockContext.additiveInverse(en);
-    assertEquals(key.decrypt(en.add(minusEN)).decodeDouble(), 0.0, 1e-100);
+    EncryptedNumber minusEN = en.additiveInverse();
+    assertEquals(en.add(minusEN).decrypt(key).decodeDouble(), 0.0, 1e-100);
     EncodedNumber zero = mockContext.encode(0);
-    EncodedNumber minusZero = mockContext.additiveInverse(zero);
+    EncodedNumber minusZero = zero.additiveInverse();
     assertEquals(zero, minusZero);
     assertEquals(0, zero.decodeLong());
   }
@@ -118,26 +86,15 @@ public class MockPaillierContextTest {
     EncodedNumber n = mockContext.encode(-987.654321);
     EncodedNumber m = mockContext.encode(462435.80712);
     EncryptedNumber nm = mockContext.encrypt(n).multiply(m);
-    assertEquals(key.decrypt(nm), n.multiply(m));
+    assertEquals(nm.decrypt(key), n.multiply(m));
   }
 
   @Test
   public void testEquals() {
-    MockPaillierContext context1 = publicKey.createMockSignedContext();
-    MockPaillierContext context2 = null;
-    MockPaillierContext context3, context4;
-
-    assertTrue(context1.equals(context1)); // Compare to itself
-    assertFalse(context1.equals(publicKey)); // Compare to other object
-    assertFalse(context1.equals(null)); // Compare to null
-
-    assertFalse(context1.equals(context2)); // Compare to uninitialised mock Paillier context
-    context2 = publicKey.createMockUnsignedContext();
-    assertFalse(context1.equals(context2)); // Compare to a different context
-
-    context3 = publicKey.createMockSignedContext(1000);
-    context4 = publicKey.createMockUnsignedContext(1000);
-    assertFalse(context1.equals(context3));
-    assertFalse(context1.equals(context4));
+    PaillierPrivateKey pkey = PaillierPrivateKey.create(512);
+    PaillierPublicKey ppublicKey = pkey.getPublicKey();
+    assertNotEquals(ppublicKey, new MockPaillierPublicKey(ppublicKey.getModulus()));
+    PaillierPrivateKey nkey = new MockPaillierPrivateKey(ppublicKey, pkey.p, pkey.q);
+    assertNotEquals(pkey, nkey);
   }
 }

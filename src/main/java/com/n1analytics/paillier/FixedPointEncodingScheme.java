@@ -7,12 +7,13 @@ import java.math.RoundingMode;
 import java.util.logging.Logger;
 
 import com.n1analytics.paillier.util.BigIntegerUtil;
+import com.n1analytics.paillier.util.HashChain;
 
 public class FixedPointEncodingScheme implements EncodingScheme {
   
   private static Logger logger = Logger.getLogger("com.n1analytics.paillier");
 
-  private final PaillierContext context;
+  private final PaillierPublicKey publicKey;
   private final int scale;
   private final int BASE = 2;
   private final BigInteger maxEncoded;
@@ -20,16 +21,21 @@ public class FixedPointEncodingScheme implements EncodingScheme {
   private final BigInteger maxSignificand;
   private final BigInteger minSignificand;
   
-  public FixedPointEncodingScheme(PaillierContext context, int scale) {
-    this.context = context;
+  public FixedPointEncodingScheme(PaillierPublicKey publicKey, int scale) {
+    this.publicKey = publicKey;
     this.scale = scale;
-    BigInteger modulus = context.getPublicKey().getModulus();
+    BigInteger modulus = publicKey.getModulus();
     maxEncoded = modulus.add(BigInteger.ONE).shiftRight(1).subtract(BigInteger.ONE);   
     minEncoded = modulus.subtract(maxEncoded);
     maxSignificand = maxEncoded;
     minSignificand = maxEncoded.negate();
   }
   
+  @Override
+  public PaillierPublicKey getPublicKey() {
+    return publicKey;
+  }
+
   @Override
   public int getBase() {
     return BASE;
@@ -42,8 +48,7 @@ public class FixedPointEncodingScheme implements EncodingScheme {
 
   @Override
   public int getPrecision() {
-    // we ignore precision
-    return -1;
+    return getPublicKey().getModulus().bitLength();
   }
 
   @Override
@@ -68,8 +73,12 @@ public class FixedPointEncodingScheme implements EncodingScheme {
 
   @Override
   public boolean isValid(EncodedNumber encoded) {
-    // we ignore that, too
+    // we ignore that
     return true;
+  }
+  
+  public int getScale() {
+    return scale;
   }
 
   @Override
@@ -87,8 +96,8 @@ public class FixedPointEncodingScheme implements EncodingScheme {
       throw new EncodeException("Input value cannot be encoded.");
     }
     if(value.signum() < 0)
-      value = value.add(context.getPublicKey().getModulus()); 
-    return new EncodedNumber(context, value, scale);
+      value = value.add(getPublicKey().getModulus()); 
+    return new EncodedNumber(this, value, scale);
   }
 
   @Override
@@ -96,7 +105,7 @@ public class FixedPointEncodingScheme implements EncodingScheme {
     if(Double.isInfinite(value) || Double.isNaN(value))
       throw new EncodeException("Input value cannot be encoded.");
 
-    return new EncodedNumber(context, innerEncode(new BigDecimal(value), scale), scale);
+    return new EncodedNumber(this, innerEncode(new BigDecimal(value), scale), scale);
   }
 
   @Override
@@ -118,7 +127,7 @@ public class FixedPointEncodingScheme implements EncodingScheme {
 
   @Override
   public EncodedNumber encode(BigDecimal value, int precision) throws EncodeException {
-    return new EncodedNumber(context, innerEncode(value, scale), scale);
+    return new EncodedNumber(this, innerEncode(value, scale), scale);
   }
 
   @Override
@@ -133,7 +142,7 @@ public class FixedPointEncodingScheme implements EncodingScheme {
     }
     //if this context is signed, then a negative significant is strictly greater 
     //than modulus/2.
-    BigInteger halfModulus = context.getPublicKey().modulus.shiftRight(1);
+    BigInteger halfModulus = getPublicKey().modulus.shiftRight(1);
     return number.value.compareTo(halfModulus) > 0 ? -1 : 1;
   }
 
@@ -225,17 +234,19 @@ public class FixedPointEncodingScheme implements EncodingScheme {
     }
 
     if (bigIntRep.signum() < 0) {
-      bigIntRep = bigIntRep.add(context.getPublicKey().getModulus());
+      bigIntRep = bigIntRep.add(getPublicKey().getModulus());
     }
 
     return bigIntRep;
   }
-  
+
   private BigInteger getSignificand(EncodedNumber encoded) {
-    context.checkSameContext(encoded);
+    if (!this.equals(encoded.encoding)) {
+      throw new PaillierContextMismatchException("encoding scheme of 'encoded' does not match this encoding scheme");
+    }
     final BigInteger value = encoded.getValue();
 
-    if(value.compareTo(context.getPublicKey().getModulus()) > 0)
+    if(value.compareTo(getPublicKey().getModulus()) > 0)
       throw new DecodeException("The significand of the encoded number is corrupted");
 
     // Non-negative
@@ -244,9 +255,32 @@ public class FixedPointEncodingScheme implements EncodingScheme {
     } else {
     // Negative - note that negative encoded numbers are greater than
     // non-negative encoded numbers and hence minEncoded > maxEncoded
-      final BigInteger modulus = context.getPublicKey().getModulus();
+      final BigInteger modulus = getPublicKey().getModulus();
       return value.subtract(modulus);
     }
   }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (o == null || o.getClass() != FixedPointEncodingScheme.class) {
+      return false;
+    }
+    FixedPointEncodingScheme encoding = (FixedPointEncodingScheme) o;
+    return equals(encoding);
+  }
+  
+  @Override
+  public int hashCode() {
+    return new HashChain().chain(BASE).chain(scale).chain(publicKey).hashCode();
+  }
 
+  public boolean equals(FixedPointEncodingScheme o) {
+    return o == this || (o != null &&
+            BASE == o.BASE &&
+            scale == o.scale &&
+            publicKey.equals(o.publicKey));
+  }
 }

@@ -33,7 +33,7 @@ import static com.n1analytics.paillier.util.BigIntegerUtil.randomPositiveNumber;
  * Besides storing Paillier public key, the class has methods to generate the corresponding encoding
  * scheme (i.e., Paillier context).
  */
-public final class PaillierPublicKey {
+public class PaillierPublicKey {
 
   /**
    * The modulus (n) of the public key.
@@ -104,88 +104,6 @@ public final class PaillierPublicKey {
     serializer.serialize(modulus);
   }
 
-  /**
-   * Creates a new full precision, unsigned Paillier context. The precision of the new context
-   * equals to the modulus's bit length.
-   *
-   * @return the Paillier context.
-   */
-  public PaillierContext createUnsignedContext() {
-    return new PaillierContext(this, false, modulus.bitLength());
-  }
-
-  /**
-   * Creates a new partial precision, unsigned Paillier context.
-   *
-   * @param precision of the Paillier context.
-   * @return the Paillier context.
-   * @throws IllegalArgumentException if {@code precision} is invalid.
-   */
-  public PaillierContext createUnsignedContext(int precision)
-          throws IllegalArgumentException {
-    return new PaillierContext(this, false, precision);
-  }
-
-  /**
-   * Creates a new full precision, signed Paillier context. The precision of the new context
-   * equals to the modulus's bit length.
-   *
-   * @return the Paillier context.
-   */
-  public PaillierContext createSignedContext() {
-    return new PaillierContext(this, true, modulus.bitLength());
-  }
-
-  /**
-   * Creates a new partial precision, signed Paillier context.
-   *
-   * @param precision of the Paillier context.
-   * @return the Paillier context.
-   */
-  public PaillierContext createSignedContext(int precision) {
-    return new PaillierContext(this, true, precision);
-  }
-
-  /**
-   * Creates a new unsigned, full precision {@code MockPaillierContext}.
-   *
-   * @return the  {@code MockPaillierContext}.
-   */
-  public MockPaillierContext createMockUnsignedContext() {
-    return new MockPaillierContext(this, false, modulus.bitLength());
-  }
-
-  /**
-   * Creates a new unsigned, partial precision  {@code MockPaillierContext}.
-   *
-   * @param precision of the {@code MockPaillierContext}.
-   * @return the {@code MockPaillierContext}.
-   * @throws IllegalArgumentException if the precision is not valid
-   */
-  public MockPaillierContext createMockUnsignedContext(int precision)
-          throws IllegalArgumentException {
-    return new MockPaillierContext(this, false, precision);
-  }
-
-  /**
-   * Creates a new signed, full precision {@code MockPaillierContext}.
-   *
-   * @return the {@code MockPaillierContext}.
-   */
-  public MockPaillierContext createMockSignedContext() {
-    return new MockPaillierContext(this, true, modulus.bitLength());
-  }
-
-  /**
-   * Creates a new signed, partial precision {@code MockPaillierContext}.
-   *
-   * @param precision of the {@code MockPaillierContext}.
-   * @return {@code MockPaillierContext}.
-   */
-  public MockPaillierContext createMockSignedContext(int precision) {
-    return new MockPaillierContext(this, true, precision);
-  }
-  
   /**
    * Implements the encryption function of the Paillier encryption scheme.
    *

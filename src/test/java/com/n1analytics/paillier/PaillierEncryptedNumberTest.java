@@ -69,19 +69,19 @@ public class PaillierEncryptedNumberTest {
       assert onePlusEps > 1;
 
       EncryptedNumber ciphertext1 = context.encrypt(onePlusEps);
-      double decryption1 = privateKey.decrypt(ciphertext1).decodeDouble();
+      double decryption1 = ciphertext1.decrypt(privateKey).decodeDouble();
       assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption1));
 
       EncryptedNumber ciphertext2 = ciphertext1.add(eps);
-      double decryption2 = privateKey.decrypt(ciphertext2).decodeDouble();
+      double decryption2 = ciphertext2.decrypt(privateKey).decodeDouble();
       assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption2));
 
       EncryptedNumber ciphertext3 = ciphertext1.add(eps / 5.0d);
-      double decryption3 = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption3 = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(String.valueOf(onePlusEps), String.valueOf(decryption3));
 
       EncryptedNumber ciphertext4 = ciphertext3.add(eps * 4.0d / 5.0d);
-      double decryption4 = privateKey.decrypt(ciphertext4).decodeDouble();
+      double decryption4 = ciphertext4.decrypt(privateKey).decodeDouble();
       assertNotEquals(onePlusEps, decryption4, 0.0d);
       assertEquals(String.valueOf(onePlusEps + eps), String.valueOf(decryption4));
     }
@@ -90,14 +90,14 @@ public class PaillierEncryptedNumberTest {
     public void testMulZero() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(3.0);
       EncryptedNumber ciphertext2 = ciphertext1.multiply(0);
-      assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(0.0, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
     public void testMulZeroRight() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(3.0);
       EncryptedNumber ciphertext2 = context.encode(0).multiply(ciphertext1);
-      assertEquals(0.0, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(0.0, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     public void testEncryptDecryptLong(long value) {
@@ -236,7 +236,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
         assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(-0.1, decryption, 1e-3);
       }
     }
@@ -249,7 +249,7 @@ public class PaillierEncryptedNumberTest {
 
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-        long additionResult = privateKey.decrypt(ciphertext3).decodeLong();
+        long additionResult = ciphertext3.decrypt(privateKey).decodeLong();
 
         assertEquals(-14, additionResult);
       }
@@ -262,7 +262,7 @@ public class PaillierEncryptedNumberTest {
 
       EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-      long additionResult = privateKey.decrypt(ciphertext3).decodeLong();
+      long additionResult = ciphertext3.decrypt(privateKey).decodeLong();
 
       assertEquals(16, additionResult);
     }
@@ -275,7 +275,7 @@ public class PaillierEncryptedNumberTest {
 
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-        long additionResult = privateKey.decrypt(ciphertext3).decodeLong();
+        long additionResult = ciphertext3.decrypt(privateKey).decodeLong();
 
         assertEquals(-16, additionResult);
       }
@@ -288,7 +288,7 @@ public class PaillierEncryptedNumberTest {
 
       EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
 
-      long decryption = privateKey.decrypt(ciphertext3).decodeLong();
+      long decryption = ciphertext3.decrypt(privateKey).decodeLong();
 
       assertEquals(14, decryption);
     }
@@ -300,7 +300,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext2 = context.encrypt(1.0);
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(-14.0, decryption, EPSILON);
       }
     }
@@ -312,7 +312,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext2 = context.encrypt(1.0);
         EncryptedNumber ciphertext3 = ciphertext2.add(ciphertext1);
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(-14.0, decryption, EPSILON);
       }
     }
@@ -323,7 +323,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = context.encrypt(1.0);
       EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-      double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(16.0, decryption, EPSILON);
     }
 
@@ -334,7 +334,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext2 = context.encrypt(-1.0);
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(-16.0, decryption, EPSILON);
       }
     }
@@ -346,7 +346,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext2 = context.encrypt(-0.4);
         EncryptedNumber ciphertext3 = ciphertext2.add(ciphertext1);
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(0.9842, decryption, EPSILON);
       }
     }
@@ -360,7 +360,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
       assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
 
-      double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(0.3, decryption, EPSILON);
     }
 
@@ -374,7 +374,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.subtract(ciphertext2);
         assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
 
-        double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+        double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
         assertEquals(-0.1, decryption, EPSILON);
       }
     }
@@ -384,7 +384,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.add(4);
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -393,7 +393,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.add(4.0);
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -402,7 +402,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.add(new BigInteger("4"));
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -410,7 +410,7 @@ public class PaillierEncryptedNumberTest {
     public void testAddDoubleWithEncryptedDouble() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(1.98);
       EncryptedNumber ciphertext2 = ciphertext1.add(4.3);
-      assertEquals(6.28, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+      assertEquals(6.28, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
     }
 
     @Test
@@ -418,7 +418,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(240.9);
         EncryptedNumber ciphertext2 = ciphertext1.add(-40.8);
-        assertEquals(200.1, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+        assertEquals(200.1, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
       }
     }
 
@@ -427,7 +427,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(3.9);
         EncryptedNumber ciphertext2 = ciphertext1.add(-40);
-        assertEquals(-36.1, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-36.1, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -436,7 +436,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.subtract(-4);
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -445,7 +445,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.0);
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -454,7 +454,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.subtract(new BigInteger("-4"));
-        assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -463,7 +463,7 @@ public class PaillierEncryptedNumberTest {
       // Right-operation: 4 - encrypt(1.98)
       EncryptedNumber ciphertext1 = context.encrypt(1.98);
       EncryptedNumber ciphertext2 = context.encode(4).subtract(ciphertext1);
-      assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
@@ -471,7 +471,7 @@ public class PaillierEncryptedNumberTest {
       // Right-operation: 4 - encrypt(1.98)
       EncryptedNumber ciphertext1 = context.encrypt(1.98);
       EncryptedNumber ciphertext2 = context.encode(4.0).subtract(ciphertext1);
-      assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
@@ -479,7 +479,7 @@ public class PaillierEncryptedNumberTest {
       // Right-operation: 4 - encrypt(1.98)
       EncryptedNumber ciphertext1 = context.encrypt(1.98);
       EncryptedNumber ciphertext2 = context.encode(new BigInteger("4")).subtract(ciphertext1);
-      assertEquals(2.02, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(2.02, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
@@ -487,7 +487,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(1.98);
         EncryptedNumber ciphertext2 = ciphertext1.subtract(-4.3);
-        assertEquals(6.28, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+        assertEquals(6.28, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
       }
     }
 
@@ -496,7 +496,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = context.encode(4.3).subtract(ciphertext1);
-        assertEquals(6.28, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+        assertEquals(6.28, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
       }
     }
 
@@ -504,7 +504,7 @@ public class PaillierEncryptedNumberTest {
     public void testSubtractDoubleFromEncryptedDouble() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(240.9);
       EncryptedNumber ciphertext2 = ciphertext1.subtract(40.8);
-      assertEquals(200.1, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+      assertEquals(200.1, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
     }
 
     @Test
@@ -512,7 +512,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(3.9);
         EncryptedNumber ciphertext2 = ciphertext1.subtract(40);
-        assertEquals(-36.1, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-36.1, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -521,7 +521,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(4);
-        assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-7.92, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -530,7 +530,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(4.0);
-        assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-7.92, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -539,7 +539,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(new BigInteger("4"));
-        assertEquals(-7.92, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-7.92, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -548,7 +548,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.3);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(1);
-        double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
+        double decryption = ciphertext2.decrypt(privateKey).decodeDouble();
 
         assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
         assertEquals(-1.3, decryption, 0.0);
@@ -560,7 +560,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext1 = context.encrypt(2.3);
       EncodedNumber two = context.encode(2);
       EncryptedNumber ciphertext2 = ciphertext1.multiply(two);
-      double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
+      double decryption = ciphertext2.decrypt(privateKey).decodeDouble();
 
       assertEquals(ciphertext1.getExponent() + two.getExponent(), ciphertext2.getExponent());
       assertEquals(4.6, decryption, 0.0);
@@ -572,7 +572,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext1 = context.encrypt(-0.1);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(31.4);
 
-        assertEquals(-3.14, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-3.14, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
         assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
 
         int expOf314 = context.encode(-31.4).getExponent();
@@ -586,7 +586,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext1 = context.encrypt(context.encode(1.2345678e-12, 1e-14));
       EncodedNumber encoded1 = context.encode(1.38734864, 1e-2);
       EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
-      assertEquals(1.71e-12, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+      assertEquals(1.71e-12, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
     }
 
     @Test
@@ -594,7 +594,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.3);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(-1);
-        double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
+        double decryption = ciphertext2.decrypt(privateKey).decodeDouble();
 
         assertEquals(ciphertext1.getExponent(), ciphertext2.getExponent());
         assertEquals(1.3, decryption, 0.0);
@@ -607,7 +607,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext1 = context.encrypt(2.3);
         EncodedNumber minusTwo = context.encode(-2);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(minusTwo);
-        double decryption = privateKey.decrypt(ciphertext2).decodeDouble();
+        double decryption = ciphertext2.decrypt(privateKey).decodeDouble();
 
         assertEquals(ciphertext1.getExponent() + minusTwo.getExponent(), ciphertext2.getExponent());
         assertEquals(-4.6, decryption, 0.0);
@@ -620,7 +620,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext1 = context.encrypt(-0.1);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(-31.4);
 
-        assertEquals(3.14, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(3.14, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
         assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
 
         int expOf314 = context.encode(-31.4).getExponent();
@@ -634,7 +634,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext1 = context.encrypt(context.encode(1.2345678e-12, 1e-14));
       EncodedNumber encoded1 = context.encode(1.38734864, 1e-2);
       EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
-      assertEquals(-1.71e-12, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+      assertEquals(-1.71e-12, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
     }
 
     @Test
@@ -642,7 +642,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.divide(4);
-        assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-0.495, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -652,8 +652,8 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = ciphertext1.multiply(31.4);
       EncryptedNumber ciphertext3 = (context.encode(31.4)).multiply(ciphertext1);
 
-      assertEquals(privateKey.decrypt(ciphertext3).decodeDouble(), privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
-      assertEquals(3.14, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(ciphertext3.decrypt(privateKey).decodeDouble(), ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
+      assertEquals(3.14, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
@@ -661,7 +661,7 @@ public class PaillierEncryptedNumberTest {
       if(context.isSigned()) {
         EncryptedNumber ciphertext1 = context.encrypt(-1.98);
         EncryptedNumber ciphertext2 = ciphertext1.divide(4.0);
-        assertEquals(-0.495, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(-0.495, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
       }
     }
 
@@ -669,10 +669,10 @@ public class PaillierEncryptedNumberTest {
     public void testDivideEncryptedDoubleWithLong() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(6.28);
       EncryptedNumber ciphertext2 = ciphertext1.divide(2);
-      assertEquals(3.14, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+      assertEquals(3.14, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
 
       EncryptedNumber ciphertext3 = ciphertext1.divide(3.14);
-      assertEquals(2.0, privateKey.decrypt(ciphertext3).decodeDouble(), 0.0);
+      assertEquals(2.0, ciphertext3.decrypt(privateKey).decodeDouble(), 0.0);
     }
 
     @Test
@@ -707,7 +707,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext3 = ciphertext1.add(encoded1);
       assertEquals(encoded1.getExponent(), ciphertext3.getExponent());
 
-      double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(0.3, decryption, 1e-3);
     }
 
@@ -718,7 +718,7 @@ public class PaillierEncryptedNumberTest {
         EncodedNumber encoded1 = context.encode(-31.4);
         EncryptedNumber ciphertext2 = ciphertext1.multiply(encoded1);
 
-        assertEquals(3.14, privateKey.decrypt(ciphertext2).decodeDouble(), 0.0);
+        assertEquals(3.14, ciphertext2.decrypt(privateKey).decodeDouble(), 0.0);
         assertNotEquals(ciphertext2.getExponent(), ciphertext1.getExponent());
 
         int expOf314 = context.encode(-31.4).getExponent();
@@ -736,7 +736,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
         exception.expect(DecodeException.class);
-        privateKey.decrypt(ciphertext3).decodeBigInteger();
+        ciphertext3.decrypt(privateKey).decodeBigInteger();
       }
     }
 
@@ -750,7 +750,7 @@ public class PaillierEncryptedNumberTest {
         EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
 
         exception.expect(DecodeException.class);
-        privateKey.decrypt(ciphertext3).decodeBigInteger();
+        ciphertext3.decrypt(privateKey).decodeBigInteger();
       }
     }
 
@@ -763,7 +763,7 @@ public class PaillierEncryptedNumberTest {
 
       EncodedNumber encoded3 = context.encode(1.0, 200);
       EncryptedNumber ciphertext3 = ciphertext1.add(encoded3);
-      double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(16, (long) decryption);
     }
 
@@ -775,7 +775,7 @@ public class PaillierEncryptedNumberTest {
       assert ciphertext1.getExponent() == 100;
 
       EncryptedNumber ciphertext2 = ciphertext1.add(encoded1);
-      assertEquals(16.0, privateKey.decrypt(ciphertext2).decodeDouble(), EPSILON);
+      assertEquals(16.0, ciphertext2.decrypt(privateKey).decodeDouble(), EPSILON);
     }
 
     @Test
@@ -793,7 +793,7 @@ public class PaillierEncryptedNumberTest {
       assertEquals(ciphertext2.getExponent(), ciphertext3.getExponent());
       assertEquals(oldExponent, ciphertext1.getExponent());
 
-      double decryption = privateKey.decrypt(ciphertext3).decodeDouble();
+      double decryption = ciphertext3.decrypt(privateKey).decodeDouble();
       assertEquals(0.3, decryption, 1e-3);
     }
 
@@ -805,7 +805,7 @@ public class PaillierEncryptedNumberTest {
 
       assert -30 < ciphertext1.getExponent();
       assertEquals(-30, ciphertext2.getExponent());
-      assertEquals(1.01, privateKey.decrypt(ciphertext2).decodeDouble(), Math.pow(1.0, -8));
+      assertEquals(1.01, ciphertext2.decrypt(privateKey).decodeDouble(), Math.pow(1.0, -8));
     }
   }
 
@@ -858,21 +858,21 @@ public class PaillierEncryptedNumberTest {
       assertNull(encryptedNumber);
 
       try {
-        encryptedNumber = new EncryptedNumber(context, null, 0);
+        encryptedNumber = new EncryptedNumber(context.getEncodingScheme(), null, 0);
         fail("Successfully created an encrypted number with null ciphertext");
       } catch (IllegalArgumentException e) {
       }
       assertNull(encryptedNumber);
 
       try {
-        encryptedNumber = new EncryptedNumber(context, BigInteger.ONE.negate(), 0);
+        encryptedNumber = new EncryptedNumber(context.getEncodingScheme(), BigInteger.ONE.negate(), 0);
         fail("Successfully created an encrypted number with negative ciphertext");
       } catch (IllegalArgumentException e) {
       }
       assertNull(encryptedNumber);
 
       try {
-        encryptedNumber = new EncryptedNumber(context,
+        encryptedNumber = new EncryptedNumber(context.getEncodingScheme(),
                 context.getPublicKey().getModulusSquared().add(
                         BigInteger.ONE), 0);
         fail("Successfully created an encrypted number with ciphertext greater than modulus squared");
@@ -887,20 +887,20 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext = context.encrypt(data);
 
       exception.expect(PaillierKeyMismatchException.class);
-      otherPrivateKey.decrypt(ciphertext).decodeLong();
+      ciphertext.decrypt(otherPrivateKey).decodeLong();
     }
 
     @Test
     public void testCantEncryptDecryptIntWithDifferentSizeKey() throws Exception {
       PaillierPrivateKey aPrivateKey = PaillierPrivateKey.create(128);
       PaillierPublicKey aPublicKey = aPrivateKey.getPublicKey();
-      PaillierContext aContext = aPublicKey.createSignedContext();
+      PaillierContext aContext = new PaillierContext(aPublicKey, new StandardEncodingScheme(aPublicKey, true));
 
       long data = 1564;
       EncryptedNumber ciphertext = aContext.encrypt(data);
 
       exception.expect(PaillierKeyMismatchException.class);
-      privateKey.decrypt(ciphertext).decodeLong();
+      ciphertext.decrypt(privateKey).decodeLong();
     }
 
     @Test
@@ -915,7 +915,7 @@ public class PaillierEncryptedNumberTest {
     @Test
     public void testCantAddEncodedWithDifferentKey() throws Exception {
       EncryptedNumber ciphertext1 = context.encrypt(-15);
-      EncodedNumber ciphertext2 = new EncodedNumber(otherContext, BigInteger.ONE,
+      EncodedNumber ciphertext2 = new EncodedNumber(otherContext.getEncodingScheme(), BigInteger.ONE,
               ciphertext1.getExponent());
 
       exception.expect(PaillierContextMismatchException.class);
@@ -926,7 +926,7 @@ public class PaillierEncryptedNumberTest {
     public void testMultipleAddWithEncryptDecryptInt0() throws Exception {
       EncryptedNumber ciphertext = (encryptionList[0].add(encryptionList[1])).add(
               encryptionList[2]);
-      BigInteger decryption = privateKey.decrypt(ciphertext).decodeBigInteger();
+      BigInteger decryption = ciphertext.decrypt(privateKey).decodeBigInteger();
 
       BigInteger expectedResult = (plaintextList[0].add(plaintextList[1])).add(
               plaintextList[2]);
@@ -937,7 +937,7 @@ public class PaillierEncryptedNumberTest {
     public void testMultipleAddWithEncryptDecryptInt1() throws Exception {
       EncryptedNumber ciphertext = (encryptionList[3].add(encryptionList[4])).add(
               encryptionList[5]);
-      BigInteger decryption = privateKey.decrypt(ciphertext).decodeBigInteger();
+      BigInteger decryption = ciphertext.decrypt(privateKey).decodeBigInteger();
 
       BigInteger expectedResult = (plaintextList[3].add(plaintextList[4])).add(
               plaintextList[5]);
@@ -950,7 +950,7 @@ public class PaillierEncryptedNumberTest {
               encryptionList[2]);
       EncryptedNumber ciphertext2 = encryptionList[3].add(encryptionList[4]);
       EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
-      BigInteger decryption = privateKey.decrypt(ciphertext3).decodeBigInteger();
+      BigInteger decryption = ciphertext3.decrypt(privateKey).decodeBigInteger();
 
       BigInteger expectedResult1 = (plaintextList[0].add(plaintextList[1])).add(
               plaintextList[2]);
@@ -967,7 +967,7 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = (encryptionList[3].add(encryptionList[4])).add(
               encryptionList[5]);
       EncryptedNumber ciphertext3 = ciphertext1.add(ciphertext2);
-      BigInteger decryption = privateKey.decrypt(ciphertext3).decodeBigInteger();
+      BigInteger decryption = ciphertext3.decrypt(privateKey).decodeBigInteger();
 
       BigInteger expectedResult1 = (plaintextList[0].add(plaintextList[1])).add(
               plaintextList[2]);
@@ -1009,15 +1009,14 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext1 = context.encrypt(
               context.getMaxSignificand().subtract(sum3Pos2Neg3));
       EncryptedNumber ciphertext2 = ciphertextSum3Pos2Neg3.add(ciphertext1);
-      BigInteger decryption = privateKey.decrypt(ciphertext2).decodeBigInteger();
+      BigInteger decryption = ciphertext2.decrypt(privateKey).decodeBigInteger();
       assertEquals(context.getMaxSignificand(), decryption);
 
 //        Add many positive and negative numbers to reach -maxInt.
       EncryptedNumber ciphertext3 = context.encrypt(
               (context.getMinSignificand()).add(sum3Pos3Neg3));
       EncryptedNumber ciphertext4 = ciphertext3.subtract(ciphertextSum3Pos3Neg3);
-      BigInteger decryption2 = privateKey.decrypt(
-              ciphertext4).decodeBigInteger();
+      BigInteger decryption2 = ciphertext4.decrypt(privateKey).decodeBigInteger();
       assertEquals(context.getMinSignificand(), decryption2);
     }
 
@@ -1068,7 +1067,7 @@ public class PaillierEncryptedNumberTest {
       assertEquals(ciphertext2, ciphertext4);
       assertNotEquals(ciphertext3, ciphertext4);
 
-      double decryptedNumber = privateKey.decrypt(encryptedNumber).decodeDouble();
+      double decryptedNumber = encryptedNumber.decrypt(privateKey).decodeDouble();
       assertEquals(3.14, decryptedNumber, 0.0);
     }
 
@@ -1090,10 +1089,10 @@ public class PaillierEncryptedNumberTest {
       EncryptedNumber ciphertext2 = context.encrypt(2.0);
       EncryptedNumber ciphertext3 = otherContext.encrypt(2.0);
 
-      ciphertext1.checkSameContext(ciphertext2);
+      ciphertext1.checkSameEncoding(ciphertext2);
 
       try {
-        ciphertext1.checkSameContext(ciphertext3);
+        ciphertext1.checkSameEncoding(ciphertext3);
         fail("ciphertext1 and ciphertext3 have different context");
       } catch (PaillierContextMismatchException e) {
       }
@@ -1105,10 +1104,10 @@ public class PaillierEncryptedNumberTest {
       EncodedNumber encodedNumber2 = context.encode(2.0);
       EncodedNumber encodedNumber3 = otherContext.encode(2.0);
 
-      ciphertext1.checkSameContext(encodedNumber2);
+      ciphertext1.checkSameEncoding(encodedNumber2);
 
       try {
-        ciphertext1.checkSameContext(encodedNumber3);
+        ciphertext1.checkSameEncoding(encodedNumber3);
         fail("encodedNumber1 and encodedNumber3 have different context");
       } catch (PaillierContextMismatchException e) {
       }

@@ -78,7 +78,7 @@ public class FuzzTest {
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(c);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -121,7 +121,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(b).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -168,7 +168,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC.add(encodedD)));
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -218,7 +218,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC)).divide(d);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -262,7 +262,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -304,7 +304,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(b).multiply(c);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeDouble();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeDouble();
 
         double absValue = Math.abs(plainResult);
         if(absValue == 0.0 || absValue > 1.0) {
@@ -342,7 +342,7 @@ public class FuzzTest {
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(c);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeLong();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -372,7 +372,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(b).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeLong();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -409,7 +409,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC.add(encodedD)));
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeLong();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       } catch (DecodeException e) {
@@ -440,7 +440,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeLong();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -469,7 +469,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(b).multiply(c);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeLong();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeLong();
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -500,7 +500,7 @@ public class FuzzTest {
       encryptedResult = (ciphertextA.add(ciphertextB)).multiply(encodedC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeBigInteger();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeBigInteger();
         assertEquals(plainResult.toString(), decodedResult.toString());
       } catch (ArithmeticException e) {
       }
@@ -530,7 +530,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(encodedB).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeBigInteger();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeBigInteger();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       }
@@ -563,7 +563,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB.multiply(encodedC.add(encodedD)));
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeBigInteger();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeBigInteger();
         assertEquals(plainResult, decodedResult);
       } catch (ArithmeticException e) {
       }
@@ -592,7 +592,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.add(ciphertextB).add(ciphertextC);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeBigInteger();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeBigInteger();
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {
@@ -620,7 +620,7 @@ public class FuzzTest {
       encryptedResult = ciphertextA.multiply(b).multiply(c);
 
       try {
-        decodedResult = privateKey.decrypt(encryptedResult).decodeBigInteger();
+        decodedResult = encryptedResult.decrypt(privateKey).decodeBigInteger();
         assertEquals(plainResult, decodedResult);
       } catch (DecodeException e) {
       } catch (ArithmeticException e) {

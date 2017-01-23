@@ -56,47 +56,6 @@ public class PaillierPublicKeyTest {
     assertEquals(modulus.add(BigInteger.ONE), publicKey.getGenerator());
   }
 
-  @Test
-  public void testCreateSignedFullContext() throws Exception {
-    PaillierContext context = defPublicKey.createSignedContext();
-    assertNotNull(context);
-    assertEquals(true, context.isSigned());
-    assertEquals(true, context.isFullPrecision());
-  }
-
-  @Test
-  public void testCreateUnsignedFullContext() throws Exception {
-    PaillierContext context = defPublicKey.createUnsignedContext();
-    assertNotNull(context);
-    assertEquals(false, context.isSigned());
-    assertEquals(true, context.isFullPrecision());
-  }
-
-  @Test
-  public void testCreateSignedPartialContext() throws Exception {
-    PaillierContext context = defPublicKey.createSignedContext(2044);
-    assertNotNull(context);
-    assertEquals(true, context.isSigned());
-    assertEquals(false, context.isFullPrecision());
-
-    context = defPublicKey.createSignedContext(2048);
-    assertNotNull(context);
-    assertEquals(true, context.isSigned());
-    assertEquals(true, context.isFullPrecision());
-  }
-
-  @Test
-  public void testCreateUnsignedPartialContext() throws Exception {
-    PaillierContext context = defPublicKey.createUnsignedContext(2044);
-    assertNotNull(context);
-    assertEquals(false, context.isSigned());
-    assertEquals(false, context.isFullPrecision());
-
-    context = defPublicKey.createUnsignedContext(2048);
-    assertNotNull(context);
-    assertEquals(false, context.isSigned());
-    assertEquals(true, context.isFullPrecision());
-  }
 
 //  @Test
 //  public void testCreateDoubleContext() {

@@ -32,9 +32,9 @@ import com.n1analytics.paillier.util.HashChain;
 public final class EncodedNumber {
 
   /**
-   * The Paillier context used to encode this number.
+   * The EncodingScheme used to encode this number.
    */
-  protected final PaillierContext context;
+  protected final EncodingScheme encoding;
 
   /**
    * The value of the encoded number. Must be a non-negative integer less than <code>context.getModulus()</code>
@@ -55,9 +55,9 @@ public final class EncodedNumber {
    * @param value of the encoded number must be a non-negative integer less than {@code context.getModulus()}.
    * @param exponent of the encoded number.
    */
-  protected EncodedNumber(PaillierContext context, BigInteger value, int exponent) {
-    if (context == null) {
-      throw new IllegalArgumentException("context must not be null");
+  protected EncodedNumber(EncodingScheme encoding, BigInteger value, int exponent) {
+    if (encoding == null) {
+      throw new IllegalArgumentException("encoding must not be null");
     }
     if (value == null) {
       throw new IllegalArgumentException("value must not be null");
@@ -65,19 +65,33 @@ public final class EncodedNumber {
     if (value.signum() < 0) {
       throw new IllegalArgumentException("value must be non-negative");
     }
-    if (value.compareTo(context.getPublicKey().getModulus()) >= 0) {
+    if (value.compareTo(encoding.getPublicKey().getModulus()) >= 0) {
       throw new IllegalArgumentException("value must be less than modulus");
     }
-    this.context = context;
+    this.encoding = encoding;
     this.value = value;
     this.exponent = exponent;
   }
 
   /**
-   * @return the {@code context} with which this number is encoded.
+   * @return the {@code EncodingScheme} with which this number is encoded.
    */
-  public PaillierContext getContext() {
-    return context;
+  public EncodingScheme getEncodingScheme() {
+    return encoding;
+  }
+  
+  /**
+   * Checks whether an {@code EncodedNumber} has the same encoding as this {@code EncodedNumber}.
+   *
+   * @param other {@code EncodedNumber} to compare to.
+   * @return {@code other} provided the contexts match, else PaillierContextMismatchException is thrown.
+   * @throws PaillierContextMismatchException if the encodings are different.
+   */
+  public EncodedNumber checkSameEncoding(EncodedNumber other) throws PaillierContextMismatchException {
+    if (!encoding.equals(other.encoding)) {
+      throw new PaillierContextMismatchException("the encoding scheme of 'other' does not match the encoding of this number");
+    }
+    return other;
   }
 
   /**
@@ -100,7 +114,7 @@ public final class EncodedNumber {
    * @return true if encoded number is valid, false otherwise.
    */
   public boolean isValid() {
-    return context.isValid(this);
+    return encoding.isValid(this);
   }
   
   /**
@@ -108,31 +122,7 @@ public final class EncodedNumber {
    * @return -1, 0 or 1 as the value of this EncodedNumber is negative, zero or positive.
    */
   public int signum(){
-    return context.signum(this);
-  }
-
-  /**
-   * Checks whether an {@code EncryptedNumber} has the same context as this {@code EncodedNumber}.
-   *
-   * @param other {@code EncryptedNumber} to compare to.
-   * @return {@code other} provided the contexts match, else PaillierContextMismatchException is thrown.
-   * @throws PaillierContextMismatchException if the contexts are different.
-   */
-  public EncryptedNumber checkSameContext(EncryptedNumber other)
-          throws PaillierContextMismatchException {
-    return context.checkSameContext(other);
-  }
-
-  /**
-   * Checks whether another {@code EncodedNumber} has the same context as this {@code EncodedNumber}.
-   *
-   * @param other {@code EncodedNumber} to compare to.
-   * @return {@code other} provided the contexts match, else PaillierContextMismatchException is thrown.
-   * @throws PaillierContextMismatchException if the context are different.
-   */
-  public EncodedNumber checkSameContext(EncodedNumber other)
-          throws PaillierContextMismatchException {
-    return context.checkSameContext(other);
+    return encoding.signum(this);
   }
 
   /**
@@ -143,7 +133,7 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a {@code BigInteger}.
    */
   public BigInteger decodeBigInteger() throws ArithmeticException {
-    return context.decodeBigInteger(this);
+    return encoding.decodeBigInteger(this);
   }
 
   /**
@@ -154,7 +144,7 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this {@code EncodedNumber} cannot be represented as a valid {@code double}.
    */
   public double decodeDouble() throws ArithmeticException {
-    return context.decodeDouble(this);
+    return encoding.decodeDouble(this);
   }
 
   /**
@@ -165,11 +155,11 @@ public final class EncodedNumber {
    * @throws ArithmeticException if this cannot be represented as a valid {@code long}.
    */
   public long decodeLong() throws ArithmeticException {
-    return context.decodeLong(this);
+    return encoding.decodeLong(this);
   }
   
   public BigDecimal decodeBigDecimal() throws ArithmeticException {
-    return context.decodeBigDecimal(this);
+    return encoding.decodeBigDecimal(this);
   }
 
   /**
@@ -181,7 +171,17 @@ public final class EncodedNumber {
    * @return an {@code EncodedNumber} which exponent is equal to {@code newExp}.
    */
   public EncodedNumber decreaseExponentTo(int newExp) {
-    return context.decreaseExponentTo(this, newExp);
+    
+    BigInteger significand = getValue();
+    int exponent = getExponent();
+    if(newExp > exponent){
+      throw new IllegalArgumentException("New exponent: "+ newExp +
+              "has to be smaller than old exponent: " + exponent + ".");
+    }
+    int expDiff = exponent - newExp;
+    BigInteger bigFactor = encoding.getRescalingFactor(expDiff);
+    BigInteger newEnc = significand.multiply(bigFactor).mod(encoding.getPublicKey().getModulus());
+    return new EncodedNumber(encoding, newEnc, newExp);
   }
 
   /**
@@ -191,7 +191,12 @@ public final class EncodedNumber {
    * @return the encrypted number.
    */
   public EncryptedNumber encrypt() {
-    return context.encrypt(this);
+      if (encoding.getPublicKey() instanceof MockPaillierPublicKey) {
+          return new MockEncryptedNumber(encoding, value, exponent);
+      } else {
+        final BigInteger ciphertext = encoding.getPublicKey().raw_encrypt_without_obfuscation(value);
+        return new EncryptedNumber(encoding, ciphertext, getExponent(), false);
+      }
   }
 
   /**
@@ -202,18 +207,30 @@ public final class EncodedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(EncryptedNumber other) {
-    return context.add(this, other);
+    return other.add(this);
   }
 
   /**
-   * Adds another {@code EncodedNumber} to this {@code EncodedNumber}. See
-   * {@link com.n1analytics.paillier.PaillierContext#add(EncodedNumber, EncodedNumber)} for details.
+   * Adds another {@code EncodedNumber} to this {@code EncodedNumber}.
    *
    * @param other {@code EncodedNumber} to be added.
    * @return the addition result.
    */
-  public EncodedNumber add(EncodedNumber other) {
-    return context.add(this, other);
+  public EncodedNumber add(EncodedNumber other) throws PaillierContextMismatchException {
+    checkSameEncoding(other);
+    final BigInteger modulus = encoding.getPublicKey().getModulus();
+    BigInteger thisValue = getValue();
+    BigInteger otherValue = other.getValue();
+    int thisExponent = getExponent();
+    int otherExponent = other.getExponent();
+    if (thisExponent > otherExponent) {
+      thisValue = thisValue.multiply(encoding.getRescalingFactor(thisExponent - otherExponent));
+      thisExponent = otherExponent;
+    } else if (thisExponent < otherExponent) {
+      otherValue = otherValue.multiply(encoding.getRescalingFactor(otherExponent - thisExponent));
+    }
+    final BigInteger result = thisValue.add(otherValue).mod(modulus);
+    return new EncodedNumber(encoding, result, thisExponent);
   }
 
   /**
@@ -223,7 +240,7 @@ public final class EncodedNumber {
    * @return the addition result.
    */
   public EncodedNumber add(BigInteger other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
@@ -233,7 +250,7 @@ public final class EncodedNumber {
    * @return the addition result.
    */
   public EncodedNumber add(double other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
@@ -243,14 +260,19 @@ public final class EncodedNumber {
    * @return the addition result.
    */
   public EncodedNumber add(long other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
    * @return additive inverse of this {@code EncodedNumber}.
    */
   public EncodedNumber additiveInverse() {
-    return context.additiveInverse(this);
+    if (getValue().signum() == 0) {
+      return this;
+    }
+    final BigInteger modulus = encoding.getPublicKey().getModulus();
+    final BigInteger result = modulus.subtract(getValue());
+    return new EncodedNumber(encoding, result, getExponent());
   }
 
   /**
@@ -260,7 +282,7 @@ public final class EncodedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncryptedNumber other) {
-    return context.subtract(this, other);
+    return other.additiveInverse().add(this);
   }
 
   /**
@@ -270,7 +292,7 @@ public final class EncodedNumber {
    * @return the subtraction result.
    */
   public EncodedNumber subtract(EncodedNumber other) {
-    return context.subtract(this, other);
+    return add(other.additiveInverse());
   }
 
   /**
@@ -280,7 +302,7 @@ public final class EncodedNumber {
    * @return the subtraction result.
    */
   public EncodedNumber subtract(BigInteger other) {
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -290,7 +312,7 @@ public final class EncodedNumber {
    * @return the subtraction result.
    */
   public EncodedNumber subtract(double other) {
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -303,7 +325,7 @@ public final class EncodedNumber {
     // NOTE it would be nice to do add(context.encode(-other)) however this
     //      would fail if other == Long.MIN_VALUE since it has no
     //      corresponding positive value.
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -313,7 +335,7 @@ public final class EncodedNumber {
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(EncryptedNumber other) {
-    return context.multiply(this, other);
+    return other.multiply(this);
   }
 
   /**
@@ -323,7 +345,11 @@ public final class EncodedNumber {
    * @return the multiplication result.
    */
   public EncodedNumber multiply(EncodedNumber other) {
-    return context.multiply(this, other);
+    checkSameEncoding(other);
+    final BigInteger modulus = encoding.getPublicKey().getModulus();
+    final BigInteger result = getValue().multiply(other.getValue()).mod(modulus);
+    final int exponent = getExponent() + other.getExponent();
+    return new EncodedNumber(encoding, result, exponent);
   }
 
   /**
@@ -333,7 +359,7 @@ public final class EncodedNumber {
    * @return the multiplication result.
    */
   public EncodedNumber multiply(BigInteger other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   /**
@@ -343,7 +369,7 @@ public final class EncodedNumber {
    * @return the multiplication result.
    */
   public EncodedNumber multiply(double other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   /**
@@ -353,7 +379,7 @@ public final class EncodedNumber {
    * @return the multiplication result.
    */
   public EncodedNumber multiply(long other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   // TODO Issue #10
@@ -382,7 +408,7 @@ public final class EncodedNumber {
    * @return the division result.
    */
   public EncodedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(encoding.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   /**
@@ -392,12 +418,12 @@ public final class EncodedNumber {
    * @return the division result.
    */
   public EncodedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(encoding.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   @Override
   public int hashCode() {
-    return new HashChain().chain(context).chain(value).hashCode();
+    return new HashChain().chain(encoding).chain(value).hashCode();
   }
 
   @Override
@@ -409,12 +435,12 @@ public final class EncodedNumber {
       return false;
     }
     EncodedNumber number = (EncodedNumber) o;
-    return context.equals(number.context) && value.equals(number.value);
+    return encoding.equals(number.encoding) && value.equals(number.value);
   }
 
   public boolean equals(EncodedNumber o) {
     return o == this || (o != null &&
-            context.equals(o.context) &&
+            encoding.equals(o.encoding) &&
             value.equals(o.value));
   }
 }

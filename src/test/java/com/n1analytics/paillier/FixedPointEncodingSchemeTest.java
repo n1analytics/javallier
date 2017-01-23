@@ -22,18 +22,18 @@ public class FixedPointEncodingSchemeTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     privateKey = PaillierPrivateKey.create(TestConfiguration.DEFAULT_KEY_SIZE);
-    PaillierContext context = new PaillierContext(privateKey.publicKey, DEFAULT_SCALE);
+    PaillierContext context = new PaillierContext(privateKey.publicKey, new FixedPointEncodingScheme(privateKey.publicKey, DEFAULT_SCALE));
     encoding = (FixedPointEncodingScheme)context.getEncodingScheme();
     rnd = new Random();
   }
 
   @Test
   public void testConstructor() {
-    PaillierContext context = new PaillierContext(privateKey.getPublicKey(), DEFAULT_SCALE);
-    FixedPointEncodingScheme newScheme = new FixedPointEncodingScheme(context, DEFAULT_SCALE);
+    FixedPointEncodingScheme newScheme = new FixedPointEncodingScheme(privateKey.getPublicKey(), DEFAULT_SCALE);
     assertEquals(2, newScheme.getBase());
     assertTrue(newScheme.isSigned());
-    assertEquals(-1, newScheme.getPrecision());
+    assertEquals(TestConfiguration.DEFAULT_KEY_SIZE, newScheme.getPrecision());
+    assertEquals(privateKey.getPublicKey(), newScheme.getPublicKey());
   }
   
   @Test

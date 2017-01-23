@@ -73,16 +73,6 @@ public class MultiplicationTest {
     public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
       return arg2.multiply(arg1);
     }
-  }, new BinaryMultiplier1() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
-      return context.multiply(arg1, arg2);
-    }
-  }, new BinaryMultiplier1() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
-      return context.multiply(arg2, arg1);
-    }
   }};
 
   BinaryMultiplier3 binaryMultipliers3[] = new BinaryMultiplier3[]{new BinaryMultiplier3() {
@@ -94,16 +84,6 @@ public class MultiplicationTest {
     @Override
     public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
       return arg2.multiply(arg1);
-    }
-  }, new BinaryMultiplier3() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
-      return context.multiply(arg1, arg2);
-    }
-  }, new BinaryMultiplier3() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
-      return context.multiply(arg2, arg1);
     }
   }};
 

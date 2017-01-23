@@ -18,6 +18,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,77 +71,47 @@ public class SubtractionTest {
     public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2);
   }
 
-  BinarySubtractor1 binarySubtractors1[] = new BinarySubtractor1[]{new BinarySubtractor1() {
+  BinarySubtractor1 binarySubtractors1 = new BinarySubtractor1() {
     @Override
     public EncryptedNumber eval(EncryptedNumber arg1, EncryptedNumber arg2) {
       return arg1.subtract(arg2);
     }
-  }, new BinarySubtractor1() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncryptedNumber arg2) {
-      return context.subtract(arg1, arg2);
-    }
-  }};
+  };
 
-  BinarySubtractor1 binarySubtractorsRight1[] = new BinarySubtractor1[]{new BinarySubtractor1() {
+  BinarySubtractor1 binarySubtractorsRight1 = new BinarySubtractor1() {
     @Override
     public EncryptedNumber eval(EncryptedNumber arg1, EncryptedNumber arg2) {
       return arg2.subtract(arg1);
     }
-  }, new BinarySubtractor1() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncryptedNumber arg2) {
-      return context.subtract(arg2, arg1);
-    }
-  }};
+  };
 
-  BinarySubtractor2 binarySubtractors2[] = new BinarySubtractor2[]{new BinarySubtractor2() {
+  BinarySubtractor2 binarySubtractors2 = new BinarySubtractor2() {
     @Override
     public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
       return arg1.subtract(arg2);
     }
-  }, new BinarySubtractor2() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
-      return context.subtract(arg1, arg2);
-    }
-  }};
+  };
 
-  BinarySubtractor2 binarySubtractorsRight2[] = new BinarySubtractor2[]{new BinarySubtractor2() {
+  BinarySubtractor2 binarySubtractorsRight2 = new BinarySubtractor2() {
     @Override
     public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
       return arg2.subtract(arg1);
     }
-  }, new BinarySubtractor2() {
-    @Override
-    public EncryptedNumber eval(EncryptedNumber arg1, EncodedNumber arg2) {
-      return context.subtract(arg2, arg1);
-    }
-  }};
+  };
 
-  BinarySubtractor4 binarySubtractors4[] = new BinarySubtractor4[]{new BinarySubtractor4() {
+  BinarySubtractor4 binarySubtractors4 = new BinarySubtractor4() {
     @Override
     public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
       return arg1.subtract(arg2);
     }
-  }, new BinarySubtractor4() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
-      return context.subtract(arg1, arg2);
-    }
-  }};
+  };
 
-  BinarySubtractor4 binarySubtractorsRight4[] = new BinarySubtractor4[]{new BinarySubtractor4() {
+  BinarySubtractor4 binarySubtractorsRight4 = new BinarySubtractor4() {
     @Override
     public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
       return arg2.subtract(arg1);
     }
-  }, new BinarySubtractor4() {
-    @Override
-    public EncodedNumber eval(EncodedNumber arg1, EncodedNumber arg2) {
-      return context.subtract(arg2, arg1);
-    }
-  }};
+  };
 
   void testDoubleSubtraction(BinarySubtractor1 subtractor) {
     double a, b, plainResult, decodedResult, tolerance;
@@ -562,8 +534,9 @@ public class SubtractionTest {
     EncodedNumber encodedB, decryptedResult;
 
     for(int i = 0; i < maxIteration; i++) {
-      a = new BigInteger(context.getPrecision(), random);
-      b = new BigInteger(context.getPrecision(), random);
+      
+      a = BigIntegerUtil.randomPositiveNumber(context.getPublicKey().modulus);
+      b = BigIntegerUtil.randomPositiveNumber(context.getPublicKey().modulus);
 
       // The random generator above only generates positive BigIntegers, the following code
       // negates some inputs.
@@ -813,47 +786,34 @@ public class SubtractionTest {
 
   @Test
   public void testSubtractionEncryptedNumbers1() throws Exception {
-    for(BinarySubtractor1 subtractor : binarySubtractors1) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
-
-    for(BinarySubtractor1 subtractor : binarySubtractorsRight1) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
+    testDoubleSubtraction(binarySubtractors1);
+    testLongSubtraction(binarySubtractors1);
+    testBigIntegerSubtraction(binarySubtractors1);
+    
+    testDoubleSubtractionRight(binarySubtractorsRight1);
+    testLongSubtractionRight(binarySubtractorsRight1);
+    testBigIntegerSubtractionRight(binarySubtractorsRight1);
   }
 
   @Test
   public void testSubtractionEncryptedNumbers2() throws Exception {
-    for(BinarySubtractor2 subtractor : binarySubtractors2) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
-
-    for(BinarySubtractor2 subtractor : binarySubtractorsRight2) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
+    testDoubleSubtraction(binarySubtractors2);
+    testLongSubtraction(binarySubtractors2);
+    testBigIntegerSubtraction(binarySubtractors2);
+    
+    testDoubleSubtractionRight(binarySubtractorsRight2);
+    testLongSubtractionRight(binarySubtractorsRight2);
+    testBigIntegerSubtractionRight(binarySubtractorsRight2);
   }
 
   @Test
   public void testSubtractionEncodedNumbers1() throws Exception {
-    for(BinarySubtractor4 subtractor : binarySubtractors4) {
-      testDoubleSubtraction(subtractor);
-      testLongSubtraction(subtractor);
-      testBigIntegerSubtraction(subtractor);
-    }
+      testDoubleSubtraction(binarySubtractors4);
+      testLongSubtraction(binarySubtractors4);
+      testBigIntegerSubtraction(binarySubtractors4);
 
-    for(BinarySubtractor4 subtractor : binarySubtractorsRight4) {
-      testDoubleSubtractionRight(subtractor);
-      testLongSubtractionRight(subtractor);
-      testBigIntegerSubtractionRight(subtractor);
-    }
+      testDoubleSubtractionRight(binarySubtractorsRight4);
+      testLongSubtractionRight(binarySubtractorsRight4);
+      testBigIntegerSubtractionRight(binarySubtractorsRight4);
   }
-
 }

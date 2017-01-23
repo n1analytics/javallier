@@ -13,6 +13,7 @@
  */
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
 import com.n1analytics.paillier.util.HashChain;
 
 import java.math.BigInteger;
@@ -41,19 +42,19 @@ import java.math.BigInteger;
  *     </li>
  * </ul>
  */
-public final class EncryptedNumber {
+public class EncryptedNumber {
   /**
    * A serializer interface for {@code EncryptedNumber}.
    */
   public static interface Serializer {
 
-    void serialize(PaillierContext context, BigInteger value, int exponent);
+    void serialize(EncodingScheme encoding, BigInteger value, int exponent);
   }
 
   /**
    * The Paillier context associated to this encrypted number.
    */
-  protected final PaillierContext context;
+  protected final EncodingScheme encoding;
 
   /**
    * The ciphertext.
@@ -80,10 +81,10 @@ public final class EncryptedNumber {
    * @param exponent of the encrypted number.
    * @param isSafe set to true if ciphertext is obfuscated, false otherwise.
    */
-  public EncryptedNumber(PaillierContext context, BigInteger ciphertext, int exponent,
+  public EncryptedNumber(EncodingScheme encoding, BigInteger ciphertext, int exponent,
                          boolean isSafe) {
-    if (context == null) {
-      throw new IllegalArgumentException("context must not be null");
+    if (encoding == null) {
+      throw new IllegalArgumentException("encoding must not be null");
     }
     if (ciphertext == null) {
       throw new IllegalArgumentException("unsafeCiphertext must not be null");
@@ -91,11 +92,11 @@ public final class EncryptedNumber {
     if (ciphertext.signum() < 0) {
       throw new IllegalArgumentException("unsafeCiphertext must be non-negative");
     }
-    if (ciphertext.compareTo(context.getPublicKey().getModulusSquared()) >= 0) {
+    if (ciphertext.compareTo(encoding.getPublicKey().getModulusSquared()) >= 0) {
       throw new IllegalArgumentException(
               "unsafeCiphertext must be less than modulus squared");
     }
-    this.context = context;
+    this.encoding = encoding;
     this.ciphertext = ciphertext;
     this.exponent = exponent;
     this.isSafe = isSafe;
@@ -111,15 +112,15 @@ public final class EncryptedNumber {
    * @param ciphertext the encrypted representation of the encoded number.
    * @param exponent the exponent of the encrypted number.
    */
-  public EncryptedNumber(PaillierContext context, BigInteger ciphertext, int exponent) {
-    this(context, ciphertext, exponent, false);
+  public EncryptedNumber(EncodingScheme encoding, BigInteger ciphertext, int exponent) {
+    this(encoding, ciphertext, exponent, false);
   }
 
   /**
    * @return the associated Paillier {@code context}.
    */
-  public PaillierContext getContext() {
-    return context;
+  public EncodingScheme getEncodingScheme() {
+    return encoding;
   }
   
   /**
@@ -127,7 +128,7 @@ public final class EncryptedNumber {
    * @return a version of this encrypted number which is guaranteed to be safe.
    */
   public EncryptedNumber getSafeEncryptedNumber() {
-      return new EncryptedNumber(context, calculateCiphertext(), exponent, true);
+      return new EncryptedNumber(encoding, calculateCiphertext(), exponent, true);
   }
 
   /**
@@ -151,9 +152,12 @@ public final class EncryptedNumber {
    * @return {@code other} provided the contexts match, else PaillierContextMismatchException is thrown.
    * @throws PaillierContextMismatchException if the context is different.
    */
-  public EncryptedNumber checkSameContext(EncryptedNumber other)
+  public EncryptedNumber checkSameEncoding(EncryptedNumber other)
           throws PaillierContextMismatchException {
-    return context.checkSameContext(other);
+    if (!encoding.equals(other.encoding)) {
+        throw new PaillierContextMismatchException("EncryptedNumber 'other' has different encoding scheme.");
+    }
+      return other;
   }
 
   /**
@@ -163,19 +167,24 @@ public final class EncryptedNumber {
    * @return {@code other} if the {@code PaillierContext} match, else PaillierContextMismatchException is thrown.
    * @throws PaillierContextMismatchException if the context is different.
    */
-  public EncodedNumber checkSameContext(EncodedNumber other) throws PaillierContextMismatchException {
-    return context.checkSameContext(other);
+  public EncodedNumber checkSameEncoding(EncodedNumber other) throws PaillierContextMismatchException {
+      if (!encoding.equals(other.encoding)) {
+          throw new PaillierContextMismatchException("EncryptedNumber 'other' has different encoding scheme.");
+      }
+        return other;
   }
 
   /**
-   * Decrypts this {@code EncryptedNumber} using a private key. See
-   * {@link com.n1analytics.paillier.PaillierPrivateKey#decrypt(EncryptedNumber)} for more details.
+   * Decrypts this {@code EncryptedNumber} using a private key. 
    *
    * @param key private key to decrypt.
    * @return the decryption result.
    */
-  public EncodedNumber decrypt(PaillierPrivateKey key) {
-    return key.decrypt(this);
+  public EncodedNumber decrypt(PaillierPrivateKey key) throws PaillierKeyMismatchException{
+      if (!encoding.getPublicKey().equals(key.getPublicKey())) {
+          throw new PaillierKeyMismatchException();
+      }
+      return new EncodedNumber(encoding, key.raw_decrypt(ciphertext), exponent);
   }
 
   /**
@@ -186,7 +195,8 @@ public final class EncryptedNumber {
    * @return the obfuscated {@code EncryptedNumber}.
    */
   public EncryptedNumber obfuscate() {
-    return context.obfuscate(this);
+    final BigInteger obfuscated = encoding.getPublicKey().raw_obfuscate(ciphertext);
+    return new EncryptedNumber(encoding, obfuscated, getExponent(), true);
   }
 
   /**
@@ -198,8 +208,16 @@ public final class EncryptedNumber {
    * @return an {@code EncryptedNumber} representing the same value with {@code exponent} equals to {@code newExp}.
    */
   public EncryptedNumber decreaseExponentTo(int newExp) {
-    return context.decreaseExponentTo(this, newExp);
+    if(newExp > exponent){
+      throw new IllegalArgumentException("New exponent: "+ newExp +
+              "has to be smaller than old exponent: " + exponent + ".");
+    }
+    int expDiff = exponent - newExp;
+    BigInteger bigFactor = encoding.getRescalingFactor(expDiff);
+    BigInteger newEnc = encoding.getPublicKey().raw_multiply(ciphertext, bigFactor);
+    return new EncryptedNumber(encoding, newEnc, newExp, isSafe);
   }
+  
 
   /**
    * Adds another {@code EncryptedNumber} to this {@code EncryptedNumber}. See
@@ -209,7 +227,19 @@ public final class EncryptedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(EncryptedNumber other) {
-    return context.add(this, other);
+    checkSameEncoding(other);
+    BigInteger value1 = ciphertext;
+    BigInteger value2 = other.ciphertext;
+    int exponent1 = getExponent();
+    int exponent2 = other.getExponent();
+    if (exponent1 > exponent2) {
+      value1 = encoding.getPublicKey().raw_multiply(value1, encoding.getRescalingFactor(exponent1 - exponent2));
+      exponent1 = exponent2;
+    } else if (exponent1 < exponent2) {
+      value2 = encoding.getPublicKey().raw_multiply(value2, encoding.getRescalingFactor(exponent2 - exponent1));
+    } // else do nothing
+    final BigInteger result = encoding.getPublicKey().raw_add(value1, value2);
+    return new EncryptedNumber(encoding, result, exponent1, isSafe && other.isSafe);
   }
 
   /**
@@ -220,7 +250,29 @@ public final class EncryptedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(EncodedNumber other) {
-    return context.add(this, other);
+    checkSameEncoding(other);
+    //addition only works if both numbers have the same exponent. Adjusting the exponent of an 
+    //encrypted number can only be done with an encrypted multiplication (internally, this is
+    //done with a modular exponentiation). 
+    //It is going to be computationally much cheaper to adjust the encoded number before the 
+    //encryption as we only need to do a modular multiplication.
+    int exponent1 = exponent;
+    int exponent2 = other.getExponent();
+    BigInteger value2 = other.value;
+    if(exponent1 < exponent2){
+      value2 = value2.multiply(encoding.getRescalingFactor(exponent2-exponent1)).mod(encoding.getPublicKey().getModulus());
+      return add(new EncodedNumber(encoding, value2, exponent1).encrypt());
+    }
+    if(exponent1 > exponent2 && other.signum() == 1){
+      //test if we can shift value2 to the right without loosing information
+      //Note, this only works for positive values.
+      boolean canShift = value2.mod(encoding.getRescalingFactor(exponent1-exponent2)).equals(BigInteger.ZERO);
+      if(canShift){
+        value2 = value2.divide(encoding.getRescalingFactor(exponent1-exponent2));
+        return add(new EncodedNumber(encoding, value2, exponent1).encrypt());
+      }
+    }
+    return add(other.encrypt());
   }
 
   /**
@@ -230,7 +282,7 @@ public final class EncryptedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(BigInteger other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
@@ -240,7 +292,7 @@ public final class EncryptedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(double other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
@@ -250,14 +302,15 @@ public final class EncryptedNumber {
    * @return the addition result.
    */
   public EncryptedNumber add(long other) {
-    return add(context.encode(other));
+    return add(encoding.encode(other));
   }
 
   /**
    * @return the additive inverse of this.
    */
   public EncryptedNumber additiveInverse() {
-    return context.additiveInverse(this);
+    return new EncryptedNumber(encoding, BigIntegerUtil.modInverse(ciphertext, encoding.getPublicKey().getModulusSquared()),
+                               getExponent(), isSafe);
   }
 
   /**
@@ -267,7 +320,7 @@ public final class EncryptedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncryptedNumber other) {
-    return context.subtract(this, other);
+    return add(other.additiveInverse());
   }
 
   /**
@@ -277,7 +330,7 @@ public final class EncryptedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(EncodedNumber other) {
-    return context.subtract(this, other);
+    return add(other.additiveInverse().encrypt());
   }
 
   /**
@@ -287,7 +340,7 @@ public final class EncryptedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(BigInteger other) {
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -297,7 +350,7 @@ public final class EncryptedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(double other) {
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -307,7 +360,7 @@ public final class EncryptedNumber {
    * @return the subtraction result.
    */
   public EncryptedNumber subtract(long other) {
-    return subtract(context.encode(other));
+    return subtract(encoding.encode(other));
   }
 
   /**
@@ -317,7 +370,10 @@ public final class EncryptedNumber {
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(EncodedNumber other) {
-    return context.multiply(this, other);
+    checkSameEncoding(other);
+    final BigInteger result = encoding.getPublicKey().raw_multiply(ciphertext, other.getValue());
+    final int exponent = getExponent() + other.getExponent();
+    return new EncryptedNumber(encoding, result, exponent);
   }
 
   /**
@@ -327,7 +383,7 @@ public final class EncryptedNumber {
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(BigInteger other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   /**
@@ -337,7 +393,7 @@ public final class EncryptedNumber {
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(double other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   /**
@@ -347,7 +403,7 @@ public final class EncryptedNumber {
    * @return the multiplication result.
    */
   public EncryptedNumber multiply(long other) {
-    return multiply(context.encode(other));
+    return multiply(encoding.encode(other));
   }
 
   // TODO Issue #10
@@ -372,7 +428,7 @@ public final class EncryptedNumber {
    * @return the division result.
    */
   public EncryptedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(encoding.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   /**
@@ -382,7 +438,7 @@ public final class EncryptedNumber {
    * @return the division result.
    */
   public EncryptedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(encoding.encode(1.0 / other)); // TODO Issue #10: unhack
   }
 
   /**
@@ -391,12 +447,12 @@ public final class EncryptedNumber {
    * @param serializer to serialize the {@code EncryptedNumber}.
    */
   public void serialize(Serializer serializer) {
-    serializer.serialize(context, calculateCiphertext(), exponent);
+    serializer.serialize(encoding, calculateCiphertext(), exponent);
   }
 
   @Override
   public int hashCode() {
-    return new HashChain().chain(context).chain(ciphertext).hashCode();
+    return new HashChain().chain(encoding).chain(ciphertext).hashCode();
   }
 
   @Override
@@ -408,12 +464,15 @@ public final class EncryptedNumber {
       return false;
     }
     EncryptedNumber number = (EncryptedNumber) o;
-    return context.equals(number.context) && ciphertext.equals(number.ciphertext);
+    return encoding.equals(number.encoding) 
+            && ciphertext.equals(number.ciphertext)
+            && exponent == number.exponent;
   }
 
   public boolean equals(EncryptedNumber o) {
     return o == this || (o != null &&
-            context.equals(o.context) &&
-            ciphertext.equals(o.ciphertext));
+            encoding.equals(o.encoding) 
+            && ciphertext.equals(o.ciphertext)
+            && exponent == o.exponent);
   }
 }

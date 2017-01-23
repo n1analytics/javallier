@@ -63,10 +63,6 @@ import com.n1analytics.paillier.util.HashChain;
  */
 public class PaillierContext {
 
-  /**
-   * The default base value.
-   */
-  protected static final int DEFAULT_BASE = 16;
 
   /**
    * The public key associated with this PaillierContext.
@@ -86,46 +82,20 @@ public class PaillierContext {
    * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
    * @param precision to denote the number of bits used to represent valid numbers.
    */
-  public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision) {
-    this(publicKey, signed, precision, DEFAULT_BASE);
-  }
-  
-  /**
-   * Constructs a Paillier context with a floating point encoding scheme.
-   *
-   * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
-   * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
-   *
-   * @param publicKey associated with this PaillierContext.
-   * @param signed to denote whether this PaillierContext supports signed or unsigned numbers.
-   * @param precision to denote the number of bits used to represent valid numbers.
-   * @param base to denote the selected base used for encoding, the value must be greater than or equal to 2.
-   */
-  public PaillierContext(PaillierPublicKey publicKey, boolean signed, int precision, int base) {
+  public PaillierContext(PaillierPublicKey publicKey, EncodingScheme encoding) {
     if (publicKey == null) {
       throw new NullPointerException("publicKey must not be null");
     }
-    this.publicKey = publicKey;
-    this.encoding = new StandardEncodingScheme(this, signed, precision, base);
-  }
-  
-  /**
-   * Constructs a Paillier context with a fixed point encoding scheme.
-   *
-   * The method also derives the minimum/maximum {@code value} of {@code EncodedNumber} and
-   * the minimum/maximum values that can be encoded and encrypted using the {@code PaillierPublicKey}.
-   *
-   * @param publicKey associated with this PaillierContext.
-   * @param scale for the fixed-point encoding. A number x is encoded to x = significand * 2 ^ scale, where
-   * significand is a Integer value. 
-   */
-  public PaillierContext(PaillierPublicKey publicKey, int scale) {
-    if (publicKey == null) {
-      throw new NullPointerException("publicKey must not be null");
+    if (encoding == null) {
+      throw new NullPointerException("encoding must not be null");
+    }
+    if (!publicKey.equals(encoding.getPublicKey())) {
+      throw new PaillierKeyMismatchException("the provided public key does not match the key of the encoding scheme");
     }
     this.publicKey = publicKey;
-    this.encoding = new FixedPointEncodingScheme(this, scale);
+    this.encoding = encoding;
   }
+  
 
   /**
    * @return public key of this PaillierContext.
@@ -244,7 +214,9 @@ public class PaillierContext {
    */
   public EncryptedNumber checkSameContext(EncryptedNumber other)
           throws PaillierContextMismatchException {
-    checkSameContext(other.getContext());
+      if (!encoding.equals(other.encoding)) {
+          throw new PaillierContextMismatchException("This encrypted number has a diffenent encoding scheme.");
+        }
     return other;
   }
 
@@ -259,25 +231,12 @@ public class PaillierContext {
    */
   public EncodedNumber checkSameContext(EncodedNumber encoded)
           throws PaillierContextMismatchException {
-    checkSameContext(encoded.getContext());
+    if (!encoding.equals(encoded.getEncodingScheme())) {
+      throw new PaillierContextMismatchException("The encoding scheme of 'encoded' does not match the encoding of this context");
+    }
     return encoded;
   }
 
-  /**
-   * Checks whether an {@code EncodedNumber}'s {@code value} is valid, that is the {@code value}
-   * can be encrypted using the associated {@code publicKey}. 
-   * 
-   * For an unsigned {@code PaillierContext}, a valid {@code value} is less than or equal 
-   * to {@code maxEncoded}. While for a signed {@code PaillierContext}, a valid {@code value} 
-   * is less than or equal to {@code maxEncoded} (for positive numbers) or is greater than or 
-   * equal to {@code minEncoded} (for negative numbers).
-   *
-   * @param encoded the {@code EncodedNumber} to be checked.
-   * @return true if it is valid, false otherwise.
-   */
-  public boolean isValid(EncodedNumber encoded) {
-    return encoding.isValid(encoded);
-  }
 
   /**
    * Encodes a {@code BigInteger} using this {@code PaillierContext}. Throws EncodeException if the input
@@ -345,123 +304,6 @@ public class PaillierContext {
     return encoding.encode(value);
   }
 
-  /**
-   * Returns the signum function of this EncodedNumber.
-   * @return -1, 0 or 1 as the value of this EncodedNumber is negative, zero or positive.
-   */
-  public int signum(EncodedNumber number){
-    return encoding.signum(number);
-  }
-
-  
-
-  /**
-   * Returns the rescaling factor to re-encode an {@code EncodedNumber} using the same {@code base}
-   * but with a different {@code exponent}. The rescaling factor is computed as <code>base</code><sup>expDiff</sup>.
-   *
-   * @param expDiff the exponent to for the new rescaling factor.
-   * @return the rescaling factor.
-   */
-  public BigInteger getRescalingFactor(int expDiff) {
-    return encoding.getRescalingFactor(expDiff);
-  }
-
-  /**
-   * Decreases the exponent of an {@code EncodedNumber} to {@code newExp}. If {@code newExp} is greater than
-   * the {@code EncodedNumber}'s current {@code exponent}, throws an IllegalArgumentException.
-   *
-   * @param encodedNumber the {@code EncodedNumber} which {@code exponent} will be reduced.
-   * @param newExp the new {@code exponent}, must be less than the current {@code exponent}.
-   * @return an {@code EncodedNumber} representing the same value with {@code exponent} equals to {@code newExp}.
-   */
-  public EncodedNumber decreaseExponentTo(EncodedNumber encodedNumber, int newExp) {
-    BigInteger significand = encodedNumber.getValue();
-    int exponent = encodedNumber.getExponent();
-    if(newExp > exponent){
-      throw new IllegalArgumentException("New exponent: "+ newExp +
-              "should be more negative than old exponent: " + exponent + ".");
-    }
-
-    int expDiff = exponent - newExp;
-    BigInteger bigFactor = getRescalingFactor(expDiff);
-    BigInteger newEnc = significand.multiply(bigFactor).mod(publicKey.getModulus());
-    return new EncodedNumber(this, newEnc, newExp);
-  }
-
-  /**
-   * Decreases the exponent of an {@code EncryptedNumber} to {@code newExp}. If {@code newExp} is greater than
-   * the {@code EncryptedNumber}'s current {@code exponent}, throws an IllegalArgumentException.
-   *
-   * @param encryptedNumber the {@code EncryptedNumber} which {@code exponent} will be reduced.
-   * @param newExp the new {@code exponent}, must be less than the current {@code exponent}.
-   * @return an {@code EncryptedNumber} representing the same value with {@code exponent} equals to {@code newExp}.
-   */
-  public EncryptedNumber decreaseExponentTo(EncryptedNumber encryptedNumber, int newExp) {
-    int exponent = encryptedNumber.getExponent();
-    if(newExp > exponent){
-      throw new IllegalArgumentException("New exponent: "+ newExp +
-              "should be more negative than old exponent: " + exponent + ".");
-    }
-
-    int expDiff = exponent - newExp;
-    BigInteger bigFactor = getRescalingFactor(expDiff);
-    BigInteger newEnc = publicKey.raw_multiply(encryptedNumber.ciphertext, bigFactor);
-    return new EncryptedNumber(this, newEnc, newExp, encryptedNumber.isSafe);
-  }
-
-
-  /**
-   * Decodes to the exact {@code BigInteger} representation.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public BigInteger decodeBigInteger(EncodedNumber encoded) throws DecodeException {
-    return encoding.decodeBigInteger(encoded);
-  }
-
-  /**
-   * Decodes to the exact {@code double} representation. Throws DecodeException if the decoded result
-   * is {@link java.lang.Double#POSITIVE_INFINITY}, {@link java.lang.Double#NEGATIVE_INFINITY} or
-   * {@link java.lang.Double#NaN}.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public double decodeDouble(EncodedNumber encoded) throws DecodeException {
-    return encoding.decodeDouble(encoded);
-  }
-
-  /**
-   * Decodes to the exact {@code long} representation. Throws DecodeException if the decoded result
-   * is greater than {@link java.lang.Long#MAX_VALUE} or less than {@link java.lang.Long#MIN_VALUE}.
-   *
-   * @param encoded the {@code EncodedNumber} to be decoded.
-   * @return the decoding result.
-   * @throws DecodeException if the {@code encoded} cannot be decoded.
-   */
-  public long decodeLong(EncodedNumber encoded) throws DecodeException {
-    return encoding.decodeLong(encoded);
-  }
-  
-  public BigDecimal decodeBigDecimal(EncodedNumber encoded) throws DecodeException {
-    return encoding.decodeBigDecimal(encoded);
-  }
-
-  /**
-   * Obfuscates an {@code EncryptedNumber}.
-   *
-   * @param encrypted the {@code EncryptedNumber} to be obfuscated.
-   * @return the obfuscated {@code EncryptedNumber}.
-   */
-  public EncryptedNumber obfuscate(EncryptedNumber encrypted) {
-    checkSameContext(encrypted);
-    
-    final BigInteger obfuscated = publicKey.raw_obfuscate(encrypted.ciphertext);
-    return new EncryptedNumber(this, obfuscated, encrypted.getExponent(), true);
-  }
 
   /**
    * Encrypts an {@code EncodedNumber}.
@@ -475,9 +317,7 @@ public class PaillierContext {
    */
   public EncryptedNumber encrypt(EncodedNumber encoded) {
     checkSameContext(encoded);
-    final BigInteger value = encoded.getValue();
-    final BigInteger ciphertext = publicKey.raw_encrypt_without_obfuscation(value);
-    return new EncryptedNumber(this, ciphertext, encoded.getExponent(), false);
+    return encoded.encrypt();
   }
 
   /**
@@ -510,268 +350,7 @@ public class PaillierContext {
     return encrypt(encode(value));
   }
 
-  /**
-   * Adds two EncryptedNumbers. Checks whether the {@code PaillierContext} of {@code operand1}
-   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent.
-   *
-   * @param operand1 first {@code EncryptedNumber}.
-   * @param operand2 second {@code EncryptedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber add(EncryptedNumber operand1, EncryptedNumber operand2)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    BigInteger value1 = operand1.ciphertext;
-    BigInteger value2 = operand2.ciphertext;
-    int exponent1 = operand1.getExponent();
-    int exponent2 = operand2.getExponent();
-    if (exponent1 > exponent2) {
-      value1 = publicKey.raw_multiply(value1, getRescalingFactor(exponent1 - exponent2));
-      exponent1 = exponent2;
-    } else if (exponent1 < exponent2) {
-      value2 = publicKey.raw_multiply(value2, getRescalingFactor(exponent2 - exponent1));
-    } // else do nothing
-    final BigInteger result = publicKey.raw_add(value1, value2);
-    return new EncryptedNumber(this, result, exponent1, operand1.isSafe && operand2.isSafe);
-  }
 
-  /**
-   * Adds an {@code EncryptedNumber} and an {@code EncodedNumber}. Encrypts the {@code EncodedNumber}
-   * before adding them together.
-   *
-   * @param operand1 an {@code EncryptedNumber}.
-   * @param operand2 an {@code EncodedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this PaillirContext.
-   */
-  public EncryptedNumber add(EncryptedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    //addition only works if both numbers have the same exponent. Adjusting the exponent of an 
-    //encrypted number can only be done with an encrypted multiplication (internally, this is
-    //done with a modular exponentiation). 
-    //It is going to be computationally much cheaper to adjust the encoded number before the 
-    //encryption as we only need to do a modular multiplication.
-    int exponent1 = operand1.getExponent();
-    int exponent2 = operand2.getExponent();
-    BigInteger value2 = operand2.value;
-    if(exponent1 < exponent2){
-      value2 = value2.multiply(getRescalingFactor(exponent2-exponent1)).mod(publicKey.getModulus());
-      return add(operand1, encrypt(new EncodedNumber(this, value2, exponent1)));
-    }
-    if(exponent1 > exponent2 && operand2.signum() == 1){
-      //test if we can shift value2 to the right without loosing information
-      //Note, this only works for positive values.
-      boolean canShift = value2.mod(getRescalingFactor(exponent1-exponent2)).equals(BigInteger.ZERO);
-      if(canShift){
-        value2 = value2.divide(getRescalingFactor(exponent1-exponent2));
-        return add(operand1, encrypt(new EncodedNumber(this, value2, exponent1)));
-      }
-    }
-    return add(operand1, encrypt(operand2));
-  }
-
-  /**
-   * Adds an {@code EncodedNumber} and an {@code EncryptedNumber}. Encrypts the {@code EncodedNumber}
-   * before adding them together.
-   *
-   * @param operand1 an {@code EncodedNumber}.
-   * @param operand2 an {@code EncryptedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this PaillirContext.
-   */
-  public EncryptedNumber add(EncodedNumber operand1, EncryptedNumber operand2)
-          throws PaillierContextMismatchException {
-    return add(operand2, operand1);
-  }
-
-  /**
-   * Adds two {@code EncodedNumber}s. Checks whether the {@code PaillierContext} of {@code operand1}
-   * and {@code operand2} are the same as this {@code PaillierContext}. If the operands' exponents
-   * are not the same, reduce the higher exponent to match with the lower exponent.
-   *
-   * @param operand1 first {@code EncodedNumber}.
-   * @param operand2 second {@code EncodedNumber}.
-   * @return the addition result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this{@code PaillierContext}.
-   */
-  public EncodedNumber add(EncodedNumber operand1, EncodedNumber operand2)
-  throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    final BigInteger modulus = publicKey.getModulus();
-    BigInteger value1 = operand1.getValue();
-    BigInteger value2 = operand2.getValue();
-    int exponent1 = operand1.getExponent();
-    int exponent2 = operand2.getExponent();
-    if (exponent1 > exponent2) {
-      value1 = value1.multiply(getRescalingFactor(exponent1 - exponent2));
-      exponent1 = exponent2;
-    } else if (exponent1 < exponent2) {
-      value2 = value2.multiply(getRescalingFactor(exponent2 - exponent1));
-    }
-    final BigInteger result = value1.add(value2).mod(modulus);
-    return new EncodedNumber(this, result, exponent1);
-  }
-
-  /**
-   * Returns the additive inverse of {@code EncryptedNumber}.
-   *
-   * @param operand1 input.
-   * @return the additive inverse result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of {@code operand1}
-   * is not the same as this {@code PaillierContext}.
-   */
-  public EncryptedNumber additiveInverse(EncryptedNumber operand1)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    return new EncryptedNumber(operand1.getContext(), operand1.ciphertext.modInverse(
-            operand1.getContext().getPublicKey().getModulusSquared()),
-                               operand1.getExponent(), operand1.isSafe);
-  }
-
-  /**
-   * Returns the additive inverse of an {@code EncodedNumber}.
-   *
-   * @param operand1 input.
-   * @return the additive inverse.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of {@code operand1}
-   * is not the same as this {@code PaillierContext}.
-   */
-  public EncodedNumber additiveInverse(EncodedNumber operand1)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    if (operand1.getValue().signum() == 0) {
-      return operand1;
-    }
-    final BigInteger modulus = publicKey.getModulus();
-    final BigInteger value1 = operand1.getValue();
-    final BigInteger result = modulus.subtract(value1);
-    return new EncodedNumber(this, result, operand1.getExponent());
-  }
-
-  /**
-   * Subtracts an {@code EncryptedNumber} ({@code operand2}) from another {@code EncryptedNumber} ({@code operand1}).
-   *
-   * @param operand1 first {@code EncryptedNumber}.
-   * @param operand2 second {@code EncryptedNumber}.
-   * @return the subtraction result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber subtract(EncryptedNumber operand1, EncryptedNumber operand2)
-          throws PaillierContextMismatchException {
-    // TODO Issue #9: optimise
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    return add(operand1, additiveInverse(operand2));
-  }
-
-  /**
-   * Subtracts an {@code EncodedNumber} ({@code operand2}) from an {@code EncryptedNumber} ({@code operand1}).
-   *
-   * @param operand1 an {@code EncryptedNumber}.
-   * @param operand2 an {@code EncodedNumber}.
-   * @return the subtraction result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber subtract(EncryptedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException {
-    return add(operand1, encrypt(operand2.additiveInverse()));
-  }
-
-  /**
-   * Subtracts an {@code EncryptedNumber} ({@code operand2}) from an {@code EncodedNumber} ({@code operand1}).
-   *
-   * @param operand1 an {@code EncodedNumber}.
-   * @param operand2 an {@code EncryptedNumber}.
-   * @return the subtraction result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber subtract(EncodedNumber operand1, EncryptedNumber operand2)
-          throws PaillierContextMismatchException {
-    return subtract(encrypt(operand1), operand2);
-  }
-
-  /**
-   * Subtracts an {@code EncodedNumber} ({@code operand2}) from another {@code EncodedNumber} ({@code operand1}).
-   *
-   * @param operand1 first {@code EncodedNumber}.
-   * @param operand2 second {@code EncodedNumber}.
-   * @return the subtraction result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncodedNumber subtract(EncodedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException {
-    return add(operand1, operand2.additiveInverse());
-  }
-
-  /**
-   * Multiplies an EncyptedNumber with an {@code EncodedNumber}.
-   *
-   * @param operand1 an {@code EncryptedNumber}.
-   * @param operand2 an {@code EncodedNumber}.
-   * @return the multiplication result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber multiply(EncryptedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    final BigInteger value1 = operand1.ciphertext;
-    final BigInteger value2 = operand2.getValue();
-    final BigInteger result = publicKey.raw_multiply(value1, value2);
-    final int exponent = operand1.getExponent() + operand2.getExponent();
-    return new EncryptedNumber(this, result, exponent);
-  }
-
-  /**
-   * Multiplies an {@code EncodedNumber} with an {@code EncryptedNumber}.
-   *
-   * @param operand1 an {@code EncodedNumber}.
-   * @param operand2 an {@code EncryptedNumber}.
-   * @return the multiplication result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncryptedNumber multiply(EncodedNumber operand1, EncryptedNumber operand2)
-          throws PaillierContextMismatchException {
-    return multiply(operand2, operand1);
-  }
-
-  /**
-   * Multiplies two {@code EncodedNumber}s.
-   *
-   * @param operand1 an {@code EncodedNumber}.
-   * @param operand2 an {@code EncodedNumber}.
-   * @return the multiplication result.
-   * @throws PaillierContextMismatchException if the {@code PaillierContext} of either
-   * {@code operand1} or {@code operand2} does not match this {@code PaillierContext}.
-   */
-  public EncodedNumber multiply(EncodedNumber operand1, EncodedNumber operand2)
-          throws PaillierContextMismatchException {
-    checkSameContext(operand1);
-    checkSameContext(operand2);
-    final BigInteger modulus = publicKey.getModulus();
-    final BigInteger value1 = operand1.getValue();
-    final BigInteger value2 = operand2.getValue();
-    final BigInteger result = value1.multiply(value2).mod(modulus);
-    final int exponent = operand1.getExponent() + operand2.getExponent();
-    return new EncodedNumber(this, result, exponent);
-  }
-  
   /**
    * returns a random {@code EncodedNumber}, consisting of a significant, chosen uniformly 
    * at random out of the message space and an exponent specified in parameter (@code exponent}.
@@ -779,45 +358,9 @@ public class PaillierContext {
    * @return a random EncodedNumber
    */
   public EncodedNumber randomEncodedNumber(int exponent){
-    return new EncodedNumber(this, BigIntegerUtil.randomPositiveNumber(publicKey.getModulus()), exponent);
+    return new EncodedNumber(encoding, BigIntegerUtil.randomPositiveNumber(publicKey.getModulus()), exponent);
   }
 
-
-  // TODO Issue #10
-  /*
-	public EncodedNumber multiplicativeInverse(EncodedNumber operand1) throws
-		PaillierContextMismatchException
-	{
-		checkSameContext(operand1);
-		return encode(operand1.decode().multiplicativeInverse());
-	}
-
-	public EncryptedNumber divide(
-		EncryptedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		return divideUnsafe(operand1, operand2).obfuscate();
-	}
-
-	public EncodedNumber divide(
-		EncodedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		return multiply(operand1, multiplicativeInverse(operand2));
-	}
-
-	EncryptedNumber divideUnsafe(
-		EncryptedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		checkSameContext(operand1);
-		checkSameContext(operand2);
-		return multiplyUnsafe(operand1, multiplicativeInverse(operand2));
-	}
-	*/
 
   @Override
   public int hashCode() {

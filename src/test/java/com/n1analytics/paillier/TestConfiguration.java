@@ -163,6 +163,45 @@ public class TestConfiguration {
       UNSIGNED_FULL_PRECISION_2048_BASE_64, UNSIGNED_PARTIAL_PRECISION_2048_BASE_64,
       SIGNED_FULL_PRECISION_2048_BASE_64, SIGNED_PARTIAL_PRECISION_2048_BASE_64};
 
+  
+  public static final MockPaillierPrivateKey PRIVATE_KEY_MOCK_1024 = MockPaillierPrivateKey.create(1024);
+  public static final TestConfiguration UNSIGNED_FULL_PRECISION_MOCK_1024 = createUnsignedFullPrecision(PRIVATE_KEY_MOCK_1024);
+  public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_MOCK_1024 = createUnsignedPartialPrecision(PRIVATE_KEY_MOCK_1024);
+  public static final TestConfiguration SIGNED_FULL_PRECISION_MOCK_1024 = createSignedFullPrecision(PRIVATE_KEY_MOCK_1024);
+  public static final TestConfiguration SIGNED_PARTIAL_PRECISION_MOCK_1024 = createSignedPartialPrecision(PRIVATE_KEY_MOCK_1024);
+  public static final TestConfiguration UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_2 =
+          createUnsignedFullPrecision(PRIVATE_KEY_MOCK_1024, 2);
+  public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_2 =
+          createUnsignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 2);
+  public static final TestConfiguration SIGNED_FULL_PRECISION_MOCK_1024_BASE_2 =
+          createSignedFullPrecision(PRIVATE_KEY_MOCK_1024, 2);
+  public static final TestConfiguration SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_2 =
+          createSignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 2);
+  public static final TestConfiguration UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_13 =
+          createUnsignedFullPrecision(PRIVATE_KEY_MOCK_1024, 13);
+  public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_13 =
+          createUnsignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 13);
+  public static final TestConfiguration SIGNED_FULL_PRECISION_MOCK_1024_BASE_13 =
+          createSignedFullPrecision(PRIVATE_KEY_MOCK_1024, 13);
+  public static final TestConfiguration SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_13 =
+          createSignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 13);
+  public static final TestConfiguration UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_64 =
+          createUnsignedFullPrecision(PRIVATE_KEY_MOCK_1024, 64);
+  public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_64 =
+          createUnsignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 64);
+  public static final TestConfiguration SIGNED_FULL_PRECISION_MOCK_1024_BASE_64 =
+          createSignedFullPrecision(PRIVATE_KEY_MOCK_1024, 64);
+  public static final TestConfiguration SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_64 =
+          createSignedPartialPrecision(PRIVATE_KEY_MOCK_1024, 64);
+  public static final TestConfiguration[] CONFIGURATION_MOCK_1024 = {
+      UNSIGNED_FULL_PRECISION_MOCK_1024, UNSIGNED_PARTIAL_PRECISION_MOCK_1024,
+      SIGNED_FULL_PRECISION_MOCK_1024, SIGNED_PARTIAL_PRECISION_MOCK_1024,
+      UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_2, UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_2,
+      SIGNED_FULL_PRECISION_MOCK_1024_BASE_2, SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_2,
+      UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_13, UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_13,
+      SIGNED_FULL_PRECISION_MOCK_1024_BASE_13, SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_13,
+      UNSIGNED_FULL_PRECISION_MOCK_1024_BASE_64, UNSIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_64,
+      SIGNED_FULL_PRECISION_MOCK_1024_BASE_64, SIGNED_PARTIAL_PRECISION_MOCK_1024_BASE_64 };
   /*
    * public static final PaillierPrivateKey PRIVATE_KEY_4096 =
    * PaillierPrivateKey.create(4096); public static final TestConfiguration
@@ -199,7 +238,7 @@ public class TestConfiguration {
 
   public static final TestConfiguration[][] CONFIGURATIONS = {
       // new TestConfiguration[] {CONFIGURATION_FLOAT}, new TestConfiguration[] { CONFIGURATION_DOUBLE },
-      CONFIGURATION_512, CONFIGURATION_1024, CONFIGURATION_2048 };
+      CONFIGURATION_512, CONFIGURATION_1024, CONFIGURATION_2048, CONFIGURATION_MOCK_1024};
 
   private final PaillierPrivateKey privateKey;
   private final PaillierContext context;
@@ -213,8 +252,8 @@ public class TestConfiguration {
   public static TestConfiguration create(int modulusLength, boolean signed,
       int precision) {
     PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength);
-    PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
-        signed, precision);
+    PaillierContext context = new PaillierContext(privateKey.getPublicKey(), 
+        new StandardEncodingScheme(privateKey.getPublicKey(), signed, precision));
     return new TestConfiguration(privateKey, context);
   }
 
@@ -222,21 +261,21 @@ public class TestConfiguration {
                                          int precision, int base) {
     PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength);
     PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
-            signed, precision, base);
+        new StandardEncodingScheme(privateKey.getPublicKey(), signed, precision, base));
     return new TestConfiguration(privateKey, context);
   }
 
   public static TestConfiguration create(PaillierPrivateKey privateKey,
       boolean signed, int precision) {
     PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
-        signed, precision);
+        new StandardEncodingScheme(privateKey.getPublicKey(), signed, precision));
     return new TestConfiguration(privateKey, context);
   }
 
   public static TestConfiguration create(PaillierPrivateKey privateKey,
                                          boolean signed, int precision, int base) {
     PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
-            signed, precision, base);
+        new StandardEncodingScheme(privateKey.getPublicKey(), signed, precision, base));
     return new TestConfiguration(privateKey, context);
   }
 
@@ -273,13 +312,13 @@ public class TestConfiguration {
   public static TestConfiguration createUnsignedPartialPrecision(
       PaillierPrivateKey privateKey) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, false, modulusLength - 2);
+    return create(privateKey, false, modulusLength - 2);
   }
 
   public static TestConfiguration createUnsignedPartialPrecision(
           PaillierPrivateKey privateKey, int base) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, false, modulusLength - 2, base);
+    return create(privateKey, false, modulusLength - 2, base);
   }
 
   public static TestConfiguration createSignedFullPrecision(int modulusLength) {
@@ -293,13 +332,13 @@ public class TestConfiguration {
   public static TestConfiguration createSignedFullPrecision(
       PaillierPrivateKey privateKey) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, true, modulusLength);
+    return create(privateKey, true, modulusLength);
   }
 
   public static TestConfiguration createSignedFullPrecision(
           PaillierPrivateKey privateKey, int base) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, true, modulusLength, base);
+    return create(privateKey, true, modulusLength, base);
   }
 
   public static TestConfiguration createSignedPartialPrecision(int modulusLength) {
@@ -313,13 +352,13 @@ public class TestConfiguration {
   public static TestConfiguration createSignedPartialPrecision(
       PaillierPrivateKey privateKey) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, true, modulusLength - 2);
+    return create(privateKey, true, modulusLength - 2);
   }
 
   public static TestConfiguration createSignedPartialPrecision(
           PaillierPrivateKey privateKey, int base) {
     int modulusLength = privateKey.getPublicKey().getModulus().bitLength();
-    return create(modulusLength, true, modulusLength - 2, base);
+    return create(privateKey, true, modulusLength - 2, base);
   }
   
   public PaillierPrivateKey privateKey() {

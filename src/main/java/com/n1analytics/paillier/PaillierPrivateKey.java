@@ -88,7 +88,7 @@ import java.security.SecureRandom;
  *   </li>
  * </ul>
  */
-public final class PaillierPrivateKey {
+public class PaillierPrivateKey {
 
   /**
    * A serializer interface for {@code PaillierPrivateKey}.
@@ -239,27 +239,6 @@ public final class PaillierPrivateKey {
     return publicKey;
   }
 
-  /**
-   * Decrypts an encrypted number.
-   *
-   * @param encrypted EncryptedNumber to be decrypted.
-   * @return the decryption result.
-   * @throws PaillierKeyMismatchException if the encrypted number was not
-   * encoded with the appropriate public key.
-   */
-  public EncodedNumber decrypt(EncryptedNumber encrypted)
-      throws PaillierKeyMismatchException {
-    if (!publicKey.equals(encrypted.getContext().getPublicKey())) {
-      throw new PaillierKeyMismatchException();
-    }
-    
-    if(encrypted.getContext() instanceof MockPaillierContext){
-      return new EncodedNumber(encrypted.getContext(), encrypted.ciphertext, encrypted.getExponent());
-    }
-    return new EncodedNumber(encrypted.getContext(), raw_decrypt(encrypted.ciphertext),
-        encrypted.getExponent());
-  }
-  
   /**
    * Implementation of the decryption function of the Paillier encryption scheme.
    * Returns the plain text of a given cipher text.

@@ -11,6 +11,11 @@ public interface EncodingScheme {
   public static final int BIG_DECIMAL_ENCODING_PRECISION = 34;
   
   /**
+   * The default base value.
+   */
+  public static final int DEFAULT_BASE = 16;
+
+  /**
    * @return encoding base used in this Encoding Scheme.
    */
   public int getBase();
@@ -204,6 +209,13 @@ public interface EncodingScheme {
    * @return the rescaling factor.
    */
   public BigInteger getRescalingFactor(int expDiff);
+  
+  /**
+   * A encoding scheme is specific to a public key, as the public key defines the available message space.
+   * 
+   * @return the publicKey associated with this encoding scheme.
+   */
+  public PaillierPublicKey getPublicKey();
 }
 
 

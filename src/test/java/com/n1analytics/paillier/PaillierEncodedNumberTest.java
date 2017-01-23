@@ -126,7 +126,7 @@ public class PaillierEncodedNumberTest {
         if(value < 0 && context.isUnsigned()) {
           fail("ERROR: Successfully encoded negative integer with unsigned encoding");
         }
-        assertEquals(context, encoded.getContext());
+        assertEquals(encoded, context.checkSameContext(encoded));
         BigInteger expected = valueBig;
         
         if(!expected.equals(BigInteger.ZERO)) {
@@ -164,7 +164,7 @@ public class PaillierEncodedNumberTest {
 
     @Test
     public void testLongRandom() {
-      for(int i = 0; i < 100000; ++i) {
+      for(int i = 0; i < 10000; ++i) {
         testLong(random.nextLong());
       }
     }
@@ -214,7 +214,7 @@ public class PaillierEncodedNumberTest {
 
     @Test
     public void testDoubleRandom() {
-      for(int i = 0; i < 100000; ++i) {
+      for(int i = 0; i < 10000; ++i) {
         testDouble(randomFiniteDouble());
       }
     }
@@ -267,7 +267,7 @@ public class PaillierEncodedNumberTest {
     @Test
     public void testBigDecimalRandom() {
       int numBits = context.getPrecision()/2;
-      for(int i = 0; i < 100000; ++i) {        
+      for(int i = 0; i < 10000; ++i) {        
         testBigDecimal(new BigDecimal(new BigInteger(numBits, random), random.nextInt(60)-30));
       }
     }
@@ -417,10 +417,12 @@ public class PaillierEncodedNumberTest {
 
     @Test
     public void testInvalidLargeMinNumber() throws Exception {
+      /*
       BigInteger negHumongous = context.getMinSignificand().subtract(BigInteger.ONE);
       while(!negHumongous.isProbablePrime(20)){
         negHumongous = negHumongous.subtract(BigInteger.ONE);
-      }
+      }*/
+      BigInteger negHumongous = context.getMinSignificand().negate().nextProbablePrime().negate();
       testUnencodable(context, negHumongous);
     }
 
@@ -437,7 +439,7 @@ public class PaillierEncodedNumberTest {
     @Test
     public void testDecodeInvalidPositiveNumbers() throws Exception {
       if(conf.signedPartialPrecision()) {
-        EncodedNumber encodedNumber = new EncodedNumber(context, context.getMaxEncoded().add(BigInteger.ONE), 0);
+        EncodedNumber encodedNumber = new EncodedNumber(context.getEncodingScheme(), context.getMaxEncoded().add(BigInteger.ONE), 0);
         testUndecodable(encodedNumber);
       }
     }
@@ -445,7 +447,7 @@ public class PaillierEncodedNumberTest {
     @Test
     public void testDecodeInvalidNegativeNumbers() throws Exception {
       if(conf.signedPartialPrecision()) {
-        EncodedNumber encodedNumber = new EncodedNumber(context, context.getMinEncoded().subtract(BigInteger.ONE), 0);
+        EncodedNumber encodedNumber = new EncodedNumber(context.getEncodingScheme(), context.getMinEncoded().subtract(BigInteger.ONE), 0);
         testUndecodable(encodedNumber);
       }
     }
@@ -669,42 +671,42 @@ public class PaillierEncodedNumberTest {
       assertNull(encodedNumber);
 
       try {
-        encodedNumber = new EncodedNumber(defaultSignedContext, null, 0);
+        encodedNumber = new EncodedNumber(defaultSignedContext.getEncodingScheme(), null, 0);
         fail("Successfully create an encoded number with null value");
       } catch (IllegalArgumentException e) {
       }
       assertNull(encodedNumber);
 
       try {
-        encodedNumber = new EncodedNumber(defaultSignedContext, BigInteger.ONE.negate(), 0);
+        encodedNumber = new EncodedNumber(defaultSignedContext.getEncodingScheme(), BigInteger.ONE.negate(), 0);
         fail("Successfully create an encoded number with negative value");
       } catch (IllegalArgumentException e) {
       }
       assertNull(encodedNumber);
 
       try {
-        encodedNumber = new EncodedNumber(defaultSignedContext,
+        encodedNumber = new EncodedNumber(defaultSignedContext.getEncodingScheme(),
                 defaultSignedContext.getPublicKey().getModulus(), 0);
         fail("Successfully create an encoded number with value equal to modulus");
       } catch (IllegalArgumentException e) {
       }
       assertNull(encodedNumber);
 
-      encodedNumber = new EncodedNumber(defaultSignedContext, BigInteger.ONE, 0);
+      encodedNumber = new EncodedNumber(defaultSignedContext.getEncodingScheme(), BigInteger.ONE, 0);
       assertNotNull(encodedNumber);
       assertEquals(BigInteger.ONE, encodedNumber.getValue());
       assertEquals(0, encodedNumber.getExponent());
     }
 
     @Test
-    public void testCheckSameContextEncryptedNumber() throws Exception {
+    public void testCheckSameEncodingEncryptedNumber() throws Exception {
       EncodedNumber encodedNumber1 = defaultSignedContext.encode(1.0);
       EncryptedNumber ciphertext2 = defaultSignedContext.encrypt(2.0);
       EncryptedNumber ciphertext3 = defaultPartialSignedContext.encrypt(2.0);
 
-      EncryptedNumber check = encodedNumber1.checkSameContext(ciphertext2);
+      EncodedNumber check = ciphertext2.checkSameEncoding(encodedNumber1);
       try {
-        check = encodedNumber1.checkSameContext(ciphertext3);
+        check = ciphertext3.checkSameEncoding(encodedNumber1);
         fail("ciphertext1 and ciphertext3 have different context");
       } catch (PaillierContextMismatchException e) {
       }
@@ -716,9 +718,9 @@ public class PaillierEncodedNumberTest {
       EncodedNumber encodedNumber2 = defaultSignedContext.encode(2.0);
       EncodedNumber encodedNumber3 = defaultUnsignedContext.encode(2.0);
 
-      EncodedNumber check = encodedNumber1.checkSameContext(encodedNumber2);
+      EncodedNumber check = encodedNumber1.checkSameEncoding(encodedNumber2);
       try {
-        check = encodedNumber1.checkSameContext(encodedNumber3);
+        check = encodedNumber1.checkSameEncoding(encodedNumber3);
         fail("encodedNumber1 and encodedNumber3 have different context");
       } catch (PaillierContextMismatchException e) {
       }
@@ -726,11 +728,11 @@ public class PaillierEncodedNumberTest {
 
     @Test
     public void testIsEncodedNumberValid() throws Exception {
-      EncodedNumber encodedNumber1 = new EncodedNumber(defaultPartialSignedContext,
+      EncodedNumber encodedNumber1 = new EncodedNumber(defaultPartialSignedContext.getEncodingScheme(),
               defaultPartialSignedContext.getMaxEncoded(), 0);
-      EncodedNumber encodedNumber2 = new EncodedNumber(defaultPartialSignedContext,
+      EncodedNumber encodedNumber2 = new EncodedNumber(defaultPartialSignedContext.getEncodingScheme(),
               defaultPartialSignedContext.getMinEncoded(), 0);
-      EncodedNumber encodedNumber3 = new EncodedNumber(defaultPartialSignedContext,
+      EncodedNumber encodedNumber3 = new EncodedNumber(defaultPartialSignedContext.getEncodingScheme(),
               defaultPartialSignedContext.getMaxEncoded().add(BigInteger.ONE), 0);
 
       assertEquals(true, encodedNumber1.isValid());
@@ -857,7 +859,7 @@ public class PaillierEncodedNumberTest {
     public void testAutomaticPrecisionAgreesWithEpsilon() throws Exception {
       double eps = Math.ulp(1.0);
 
-      double floorHappy = Math.ceil(Math.log((double) PaillierContext.DEFAULT_BASE)/ Math.log(2.0)) * 2;
+      double floorHappy = Math.ceil(Math.log((double) StandardEncodingScheme.DEFAULT_BASE)/ Math.log(2.0)) * 2;
 
       for(double i = -floorHappy; i <= floorHappy; i++){
         EncodedNumber enc1 = defaultSignedContext.encode(Math.pow(2.0, i));

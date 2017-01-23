@@ -13,6 +13,7 @@ public class StandardEncodingScheme implements EncodingScheme{
   //Source: http://docs.oracle.com/javase/specs/jls/se7/html/jls-4.html#jls-4.2.3
   private static final int DOUBLE_MANTISSA_BITS = 53;
   
+
   /**
    * The result of log<sub>2</sub>base.
    */
@@ -56,17 +57,17 @@ public class StandardEncodingScheme implements EncodingScheme{
    */
   private final int base;
   
-  private final PaillierContext context;
+  private final PaillierPublicKey publicKey;
   
-  public StandardEncodingScheme(PaillierContext context, boolean signed, int precision, int base){
-    this.context = context;
+  public StandardEncodingScheme(PaillierPublicKey publicKey, boolean signed, int precision, int base){
+    this.publicKey = publicKey;
     this.signed = signed;
     if (base < 2) {
       throw new IllegalArgumentException("Base must be at least equals to 2.");
     }
     this.base =base;
     this.log2Base = Math.log((double) base)/ Math.log(2.0);
-    BigInteger modulus = context.getPublicKey().getModulus();
+    BigInteger modulus = publicKey.getModulus();
     if(modulus.bitLength() < precision || precision < 1) {
       throw new IllegalArgumentException("Precision must be greater than zero and less than or equal to the number of bits in the modulus");
     }
@@ -87,6 +88,14 @@ public class StandardEncodingScheme implements EncodingScheme{
       maxSignificand = maxEncoded;
       minSignificand = BigInteger.ZERO;
     }
+  }
+  
+  public StandardEncodingScheme(PaillierPublicKey publicKey, boolean signed, int precision){
+    this(publicKey, signed, precision, DEFAULT_BASE);
+  }
+  
+  public StandardEncodingScheme(PaillierPublicKey publicKey, boolean signed){
+    this(publicKey, signed, publicKey.modulus.bitLength(), DEFAULT_BASE);
   }
   
   /**
@@ -115,8 +124,8 @@ public class StandardEncodingScheme implements EncodingScheme{
       throw new EncodeException("Input value cannot be encoded.");
     }
     if(value.signum() < 0)
-      value = value.add(context.getPublicKey().getModulus()); 
-    return new EncodedNumber(context, value, exponent);
+      value = value.add(getPublicKey().getModulus()); 
+    return new EncodedNumber(this, value, exponent);
   }
 
   /**
@@ -136,7 +145,7 @@ public class StandardEncodingScheme implements EncodingScheme{
       throw new EncodeException("Input value cannot be encoded using this EncodingScheme.");
 
     int exponent = value == 0 ? 0 : getDoublePrecExponent(value);
-    return new EncodedNumber(context, innerEncode(new BigDecimal(value), exponent), exponent);
+    return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
   }
 
   /**
@@ -156,7 +165,7 @@ public class StandardEncodingScheme implements EncodingScheme{
       throw new EncodeException("Input value is not valid for this Paillier context.");
 
     int exponent = getExponent(getDoublePrecExponent(value), maxExponent);
-    return new EncodedNumber(context, innerEncode(new BigDecimal(value),
+    return new EncodedNumber(this, innerEncode(new BigDecimal(value),
             getExponent(getDoublePrecExponent(value), maxExponent)), exponent);
   }
 
@@ -180,7 +189,7 @@ public class StandardEncodingScheme implements EncodingScheme{
       throw new EncodeException("Precision must be 10^-i where i > 0.");
 
     int exponent = getPrecExponent(precision);
-    return new EncodedNumber(context, innerEncode(new BigDecimal(value), exponent), exponent);
+    return new EncodedNumber(this, innerEncode(new BigDecimal(value), exponent), exponent);
   }
 
   /**
@@ -217,9 +226,9 @@ public class StandardEncodingScheme implements EncodingScheme{
         throw new EncodeException("Input value cannot be encoded.");
       }
       if (significant.signum() < 0) {
-        significant = context.getPublicKey().getModulus().add(significant);
+        significant = getPublicKey().getModulus().add(significant);
       }
-      return new EncodedNumber(context, significant, exp);
+      return new EncodedNumber(this, significant, exp);
     } else {
       if (value.scale() > 0) { //we've got a fractional part
         BigDecimal EPSILON = new BigDecimal(BigInteger.ONE, precision); //that's the max relative error we are willing to accept
@@ -231,9 +240,9 @@ public class StandardEncodingScheme implements EncodingScheme{
           throw new EncodeException("Input value cannot be encoded.");
         }
         if (significant.signum() < 0) {
-          significant = context.getPublicKey().getModulus().add(significant);
+          significant = getPublicKey().getModulus().add(significant);
         }
-        return new EncodedNumber(context, significant, newExponent);
+        return new EncodedNumber(this, significant, newExponent);
       } else {
         //so we can turn it into a BigInteger without precision loss
         return encode(value.toBigInteger());
@@ -294,7 +303,7 @@ public class StandardEncodingScheme implements EncodingScheme{
     }
 
     if (bigIntRep.signum() < 0) {
-      bigIntRep = bigIntRep.add(context.getPublicKey().getModulus());
+      bigIntRep = bigIntRep.add(getPublicKey().getModulus());
     }
 
     return bigIntRep;
@@ -336,7 +345,7 @@ public class StandardEncodingScheme implements EncodingScheme{
     }
     //if this context is signed, then a negative significant is strictly greater 
     //than modulus/2.
-    BigInteger halfModulus = context.getPublicKey().modulus.shiftRight(1);
+    BigInteger halfModulus = getPublicKey().modulus.shiftRight(1);
     return number.value.compareTo(halfModulus) > 0 ? -1 : 1;
   }
   
@@ -366,7 +375,7 @@ public class StandardEncodingScheme implements EncodingScheme{
   
   public boolean isValid(EncodedNumber encoded) {
     // NOTE signed == true implies minEncoded > maxEncoded
-    if (!context.equals(encoded.getContext())) {
+    if (!this.equals(encoded.getEncodingScheme())) {
       return false;
     }
     if (encoded.getValue().compareTo(maxEncoded) <= 0) {
@@ -458,10 +467,12 @@ public class StandardEncodingScheme implements EncodingScheme{
    * @return the significand of the {@code EncodedNumber}.
    */
   private BigInteger getSignificand(EncodedNumber encoded) {
-    context.checkSameContext(encoded);
+    if (!this.equals(encoded.getEncodingScheme())) {
+      throw new PaillierContextMismatchException("the encoding scheme of 'encoded does not match this encoding scheme");
+    }
     final BigInteger value = encoded.getValue();
 
-    if(value.compareTo(context.getPublicKey().getModulus()) > 0)
+    if(value.compareTo(getPublicKey().getModulus()) > 0)
       throw new DecodeException("The significand of the encoded number is corrupted");
 
     // Non-negative
@@ -472,7 +483,7 @@ public class StandardEncodingScheme implements EncodingScheme{
     // Negative - note that negative encoded numbers are greater than
     // non-negative encoded numbers and hence minEncoded > maxEncoded
     if (signed && value.compareTo(minEncoded) >= 0) {
-      final BigInteger modulus = context.getPublicKey().getModulus();
+      final BigInteger modulus = getPublicKey().getModulus();
       return value.subtract(modulus);
     }
     throw new DecodeException("Detected overflow");
@@ -480,6 +491,10 @@ public class StandardEncodingScheme implements EncodingScheme{
   
   public BigInteger getRescalingFactor(int expDiff) {
     return (BigInteger.valueOf(base)).pow(expDiff);
+  }
+  
+  public PaillierPublicKey getPublicKey() {
+    return publicKey;
   }
   
   @Override
@@ -491,21 +506,20 @@ public class StandardEncodingScheme implements EncodingScheme{
       return false;
     }
     StandardEncodingScheme encoding = (StandardEncodingScheme) o;
-    return signed == encoding.signed &&
-            precision == encoding.precision && 
-            base == encoding.base;
+    return equals(encoding);
   }
 
   public boolean equals(StandardEncodingScheme o) {
     return o == this || (o != null &&
             base == o.base &&
             signed == o.signed &&
-            precision == o.precision);
+            precision == o.precision &&
+            publicKey.equals(o.publicKey));
   }
   
   @Override
   public int hashCode() {
-    return new HashChain().chain(base).chain(signed).chain(precision).hashCode();
+    return new HashChain().chain(base).chain(signed).chain(precision).chain(publicKey).hashCode();
   }
   
   //code from Maarten Bodewes (http://stackoverflow.com/questions/739532/logarithm-of-a-bigdecimal)
