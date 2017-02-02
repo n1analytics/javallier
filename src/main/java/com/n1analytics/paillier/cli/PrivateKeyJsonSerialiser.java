@@ -43,11 +43,11 @@ public class PrivateKeyJsonSerialiser implements PaillierPrivateKey.Serializer {
     data.put("kid", comment);
 
     BigInteger lambda = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
-    String encodedLambda = new String(Base64.encodeBase64(lambda.toByteArray()));
+    String encodedLambda = new String(Base64.encodeBase64URLSafeString(lambda.toByteArray()));
     data.put("lambda", encodedLambda);
 
     BigInteger mu = BigIntegerUtil.modInverse(lambda, publickey.getModulus());
-    String encodedMu = new String(Base64.encodeBase64(mu.toByteArray()));
+    String encodedMu = new String(Base64.encodeBase64URLSafeString(mu.toByteArray()));
     data.put("mu", encodedMu);
   }
 

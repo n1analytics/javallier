@@ -38,7 +38,7 @@ public class PublicKeyJsonSerialiser implements PaillierPublicKey.Serializer {
     data.put("kid", comment);
 
     // Convert n to base64 encode
-    String encodedModulus = new String(Base64.encodeBase64(modulus.toByteArray()));
+    String encodedModulus = new String(Base64.encodeBase64URLSafeString(modulus.toByteArray()));
     data.put("n", encodedModulus);
 
     ArrayNode an = data.putArray("key_ops");
