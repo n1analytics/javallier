@@ -81,24 +81,29 @@ Alternatively you can run directly with sbt:
     $ cat examplekey.priv | python -m json.tool
     {
         "kty": "DAJ",
-        "key_ops": [ "decrypt" ],
+        "key_ops": [
+            "decrypt"
+        ],
         "pub": {
             "alg": "PAI-GN1",
             "kty": "DAJ",
             "kid": "Example keypair",
-            "n": "AImjybsy4/6Lwrl71OoOFyQ//Zvn5AaHt4JXdY4uiEsB",
-            "key_ops": [ "encrypt" ]
+            "n": "AI9TjNmoL7p3j_D-RNK5AJQC1uDMtVvdy0MNi6ctj6Xn",
+            "key_ops": [
+                "encrypt"
+            ]
         },
         "kid": "Example keypair",
-        "lambda": "AImjybsy4/6Lwrl71OoOFyLITnbXrH/Z6PoGtpWokAAA",
-        "mu": "c6zkHofGK9uWqWX1eXTIydCqUnvBJKlDHOZ0fEcZCeQ="
+        "lambda": "AI9TjNmoL7p3j_D-RNK5AJJ3odV_yUj39nLtFBMcrsoQ",
+        "mu": "MDo136LqeN-R5W4kT2azGc6Y-cD77f6r_B6zncj48Eo"
     }
+    
 
     $ java -jar javallier.jar extract examplekey.priv examplekey.pub
     $ java -jar javallier.jar encrypt examplekey.pub "12" -o encA.json
     $ java -jar javallier.jar encrypt examplekey.pub "8" -o encB.json
     $ java -jar javallier.jar addenc examplekey.pub encA.json encB.json -o encC.json
-    $ java -jar javallier.jar java -jar target/scala-2.10/javallier.jar  decrypt examplekey.priv encC.json
+    $ java -jar javallier.jar decrypt examplekey.priv encC.json
     20.0
     $ java -jar javallier.jar add -o encD.json examplekey.pub encA.json 12
     $ java -jar javallier.jar decrypt examplekey.priv encD.json
