@@ -103,7 +103,7 @@ Alternatively you can run directly with sbt:
     $ java -jar javallier.jar encrypt examplekey.pub "12" -o encA.json
     $ java -jar javallier.jar encrypt examplekey.pub "8" -o encB.json
     $ java -jar javallier.jar addenc examplekey.pub encA.json encB.json -o encC.json
-    $ java -jar javallier.jar java -jar target/scala-2.10/javallier.jar  decrypt examplekey.priv encC.json
+    $ java -jar javallier.jar decrypt examplekey.priv encC.json
     20.0
     $ java -jar javallier.jar add -o encD.json examplekey.pub encA.json 12
     $ java -jar javallier.jar decrypt examplekey.priv encD.json
