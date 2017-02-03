@@ -18,7 +18,7 @@ public class SerialisationUtil {
 
   public static PaillierPublicKey unserialise_public(Map data) {
     // decode the modulus
-    BigInteger n = new BigInteger(Base64.decodeBase64((String) data.get("n")));
+    BigInteger n = new BigInteger(1, Base64.decodeBase64((String) data.get("n")));
 
     return new PaillierPublicKey(n);
   }
@@ -28,8 +28,8 @@ public class SerialisationUtil {
     // First step is to unserialise the Public key
     PaillierPublicKey pub = unserialise_public((Map) data.get("pub"));
 
-    BigInteger lambda = new BigInteger(Base64.decodeBase64((String) data.get("lambda")));
-    BigInteger mu = new BigInteger(Base64.decodeBase64((String) data.get("mu")));
+    BigInteger lambda = new BigInteger(1, Base64.decodeBase64((String) data.get("lambda")));
+    BigInteger mu = new BigInteger(1, Base64.decodeBase64((String) data.get("mu")));
 
     return new PaillierPrivateKey(pub, lambda);
   }
