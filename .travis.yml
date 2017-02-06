@@ -10,6 +10,12 @@ jdk:
 - oraclejdk7
 - oraclejdk8
 
+addons:
+  apt:
+    packages:
+    - python3
+
+
 # These directories are cached to S3 at the end of the build
 cache:
   directories:
@@ -19,6 +25,8 @@ cache:
 script:
     - sbt test
     - sbt 'project benchmark' 'jmh:run -i 3 -wi 3 -f1 -t1'
+    - sbt assembly
+    - python3 src/test/cli/cliTest.py
 
 notifications:
   slack:
