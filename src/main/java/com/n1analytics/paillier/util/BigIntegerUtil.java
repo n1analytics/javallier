@@ -72,6 +72,25 @@ public class BigIntegerUtil {
   
   /**
    * computes a modular exponentiation. It will call the GMP library, if available on this system.
+   * If GMP is available, it will use 'mpz_powm_sec' which is side channel attack resistant.
+   * Use this function if you want to protect the exponent from side channel attacks.
+   * @param base of the modular exponentiation
+   * @param exponent of the exponentiation
+   * @param modulus
+   * @return (base ^ exponent) mod modulus
+   */
+  public static BigInteger modPowSecure(BigInteger base, BigInteger exponent, BigInteger modulus) {
+    if (USE_GMP) {
+      return exponent.signum() < 0 //Gmp library can't handle negative exponents
+          ? modInverse(Gmp.modPowSecure(base, exponent.negate(), modulus), modulus)
+          : Gmp.modPowSecure(base, exponent, modulus);
+    } else {
+      return base.modPow(exponent, modulus);
+    }
+  }
+  
+  /**
+   * computes a modular exponentiation. It will call the GMP library, if available on this system.
    * This leads to a significant speed-up.
    * @param base of the modular exponentiation
    * @param exponent of the exponentiation
@@ -81,8 +100,8 @@ public class BigIntegerUtil {
   public static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus) {
     if (USE_GMP) {
       return exponent.signum() < 0 //Gmp library can't handle negative exponents
-          ? modInverse(Gmp.modPowSecure(base, exponent.negate(), modulus), modulus)
-          : Gmp.modPowSecure(base, exponent, modulus);
+          ? modInverse(Gmp.modPowInsecure(base, exponent.negate(), modulus), modulus)
+          : Gmp.modPowInsecure(base, exponent, modulus);
     } else {
       return base.modPow(exponent, modulus);
     }

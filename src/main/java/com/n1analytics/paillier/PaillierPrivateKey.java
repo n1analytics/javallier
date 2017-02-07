@@ -268,8 +268,8 @@ public final class PaillierPrivateKey {
    * @return the decrypted plaintext.
    */
   public BigInteger raw_decrypt(BigInteger ciphertext){
-    BigInteger decryptedToP = lFunction(BigIntegerUtil.modPow(ciphertext, p.subtract(BigInteger.ONE), pSquared),p).multiply(hp).mod(p);
-    BigInteger decryptedToQ = lFunction(BigIntegerUtil.modPow(ciphertext, q.subtract(BigInteger.ONE), qSquared),q).multiply(hq).mod(q);
+    BigInteger decryptedToP = lFunction(BigIntegerUtil.modPowSecure(ciphertext, p.subtract(BigInteger.ONE), pSquared),p).multiply(hp).mod(p);
+    BigInteger decryptedToQ = lFunction(BigIntegerUtil.modPowSecure(ciphertext, q.subtract(BigInteger.ONE), qSquared),q).multiply(hq).mod(q);
     return crt(decryptedToP, decryptedToQ);
   }
 
