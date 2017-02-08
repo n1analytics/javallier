@@ -81,10 +81,13 @@ public class BigIntegerUtil {
    */
   public static BigInteger modPowSecure(BigInteger base, BigInteger exponent, BigInteger modulus) {
     if (USE_GMP) {
-      return exponent.signum() < 0 //Gmp library can't handle negative exponents
+      return exponent.signum() < 0 // Gmp library can't handle negative exponents
           ? modInverse(Gmp.modPowSecure(base, exponent.negate(), modulus), modulus)
           : Gmp.modPowSecure(base, exponent, modulus);
     } else {
+      logger.log(Level.WARNING,
+          "Gmp library is not available. Falling back to native Java for modPow. This does not "
+          + "provide protection against timing attacks!");
       return base.modPow(exponent, modulus);
     }
   }
