@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/NICTA/javallier.svg?branch=master)](https://travis-ci.org/NICTA/javallier)
+[![Build Status](https://travis-ci.org/n1analytics/javallier.svg?branch=master)](https://travis-ci.org/n1analytics/javallier)
 
 [![Javadocs](https://www.javadoc.io/badge/com.n1analytics/javallier_2.10.svg)](https://www.javadoc.io/doc/com.n1analytics/javallier_2.10)
 
