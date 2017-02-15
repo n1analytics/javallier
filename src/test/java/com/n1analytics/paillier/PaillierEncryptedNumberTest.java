@@ -1039,7 +1039,7 @@ public class PaillierEncryptedNumberTest {
       assertEquals(encryptedNumber.isSafe, false);
 
       EncryptedNumber obfuscatedEncryptedNumber = encryptedNumber.obfuscate();
-      BigInteger obfuscatedCiphertext = obfuscatedEncryptedNumber.ciphertext;
+      BigInteger obfuscatedCiphertext = obfuscatedEncryptedNumber.calculateCiphertext();
 
       assertNotNull(obfuscatedEncryptedNumber);
       assertEquals(obfuscatedEncryptedNumber.isSafe, true);
