@@ -13,11 +13,13 @@
  */
 package com.n1analytics.paillier.util;
 
+import java.io.Serializable;
+
 /**
  * A class to store a {@code HashChain}. It contains a hashcode variable and
  * a method to chain another hashcode to this {@code HashChain}.
  */
-public class HashChain {
+public class HashChain implements Serializable {
 
   private int hash;
 

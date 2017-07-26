@@ -13,6 +13,7 @@
  */
 package com.n1analytics.paillier;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -29,7 +30,8 @@ import com.n1analytics.paillier.util.HashChain;
  *     <li>To perform arithmetic operations; addition, subtraction, limited multiplication and limited division.</li>
  * </ul>
  */
-public final class EncodedNumber {
+public final class EncodedNumber implements Serializable {
+  private static final long serialVersionUID = -6907742701395845137L;
 
   /**
    * The Paillier context used to encode this number.
@@ -102,7 +104,7 @@ public final class EncodedNumber {
   public boolean isValid() {
     return context.isValid(this);
   }
-  
+
   /**
    * Returns the signum function of this EncodedNumber.
    * @return -1, 0 or 1 as the value of this EncodedNumber is negative, zero or positive.
@@ -167,7 +169,7 @@ public final class EncodedNumber {
   public long decodeLong() throws ArithmeticException {
     return context.decodeLong(this);
   }
-  
+
   public BigDecimal decodeBigDecimal() throws ArithmeticException {
     return context.decodeBigDecimal(this);
   }
