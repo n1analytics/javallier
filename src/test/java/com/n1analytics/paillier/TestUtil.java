@@ -24,35 +24,39 @@ public class TestUtil {
 
   public static final Random random = new Random();
 
+  public static boolean isFiniteNumber(double x) {
+    return !(Double.isInfinite(value) || Double.isNaN(value));
+  }
+
   public static double randomDouble() {
-	  return Double.longBitsToDouble(random.nextLong());
+    return Double.longBitsToDouble(random.nextLong());
   }
 
   public static double randomFiniteDouble() {
-    for (; ; ) {
+    for ( ; ; ) {
       double value = randomDouble();
-		if (!(Double.isInfinite(value) || Double.isNaN(value))) {
-			return value;
-		}
+      if (isFiniteNumber(value)) {
+        return value;
+      }
     }
   }
 
   public static double randomNaNDouble() {
-    for (; ; ) {
+    for ( ; ; ) {
       // Generate a random NaN/infinity
       double value = Double.longBitsToDouble(0x7FF000000000000L | random.nextLong());
-		if (Double.isNaN(value)) {
-			return value;
-		}
+      if (Double.isNaN(value)) {
+        return value;
+      }
     }
   }
 
   public static double randomNormalDouble() {
-    for (; ; ) {
+    for ( ; ; ) {
       double value = randomFiniteDouble();
-		if (value >= Double.MIN_NORMAL) {
-			return value;
-		}
+      if (value >= Double.MIN_NORMAL) {
+        return value;
+      }
     }
   }
 
@@ -62,7 +66,7 @@ public class TestUtil {
 
   public static boolean isValid(PaillierContext context, BigInteger number) {
     if (BigIntegerUtil.greater(number, context.getMaxSignificand()) ||
-            BigIntegerUtil.less(number, context.getMinSignificand()))
+        BigIntegerUtil.less(number, context.getMinSignificand()))
       return false;
     return true;
   }
