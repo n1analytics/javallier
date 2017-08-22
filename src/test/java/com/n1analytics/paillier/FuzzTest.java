@@ -65,6 +65,9 @@ public class FuzzTest {
       b = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
       c = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
 
+      if ( ! (isFiniteNumber(b) && isFiniteNumber(c)))
+        continue;
+
       if(context.isUnsigned()) {
         if (a < 0) {
           a = -a;
@@ -110,6 +113,9 @@ public class FuzzTest {
       double maxDist = a * EPSILON;
       b = (rnd.nextDouble() - 0.5) * 100; //has to be small to prevent overflows
       c = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
+
+      if ( ! isFiniteNumber(c))
+        continue;
 
       if(context.isUnsigned()) {
         if (a < 0) {
@@ -161,6 +167,9 @@ public class FuzzTest {
       b = (rnd.nextDouble() - 0.5) * 100; //has to be small to prevent overflows
       c = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
       d = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
+
+      if ( ! (isFiniteNumber(c) && isFiniteNumber(d)))
+        continue;
 
       if (context.isUnsigned()) {
         if (a < 0) {
@@ -215,6 +224,9 @@ public class FuzzTest {
       b = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
       c = (rnd.nextDouble() - 0.5) * 100; //has to be small to prevent overflows
       d = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
+
+      if ( ! (isFiniteNumber(b) && isFiniteNumber(d)))
+        continue;
 
       if (context.isUnsigned()) {
         if (a < 0) {
@@ -271,6 +283,9 @@ public class FuzzTest {
       b = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
       c = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
 
+      if ( ! (isFiniteNumber(b) && isFiniteNumber(c)))
+        continue;
+
       if(context.isUnsigned()) {
         if (a < 0) {
           a = -a;
@@ -318,6 +333,9 @@ public class FuzzTest {
       double maxDist = a * EPSILON;
       b = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
       c = a + (rnd.nextDouble() - 0.5) * 2 * maxDist;
+
+      if ( ! (isFiniteNumber(b) && isFiniteNumber(c)))
+        continue;
 
       if(context.isUnsigned()) {
         if (a < 0) {
