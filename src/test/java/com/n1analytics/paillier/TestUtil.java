@@ -25,7 +25,7 @@ public class TestUtil {
   public static final Random random = new Random();
 
   public static boolean isFiniteNumber(double x) {
-    return !(Double.isInfinite(value) || Double.isNaN(value));
+    return !(Double.isInfinite(x) || Double.isNaN(x));
   }
 
   public static double randomDouble() {
