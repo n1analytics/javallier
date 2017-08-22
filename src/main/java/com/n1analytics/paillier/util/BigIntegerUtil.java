@@ -14,7 +14,8 @@
 package com.n1analytics.paillier.util;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
+//import java.security.SecureRandom;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +48,7 @@ public class BigIntegerUtil {
   public static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
  
-  public static final SecureRandom random = new SecureRandom();
+  public static final Random random = new Random();
   
   /**
    * will be set to 'true' if the gmp library is available.

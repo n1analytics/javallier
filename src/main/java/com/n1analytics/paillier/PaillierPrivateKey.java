@@ -16,7 +16,8 @@ package com.n1analytics.paillier;
 import com.n1analytics.paillier.util.BigIntegerUtil;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
+//import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * An immutable class representing Paillier private key.
@@ -226,7 +227,7 @@ public final class PaillierPrivateKey {
     // as modulusLength
     BigInteger p, q, modulus;
     int primeLength = modulusLength / 2;
-    SecureRandom random = new SecureRandom();
+    Random random = new Random();
     do {
       p = BigInteger.probablePrime(primeLength, random);
       do {
