@@ -16,7 +16,9 @@ package com.n1analytics.paillier;
 import com.n1analytics.paillier.util.BigIntegerUtil;
 
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * An immutable class representing Paillier private key.
@@ -204,22 +206,39 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Creates a Paillier keypair of the specified modulus key length.
+   * Creates a Paillier keypair of the specified modulus key length, using the default strong 
+   * SecureRandom provided by SecureRandom.getInstanceStrong().
    *
    * @param modulusLength the length of the public key modulus. Must be a positive multiple of 8.
    * @return a Paillier keypair consists of a private key and the corresponding public key.
-   * @throws IllegalArgumentException on illegal {@code modulusLength}.
+   * @throws IllegalArgumentException on illegal {@code modulusLength}
+   *         NoSuchAlgorithmException if no strong SecureRandom algorithm is available
    */
-  public static PaillierPrivateKey create(int modulusLength) {
+  public static PaillierPrivateKey create(int modulusLength) throws NoSuchAlgorithmException{
+    return create(modulusLength, SecureRandom.getInstanceStrong());
+  }
+
+  /**
+   * Creates a Paillier keypair of the specified modulus key length, using the supplied random
+   * number generator.
+   *
+   * @param modulusLength
+   *          the length of the public key modulus. Must be a positive multiple of 8.
+   * @param random
+   *          the source of randomness for the keypair. choose wisely! A non-secure random number
+   *          generator will break the security of the encryption scheme!
+   * @return a Paillier keypair consists of a private key and the corresponding public key.
+   * @throws IllegalArgumentException
+   *           on illegal {@code modulusLength}.
+   */
+  public static PaillierPrivateKey create(int modulusLength, Random random) {
     if (modulusLength < 8 || modulusLength % 8 != 0) {
       throw new IllegalArgumentException("modulusLength must be a multiple of 8");
     }
-
     // Find two primes p and q whose multiple has the same number of bits
     // as modulusLength
     BigInteger p, q, modulus;
     int primeLength = modulusLength / 2;
-    SecureRandom random = new SecureRandom();
     do {
       p = BigInteger.probablePrime(primeLength, random);
       do {
