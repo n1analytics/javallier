@@ -18,6 +18,7 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -25,11 +26,11 @@ public class PaillierPrivateKeyTest {
 
   @Category(SlowTests.class)
   @Test
-  public void testCreateKeypairs() throws Exception {
+  public void testCreateKeypairs() {
     int[] keyLength = {8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096};
-
+    Random rnd = new Random();
     for (int i = 0; i < keyLength.length; i++) {
-      PaillierPrivateKey privateKey = PaillierPrivateKey.create(keyLength[i]);
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(keyLength[i], rnd);
 
       // Check if the private key exist
       assertNotNull(privateKey);
@@ -63,19 +64,19 @@ public class PaillierPrivateKeyTest {
   }
 
   @Test
-  public void testIllegalKeyLength() throws Exception {
+  public void testIllegalKeyLength() {
     PaillierPrivateKey privateKey = null;
-
+    Random rnd = new Random();
     int keysizeSmallerThanEight = 4;
     try {
-      privateKey = PaillierPrivateKey.create(keysizeSmallerThanEight);
+      privateKey = PaillierPrivateKey.create(keysizeSmallerThanEight, rnd);
       fail("Successfuly create a private key which key size is smaller than eight.");
     } catch (IllegalArgumentException e) {
     }
 
     int keysizeNotMultipleOfEight = 1023;
     try {
-      privateKey = PaillierPrivateKey.create(keysizeNotMultipleOfEight);
+      privateKey = PaillierPrivateKey.create(keysizeNotMultipleOfEight, rnd);
       fail("Successfuly create a private key which key size is not a multiple of eight.");
     } catch (IllegalArgumentException e) {
     }
@@ -178,11 +179,12 @@ public class PaillierPrivateKeyTest {
 
   @Category(SlowTests.class)
   @Test
-  public void testKeyUniqueness512() throws Exception {
+  public void testKeyUniqueness512() {
     int repeats = 100;
-    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>();
+    Random rnd = new Random();
+    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>(repeats);
     while (keypairs.size() < repeats) {
-      PaillierPrivateKey privateKey = PaillierPrivateKey.create(512);
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(512, rnd);
       if (keypairs.contains(privateKey)) {
         fail("Non unique keypair.");
       }
@@ -192,11 +194,12 @@ public class PaillierPrivateKeyTest {
 
   @Category(SlowTests.class)
   @Test
-  public void testKeyUniqueness1024() throws Exception {
+  public void testKeyUniqueness1024() {
     int repeats = 100;
-    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>();
+    Random rnd = new Random();
+    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>(repeats);
     while (keypairs.size() < repeats) {
-      PaillierPrivateKey privateKey = PaillierPrivateKey.create(1024);
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(1024, rnd);
       if (keypairs.contains(privateKey)) {
         fail("Non unique keypair.");
       }
@@ -206,11 +209,12 @@ public class PaillierPrivateKeyTest {
 
   @Category(SlowTests.class)
   @Test
-  public void testKeyUniqueness2048() throws Exception {
+  public void testKeyUniqueness2048() {
     int repeats = 100;
-    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>();
+    Random rnd = new Random();
+    HashSet<PaillierPrivateKey> keypairs = new HashSet<PaillierPrivateKey>(repeats);
     while (keypairs.size() < repeats) {
-      PaillierPrivateKey privateKey = PaillierPrivateKey.create(2048);
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(2048, rnd);
       if (keypairs.contains(privateKey)) {
         fail("Non unique keypair.");
       }
