@@ -206,8 +206,8 @@ public final class PaillierPrivateKey {
   }
 
   /**
-   * Creates a Paillier keypair of the specified modulus key length, using the default strong 
-   * SecureRandom provided by SecureRandom.getInstanceStrong().
+   * Creates a Paillier keypair of the specified modulus key length, using the default 
+   * secure random number generator provided by new SecureRandom().
    *
    * @param modulusLength the length of the public key modulus. Must be a positive multiple of 8.
    * @return a Paillier keypair consists of a private key and the corresponding public key.
@@ -215,7 +215,7 @@ public final class PaillierPrivateKey {
    *         NoSuchAlgorithmException if no strong SecureRandom algorithm is available
    */
   public static PaillierPrivateKey create(int modulusLength) throws NoSuchAlgorithmException{
-    return create(modulusLength, SecureRandom.getInstanceStrong());
+    return create(modulusLength, new SecureRandom());
   }
 
   /**
