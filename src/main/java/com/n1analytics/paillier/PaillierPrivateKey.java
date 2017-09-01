@@ -212,9 +212,8 @@ public final class PaillierPrivateKey {
    * @param modulusLength the length of the public key modulus. Must be a positive multiple of 8.
    * @return a Paillier keypair consists of a private key and the corresponding public key.
    * @throws IllegalArgumentException on illegal {@code modulusLength}
-   *         NoSuchAlgorithmException if no strong SecureRandom algorithm is available
    */
-  public static PaillierPrivateKey create(int modulusLength) throws NoSuchAlgorithmException{
+  public static PaillierPrivateKey create(int modulusLength) {
     return create(modulusLength, new SecureRandom());
   }
 

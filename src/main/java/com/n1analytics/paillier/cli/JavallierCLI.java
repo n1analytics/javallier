@@ -6,7 +6,6 @@ import com.n1analytics.paillier.*;
 import org.apache.commons.cli.*;
 
 import java.io.*;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -251,31 +250,27 @@ public class JavallierCLI {
 
     public void run(List<String> args) {
 
-      try {
-        PaillierPrivateKey privateKey = PaillierPrivateKey.create(keysize);
-        log.info("Keypair generated");
-  
-        PrivateKeyJsonSerialiser serializedPrivateKey = new PrivateKeyJsonSerialiser(comment);
-        privateKey.serialize(serializedPrivateKey);
-  
-        String outputFile;
-        if( args.size() < 2) {
-          log.info("Output to stdout?");
-  
-          // Output to file/stream
-          System.out.println(serializedPrivateKey);
-  
-        } else {
-          outputFile = args.get(1);
-          log.info("Using destination of " + outputFile);
-          try(PrintWriter out = new PrintWriter(outputFile)) {
-            out.println(serializedPrivateKey);
-          } catch (FileNotFoundException e) {
-            log.info("Couldn't find that location sorry.");
-          }
+      PaillierPrivateKey privateKey = PaillierPrivateKey.create(keysize);
+      log.info("Keypair generated");
+
+      PrivateKeyJsonSerialiser serializedPrivateKey = new PrivateKeyJsonSerialiser(comment);
+      privateKey.serialize(serializedPrivateKey);
+
+      String outputFile;
+      if( args.size() < 2) {
+        log.info("Output to stdout?");
+
+        // Output to file/stream
+        System.out.println(serializedPrivateKey);
+
+      } else {
+        outputFile = args.get(1);
+        log.info("Using destination of " + outputFile);
+        try(PrintWriter out = new PrintWriter(outputFile)) {
+          out.println(serializedPrivateKey);
+        } catch (FileNotFoundException e) {
+          log.info("Couldn't find that location sorry.");
         }
-      } catch (NoSuchAlgorithmException e) {
-        log.severe("Could not generate keypair: " + e.getMessage());
       }
 
     }
