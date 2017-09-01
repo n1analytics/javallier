@@ -14,6 +14,7 @@
 package com.n1analytics.paillier;
 
 import java.math.BigInteger;
+import java.util.Random;
 
 public class TestConfiguration {
   // // A set of test configurations which are just big enough to encode all
@@ -46,9 +47,10 @@ public class TestConfiguration {
 
   // the maximum number of iterations for randomized tests. 
   public static final int MAX_ITERATIONS = 40;
+  private static final Random rnd = new Random();
   
   public static final PaillierPrivateKey PRIVATE_KEY_512 = PaillierPrivateKey
-      .create(512);
+      .create(512, rnd);
   public static final TestConfiguration UNSIGNED_FULL_PRECISION_512 = createUnsignedFullPrecision(PRIVATE_KEY_512);
   public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_512 = createUnsignedPartialPrecision(PRIVATE_KEY_512);
   public static final TestConfiguration SIGNED_FULL_PRECISION_512 = createSignedFullPrecision(PRIVATE_KEY_512);
@@ -87,7 +89,7 @@ public class TestConfiguration {
       SIGNED_FULL_PRECISION_512_BASE_64, SIGNED_PARTIAL_PRECISION_512_BASE_64 };
 
   public static final PaillierPrivateKey PRIVATE_KEY_1024 = PaillierPrivateKey
-      .create(1024);
+      .create(1024, rnd);
   public static final TestConfiguration UNSIGNED_FULL_PRECISION_1024 = createUnsignedFullPrecision(PRIVATE_KEY_1024);
   public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_1024 = createUnsignedPartialPrecision(PRIVATE_KEY_1024);
   public static final TestConfiguration SIGNED_FULL_PRECISION_1024 = createSignedFullPrecision(PRIVATE_KEY_1024);
@@ -127,7 +129,7 @@ public class TestConfiguration {
       SIGNED_FULL_PRECISION_1024_BASE_64, SIGNED_PARTIAL_PRECISION_1024_BASE_64 };
 
   public static final PaillierPrivateKey PRIVATE_KEY_2048 = PaillierPrivateKey
-      .create(2048);
+      .create(2048, rnd);
   public static final TestConfiguration UNSIGNED_FULL_PRECISION_2048 = createUnsignedFullPrecision(PRIVATE_KEY_2048);
   public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION_2048 = createUnsignedPartialPrecision(PRIVATE_KEY_2048);
   public static final TestConfiguration SIGNED_FULL_PRECISION_2048 = createSignedFullPrecision(PRIVATE_KEY_2048);
@@ -212,7 +214,7 @@ public class TestConfiguration {
 
   public static TestConfiguration create(int modulusLength, boolean signed,
       int precision) {
-    PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength);
+    PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength, rnd);
     PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
         signed, precision);
     return new TestConfiguration(privateKey, context);
@@ -220,7 +222,7 @@ public class TestConfiguration {
 
   public static TestConfiguration create(int modulusLength, boolean signed,
                                          int precision, int base) {
-    PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength);
+    PaillierPrivateKey privateKey = PaillierPrivateKey.create(modulusLength, rnd);
     PaillierContext context = new PaillierContext(privateKey.getPublicKey(),
             signed, precision, base);
     return new TestConfiguration(privateKey, context);
@@ -409,4 +411,5 @@ public class TestConfiguration {
   public boolean signedPartialPrecision() {
     return signed() && isPartialPrecision();
   }
+
 }
