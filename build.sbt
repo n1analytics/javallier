@@ -79,6 +79,7 @@ testOptions in Test += Tests.Setup(classLoader =>
     .loadClass("org.slf4j.LoggerFactory")
     .getMethod("getLogger", classLoader.loadClass("java.lang.String"))
     .invoke(null, "ROOT"))
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")
 
 jacoco.settings
 
