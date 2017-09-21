@@ -459,9 +459,6 @@ public class FuzzTest {
         }
       }
 
-//      if(!isValid(context, BigInteger.valueOf(c + d)))
-//        continue;
-
       ciphertextA = context.encrypt(a);
       ciphertextB = context.encrypt(b).obfuscate();
       encodedC = context.encode(c);

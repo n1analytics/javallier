@@ -350,21 +350,6 @@ public final class EncryptedNumber {
     return multiply(context.encode(other));
   }
 
-  // TODO Issue #10
-    /*
-    public EncryptedNumber divide(EncodedNumber other) {
-    	return context.divide(this, other);
-    }
-
-    public EncryptedNumber divide(Number other) {
-    	return divide(context.encode(other));
-    }
-
-    public EncryptedNumber divide(BigInteger other) {
-    	return divide(context.encode(other));
-    }
-    */
-
   /**
    * Divides this {@code EncryptedNumber} with a {@code double}.
    *
@@ -372,7 +357,7 @@ public final class EncryptedNumber {
    * @return the division result.
    */
   public EncryptedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(context.encode(1.0 / other));
   }
 
   /**
@@ -382,7 +367,7 @@ public final class EncryptedNumber {
    * @return the division result.
    */
   public EncryptedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(context.encode(1.0 / other));
   }
 
   /**

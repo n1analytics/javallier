@@ -216,7 +216,6 @@ public class PaillierContextTest {
 
   public static void testEncodable(PaillierContext context, EncodedNumber number) {
     assertTrue(context.isValid(number));
-//    assertEquals(number, context.decode(context.encode(number)));
   }
 
   public static void testEncodable(PaillierContext context, double number) {

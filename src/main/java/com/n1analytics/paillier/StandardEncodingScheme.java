@@ -1,12 +1,12 @@
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.BigIntegerUtil;
+import com.n1analytics.paillier.util.HashChain;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
-
-import com.n1analytics.paillier.util.BigIntegerUtil;
-import com.n1analytics.paillier.util.HashChain;
 
 public class StandardEncodingScheme implements EncodingScheme{
   
@@ -408,7 +408,6 @@ public class StandardEncodingScheme implements EncodingScheme{
     } else {
       bigDecoded = new BigDecimal(significand).multiply(exp, MathContext.DECIMAL128);
     }
-    //double decoded = significand.doubleValue() * Math.pow((double) base, (double) encoded.getExponent());
     double decoded = bigDecoded.doubleValue();
     if(Double.isInfinite(decoded) || Double.isNaN(decoded)) {
       throw new DecodeException("Decoded value cannot be represented as double.");

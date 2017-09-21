@@ -13,10 +13,10 @@
  */
 package com.n1analytics.paillier;
 
+import com.n1analytics.paillier.util.HashChain;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import com.n1analytics.paillier.util.HashChain;
 
 /**
  * Represents encoded numbers, enabling Paillier encrypted operations on
@@ -356,25 +356,6 @@ public final class EncodedNumber {
     return multiply(context.encode(other));
   }
 
-  // TODO Issue #10
-    /*
-    public EncodedNumber multiplicativeInverse() {
-    	return context.multiplicativeInverse(this);
-    }
-
-    public EncodedNumber divide(EncodedNumber other) {
-    	return context.divide(this, other);
-    }
-
-    public EncodedNumber divide(Number other) {
-    	return divide(context.encode(other));
-    }
-
-    public EncodedNumber divide(BigInteger other) {
-    	return divide(context.encode(other));
-    }
-    */
-
   /**
    * Divides this {@code EncodedNumber} with a {@code double}.
    *
@@ -382,7 +363,7 @@ public final class EncodedNumber {
    * @return the division result.
    */
   public EncodedNumber divide(double other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(context.encode(1.0 / other));
   }
 
   /**
@@ -392,7 +373,7 @@ public final class EncodedNumber {
    * @return the division result.
    */
   public EncodedNumber divide(long other) {
-    return multiply(context.encode(1.0 / other)); // TODO Issue #10: unhack
+    return multiply(context.encode(1.0 / other)); 
   }
 
   @Override

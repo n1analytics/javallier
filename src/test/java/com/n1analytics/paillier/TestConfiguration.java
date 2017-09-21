@@ -16,35 +16,7 @@ package com.n1analytics.paillier;
 import java.math.BigInteger;
 
 public class TestConfiguration {
-  // // A set of test configurations which are just big enough to encode all
-  // // floating point values exactly. The modulus key length is chosen to be
-  // // 280 since a Number representation of Float.MAX_VALUE with respect to
-  // // the exponent Number.FLOAT_MIN_VALUE_EXPONENT uses 277 bits. We add
-  // // one bit for negative numbers and another for room underneath the public
-  // // key modulus then round up to the nearest multiple of 8.
-  // public static final PaillierPrivateKey PRIVATE_KEY_FLOAT =
-  // PaillierPrivateKey.create(280);
-  // public static final TestConfiguration CONFIGURATION_FLOAT =
-  // create(
-  // PRIVATE_KEY_FLOAT,
-  // true,
-  // 1+Number.FLOAT_MAX_PRECISION);
-
-//  // Double configuration is only relevant when using base = 2 and encoding/decoding are done using bit shift.
-//  private static final int DOUBLE_MAX_PRECISION = 2098;
-//
-//  // A test configurations which are just big enough to encode all
-//  // floating point values exactly. The modulus key length is chosen to be
-//  // 2104 since a Number representation of Double.MAX_VALUE with respect
-//  // to the exponent Number.DOUBLE_MIN_VALUE_EXPONENT uses 2098 bits. We
-//  // add one bit for negative numbers and another for room underneath the
-//  // public key modulus then round up to the nearest multiple of 8.
-//  public static final PaillierPrivateKey PRIVATE_KEY_DOUBLE = PaillierPrivateKey
-//      .create(2104);
-//  public static final TestConfiguration CONFIGURATION_DOUBLE = create(
-//      PRIVATE_KEY_DOUBLE, true, 1 + DOUBLE_MAX_PRECISION);
-
-  // the maximum number of iterations for randomized tests. 
+  // the maximum number of iterations for randomized tests.
   public static final int MAX_ITERATIONS = 40;
   
   public static final PaillierPrivateKey PRIVATE_KEY_512 = PaillierPrivateKey
@@ -166,29 +138,6 @@ public class TestConfiguration {
       UNSIGNED_FULL_PRECISION_2048_BASE_64, UNSIGNED_PARTIAL_PRECISION_2048_BASE_64,
       SIGNED_FULL_PRECISION_2048_BASE_64, SIGNED_PARTIAL_PRECISION_2048_BASE_64};
 
-  /*
-   * public static final PaillierPrivateKey PRIVATE_KEY_4096 =
-   * PaillierPrivateKey.create(4096); public static final TestConfiguration
-   * UNSIGNED_FULL_PRECISION_4096 =
-   * createUnsignedFullPrecision(PRIVATE_KEY_4096); public static final
-   * TestConfiguration UNSIGNED_PARTIAL_PRECISION_4096 =
-   * createUnsignedPartialPrecision(PRIVATE_KEY_4096); public static final
-   * TestConfiguration SIGNED_FULL_PRECISION_4096 =
-   * createSignedFullPrecision(PRIVATE_KEY_4096); public static final
-   * TestConfiguration SIGNED_PARTIAL_PRECISION_4096 =
-   * createSignedPartialPrecision(PRIVATE_KEY_4096); public static final
-   * TestConfiguration[] CONFIGURATION_4096 = { UNSIGNED_FULL_PRECISION_4096,
-   * UNSIGNED_PARTIAL_PRECISION_4096, SIGNED_FULL_PRECISION_4096,
-   * SIGNED_PARTIAL_PRECISION_4096 };
-   */
-
-//  // Default configurations
-//  public static final TestConfiguration UNSIGNED_FULL_PRECISION = UNSIGNED_FULL_PRECISION_1024;
-//  public static final TestConfiguration UNSIGNED_PARTIAL_PRECISION = UNSIGNED_PARTIAL_PRECISION_1024;
-//  public static final TestConfiguration SIGNED_FULL_PRECISION = SIGNED_FULL_PRECISION_1024;
-//  public static final TestConfiguration SIGNED_PARTIAL_PRECISION = SIGNED_PARTIAL_PRECISION_1024;
-//  public static final TestConfiguration[] CONFIGURATION = CONFIGURATION_1024;
-
   public static final int DEFAULT_KEY_SIZE = 2048;
   // Default configurations, they all use 2048 bits key and Base 16 (to match with Python-Paillier)
   public static final TestConfiguration UNSIGNED_FULL_PRECISION = UNSIGNED_FULL_PRECISION_2048;
@@ -198,7 +147,6 @@ public class TestConfiguration {
   public static final TestConfiguration[] CONFIGURATION = CONFIGURATION_2048;
 
   public static final TestConfiguration[][] CONFIGURATIONS = {
-      // new TestConfiguration[] {CONFIGURATION_FLOAT}, new TestConfiguration[] { CONFIGURATION_DOUBLE },
       CONFIGURATION_512, CONFIGURATION_1024, CONFIGURATION_2048 };
 
   private final PaillierPrivateKey privateKey;
@@ -333,14 +281,6 @@ public class TestConfiguration {
   public PaillierContext context() {
     return context;
   }
-
-  // public BigInteger totient() {
-  // return privateKey.getTotient();
-  // }
-
-  // public BigInteger totientInverse() {
-  // return privateKey.getTotientInverse();
-  // }
 
   public BigInteger modulus() {
     return context.getPublicKey().getModulus();

@@ -61,62 +61,6 @@ public class PaillierEncodedNumberTest {
       privateKey = conf.privateKey();
     }
 
-//  public void testLong(TestConfiguration conf, long value) {
-//    BigInteger valueBig = BigInteger.valueOf(value);
-//    double valueDouble = (double) value;
-//
-//    // Attempt to encode and decode the long. If the number is
-//    // less than zero and the encoding is unsigned then it must
-//    // throw an ArithmeticException.
-//    try {
-////      Number valueFixed = Number.encode(value);
-//      EncodedNumber encoded = conf.context().encode(value);
-//      if (value < 0 && conf.unsigned()) {
-//        fail("ERROR: Successfully encoded negative integer with unsigned encoding");
-//      }
-//      assertEquals(conf.context(), encoded.getContext());
-//      BigInteger expected = valueBig.shiftRight(encoded.getExponent());
-//      if (value < 0) {
-//        expected = conf.modulus().add(expected);
-//      }
-//      assertEquals(expected, encoded.getValue());
-////      assertEquals(value, encoded.decodeApproximateLong());
-//      assertEquals(value, encoded.decodeLong());
-////      assertEquals(valueFixed, encoded.decode());
-////      assertEquals(valueBig, encoded.decodeApproximateBigInteger());
-//      assertEquals(valueBig, encoded.decodeBigInteger());
-//      // NOTE: If value has 11 or less leading zeros then it is not exactly
-//      //      representable as a float and the various rounding modes come
-//      //      into play. We should aim for exact binary compatibility with
-//      //      whatever the rounding mode is.
-//      //if(valueDouble != encoded.decode().decodeDouble()) {
-//      //	System.out.format(
-//      //		"value:           %d\n" +
-//      //		"value.hex:       %016X\n" +
-//      //		"valueDouble.hex: %016X\n" +
-//      //		"decoded.hex:     %016X\n\n",
-//      //		value,
-//      //		value,
-//      //		Double.doubleToLongBits(valueDouble),
-//      //		Double.doubleToLongBits(encoded.decode().decodeDouble()));
-//      //}
-//      if (Long.numberOfLeadingZeros(value) > 10) {
-////        assertEquals(valueDouble, encoded.decodeApproximateDouble(), 0);
-//        assertEquals(valueDouble, encoded.decodeDouble(), 0);
-//      } else {
-//        // NOTE for the moment we allow the least significant bit of the
-//        //      decoded double to differ:
-//        double delta = (double) (1 << (11 - Long.numberOfLeadingZeros(value)));
-////        assertEquals(valueDouble, encoded.decodeApproximateDouble(), delta);
-//        assertEquals(valueDouble, encoded.decodeDouble(), delta);
-//      }
-//    } catch (EncodeException e) {
-//      if (value >= 0 || conf.signed()) {
-//        throw e;
-//      }
-//    }
-//  }
-
     public void testLong(long value) {
       BigInteger valueBig = BigInteger.valueOf(value);
       double valueDouble = (double) value;

@@ -14,11 +14,11 @@
 package com.n1analytics.paillier;
 
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import com.n1analytics.paillier.util.BigIntegerUtil;
 import com.n1analytics.paillier.util.HashChain;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * The PaillierContext combines an encoding scheme and a public key.
@@ -778,43 +778,6 @@ public class PaillierContext {
   public EncodedNumber randomEncodedNumber(int exponent){
     return new EncodedNumber(this, BigIntegerUtil.randomPositiveNumber(publicKey.getModulus()), exponent);
   }
-
-
-  // TODO Issue #10
-  /*
-	public EncodedNumber multiplicativeInverse(EncodedNumber operand1) throws
-		PaillierContextMismatchException
-	{
-		checkSameContext(operand1);
-		return encode(operand1.decode().multiplicativeInverse());
-	}
-
-	public EncryptedNumber divide(
-		EncryptedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		return divideUnsafe(operand1, operand2).obfuscate();
-	}
-
-	public EncodedNumber divide(
-		EncodedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		return multiply(operand1, multiplicativeInverse(operand2));
-	}
-
-	EncryptedNumber divideUnsafe(
-		EncryptedNumber operand1,
-		EncodedNumber operand2) throws
-		PaillierContextMismatchException
-	{
-		checkSameContext(operand1);
-		checkSameContext(operand2);
-		return multiplyUnsafe(operand1, multiplicativeInverse(operand2));
-	}
-	*/
 
   @Override
   public int hashCode() {
